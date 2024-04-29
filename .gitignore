@@ -33,3 +33,4 @@ google-services.json
 *.hprof
 
 node_modules
+app_backend/backend/prisma/migrations
