@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "library"
 }
 
@@ -14,8 +14,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  password  String
+model User {
+  id                    String         @id @unique @default(cuid())
+  username              String         @unique
+  password              String
+  api_key               String         @default(uuid())
+  source_following      Following[]    @relation("SourceUser")
+  target_following      Following[]    @relation("TargetUser")
+  Author                Gnam[]         @relation("Author")
+  Likes                 Like[]         @relation("UserLikeGnam")
+  SentNotifications     Notification[] @relation("SentNotifications")
+  ReceivedNotifications Notification[] @relation("ReceivedNotifications")
+}
+
+model Following {
+  id          String @id @unique @default(cuid())
+  source_user User   @relation("SourceUser", fields: [sourceUser], references: [id])
+  sourceUser  String
+  target_user User   @relation("TargetUser", fields: [targetUser], references: [id])
+  targetUser  String
+
+  @@unique([sourceUser, targetUser])
+}
+
+model Gnam {
+  id            String         @id @unique @default(cuid())
+  author        User           @relation("Author", fields: [authorId], references: [id])
+  authorId      String
+  description   String
+  share_count   Int
+  likes         Like[]
+  notifications Notification[]
+}
+
+model Like {
+  id     String @id @unique @default(cuid())
+  user   User   @relation("UserLikeGnam", fields: [userId], references: [id])
+  userId String
+  gnam   Gnam   @relation(fields: [gnamId], references: [id])
+  gnamId String
+
+  @@unique([userId, gnamId])
+}
+
+model NotificationType {
+  id            String         @id @unique @default(cuid())
+  template_text String
+  notification  Notification[]
+}
+
+model Notification {
+  id                 String           @id @unique @default(cuid())
+  source_user        User             @relation("SentNotifications", fields: [sourceUserId], references: [id])
+  sourceUserId       String
+  target_user        User             @relation("ReceivedNotifications", fields: [targetUserId], references: [id])
+  targetUserId       String
+  gnam               Gnam?            @relation(fields: [gnamId], references: [id])
+  gnamId             String?
+  notification_type  NotificationType @relation(fields: [notificationTypeId], references: [id])
+  notificationTypeId String
+  created_at         DateTime         @default(now())
+  seen               Boolean          @default(false)
 }
