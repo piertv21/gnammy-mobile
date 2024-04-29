@@ -12,4 +12,4 @@ const gnammyRouter = require('./router/v1/gnammy')
 server.use('/api/v1', gnammyRouter)
 
 server.listen(port)
-console.log(`Server started on port ${port}...`)
+console.log(`Backend started on port ${port}...`)

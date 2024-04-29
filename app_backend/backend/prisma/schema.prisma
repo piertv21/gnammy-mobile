@@ -14,7 +14,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model users {
   id        String   @id @default(cuid())
   username  String   @unique
   password  String
