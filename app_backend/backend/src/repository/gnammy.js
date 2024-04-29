@@ -1,12 +1,14 @@
 const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
 async function addUser(username, password, callback) {
     try {
-        const createdUser = await prisma.users.create({
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const createdUser = await prisma.user.create({
             data: {
                 username: username,
-                password: password
+                password: hashedPassword
             }
         });
         callback(null, createdUser);
@@ -17,7 +19,7 @@ async function addUser(username, password, callback) {
 
 async function listUsers(limit, callback) {
     try {
-        const users = await prisma.users.findMany({
+        const users = await prisma.user.findMany({
             take: limit
         });
         callback(null, users);
