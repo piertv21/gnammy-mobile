@@ -8,6 +8,13 @@ const addUser = {
     }),
 }
 
+const listUsers = {
+    query: Joi.object().keys({
+        limit: Joi.number().required(),
+    }),
+}
+
 module.exports = {
-    addUser
+    addUser,
+    listUsers
 }

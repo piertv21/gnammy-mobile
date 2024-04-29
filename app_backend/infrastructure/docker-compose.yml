@@ -8,19 +8,20 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: postgres
+      POSTGRES_DB: gnammy
     volumes:
       - be_database_data:/var/lib/postgresql/data
     networks:
       - backend-database-network
 
-  be-tasks:
+  be-gnammy:
     build:
       context: ../backend/
       dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
     networks:
       - backend-database-network
-      - backend-network
     depends_on:
       - be-database
 

@@ -20,6 +20,20 @@ const addUser = (req, res) => {
     });
 }
 
+const listUsers = (req, res) => {
+    const { limit } = req.query;
+
+    // Call the repository
+    gnammyRepository.listUsers(limit, (err, users) => {
+        if (err) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ error: 'Errore durante il recupero degli user.' });
+        }
+        res.status(httpStatus.OK).json({ users });
+    });
+}
+
 module.exports = {
-    addUser
+    addUser,
+    listUsers
 }

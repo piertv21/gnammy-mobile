@@ -14,4 +14,7 @@ router.use((req, res, next) => {
 // Add user
 router.post('/addUser/', validate(gnammyValidator.addUser), gnammyController.addUser)
 
+// List users
+router.get('/listUsers/', validate(gnammyValidator.listUsers), gnammyController.listUsers)
+
 module.exports = router

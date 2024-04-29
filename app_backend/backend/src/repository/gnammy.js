@@ -15,6 +15,18 @@ async function addUser(username, password, callback) {
     }
 }
 
+async function listUsers(limit, callback) {
+    try {
+        const users = await prisma.users.findMany({
+            take: limit
+        });
+        callback(null, users);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 module.exports = {
-    addUser
+    addUser,
+    listUsers
 };
