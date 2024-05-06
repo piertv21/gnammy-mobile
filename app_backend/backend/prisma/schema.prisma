@@ -16,15 +16,16 @@ datasource db {
 
 model User {
   id                    String         @id @unique @default(cuid())
-  username              String         @unique
+  username              String
   password              String
-  api_key               String         @default(uuid())
+  api_key               String         @unique @default(uuid())
   source_following      Following[]    @relation("SourceUser")
   target_following      Following[]    @relation("TargetUser")
   Author                Gnam[]         @relation("Author")
   Likes                 Like[]         @relation("UserLikeGnam")
   SentNotifications     Notification[] @relation("SentNotifications")
   ReceivedNotifications Notification[] @relation("ReceivedNotifications")
+  Goals                 Goals[]
 }
 
 model Following {
@@ -41,10 +42,13 @@ model Gnam {
   id            String         @id @unique @default(cuid())
   author        User           @relation("Author", fields: [authorId], references: [id])
   authorId      String
+  title         String
   description   String
   share_count   Int
+  created_at    DateTime       @default(now())
   likes         Like[]
   notifications Notification[]
+  goals         Goals[]
 }
 
 model Like {
@@ -75,4 +79,24 @@ model Notification {
   notificationTypeId String
   created_at         DateTime         @default(now())
   seen               Boolean          @default(false)
+}
+
+model GoalsType {
+  id            String  @id @unique @default(cuid())
+  is_for        String // gnam, user
+  template_text String
+  goal_number   Int // x likes, x followers
+  goals         Goals[]
+}
+
+model Goals {
+  id         String    @id @unique @default(cuid())
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String
+  gnam       Gnam?     @relation(fields: [gnamId], references: [id])
+  gnamId     String?
+  goal_type  GoalsType @relation(fields: [goalTypeId], references: [id])
+  goalTypeId String
+  created_at DateTime  @default(now())
+  completed  Boolean   @default(false)
 }
