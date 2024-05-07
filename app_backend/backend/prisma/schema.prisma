@@ -39,16 +39,17 @@ model Following {
 }
 
 model Gnam {
-  id            String         @id @unique @default(cuid())
-  author        User           @relation("Author", fields: [authorId], references: [id])
-  authorId      String
-  title         String
-  description   String
-  share_count   Int
-  created_at    DateTime       @default(now())
-  likes         Like[]
-  notifications Notification[]
-  goals         Goals[]
+  id                String         @id @unique @default(cuid())
+  author            User           @relation("Author", fields: [authorId], references: [id])
+  authorId          String
+  title             String
+  short_description String
+  full_recipe       String
+  share_count       Int
+  created_at        DateTime       @default(now())
+  likes             Like[]
+  notifications     Notification[]
+  goals             Goals[]
 }
 
 model Like {
