@@ -2,45 +2,51 @@ package com.example.gnammy
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.gnammy.ui.theme.GnammyTheme
 
 class MainActivity : ComponentActivity() {
+    //private lateinit var locationService: LocationService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /*locationService = get<LocationService>()
+
         setContent {
             GnammyTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android fiero!")
+                    val navController = rememberNavController()
+                    val backStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute by remember {
+                        derivedStateOf {
+                            TravelDiaryRoute.routes.find {
+                                it.route == backStackEntry?.destination?.route
+                            } ?: TravelDiaryRoute.Home
+                        }
+                    }
+
+                    Scaffold(
+                        topBar = { AppBar(navController, currentRoute) }
+                    ) { contentPadding ->
+                        TravelDiaryNavGraph(
+                            navController,
+                            modifier =  Modifier.padding(contentPadding)
+                        )
+                    }
                 }
             }
-        }
+        }*/
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onPause() {
+        super.onPause()
+        //locationService.pauseLocationRequest()
+    }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    GnammyTheme {
-        Greeting("Android")
+    override fun onResume() {
+        super.onResume()
+        //locationService.resumeLocationRequest()
     }
 }
