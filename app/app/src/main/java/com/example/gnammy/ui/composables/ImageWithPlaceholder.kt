@@ -3,6 +3,7 @@ package com.example.gnammy.ui.composables
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -24,30 +26,30 @@ import coil.request.ImageRequest
 enum class Size { Sm, Lg }
 
 @Composable
-fun ImageWithPlaceholder(uri: Uri?, size: Size) {
+fun ImageWithPlaceholder(uri: Uri?, size: Size, description: String, shape: Shape) {
     if (uri?.path?.isNotEmpty() == true) {
         AsyncImage(
             ImageRequest.Builder(LocalContext.current)
                 .data(uri)
                 .crossfade(true)
                 .build(),
-            "Travel picture",
+            description,
             contentScale = ContentScale.Fit,
             modifier = Modifier
-                .size(if (size == Size.Sm) 72.dp else 128.dp)
-                .clip(CircleShape)
+                .fillMaxSize()
+                .clip(shape)
         )
     } else {
         Image(
             Icons.Outlined.Image,
-            "Travel picture",
+            description,
             contentScale = ContentScale.Fit,
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary),
             modifier = Modifier
-                .size(if (size == Size.Sm) 72.dp else 128.dp)
-                .clip(CircleShape)
+                .clip(shape)
+                .fillMaxSize()
                 .background(MaterialTheme.colorScheme.secondary)
-                .padding(if (size == Size.Sm) 20.dp else 36.dp)
+                .padding(150.dp)
         )
     }
 }
