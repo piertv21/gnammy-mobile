@@ -210,7 +210,12 @@ fun AddTravelScreen(
                 Text("Take a picture")
             }
             Spacer(Modifier.size(8.dp))
-            ImageWithPlaceholder(state.imageUri, Size.Lg)
+            ImageWithPlaceholder(
+                uri = "https://www.fisb.net/site/wp-content/uploads/id-10069296.jpg".let(Uri::parse),
+                size = Size.Lg,
+                description = "Travel image",
+                shape = MaterialTheme.shapes.medium
+            )
         }
     }
 

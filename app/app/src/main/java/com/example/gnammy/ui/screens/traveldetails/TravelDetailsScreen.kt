@@ -60,7 +60,11 @@ fun TravelDetailsScreen(place: Place) {
         ) {
             Spacer(Modifier.size(16.dp))
             val imageUri = Uri.parse(place.imageUri)
-            ImageWithPlaceholder(imageUri, Size.Lg)
+            ImageWithPlaceholder(
+                uri = imageUri,
+                size = Size.Lg,
+                description = place.name,
+                shape = MaterialTheme.shapes.medium)
             Spacer(Modifier.size(16.dp))
             Text(
                 place.name,

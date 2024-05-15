@@ -16,6 +16,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.example.gnammy.ui.TravelDiaryRoute
 
+/*
+    * AppBar composable that displays the app bar with the title, navigation icon, and actions.
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(

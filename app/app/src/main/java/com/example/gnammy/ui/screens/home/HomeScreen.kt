@@ -100,7 +100,7 @@ fun TravelItem(item: Place, onClick: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val imageUri = Uri.parse(item.imageUri)
-            ImageWithPlaceholder(imageUri, Size.Sm)
+            ImageWithPlaceholder(imageUri, Size.Lg, "Travel picture", CircleShape)
             /*if (imageUri.path?.isNotEmpty() == true) {
                 AsyncImage(
                     ImageRequest.Builder(LocalContext.current)
