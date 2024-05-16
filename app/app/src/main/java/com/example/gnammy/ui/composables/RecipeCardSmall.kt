@@ -20,6 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/*
+ It shows a small recipe card with a placeholder image and a description.
+ */
 @Composable
 @Preview
 fun RecipeCardSmall() {

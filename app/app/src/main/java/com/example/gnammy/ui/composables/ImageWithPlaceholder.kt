@@ -25,6 +25,10 @@ import coil.request.ImageRequest
 
 enum class Size { Sm, Lg }
 
+/*
+ It shows an image if the uri is not null, otherwise it shows a placeholder.
+ */
+
 @Composable
 fun ImageWithPlaceholder(uri: Uri?, size: Size, description: String, shape: Shape) {
     if (uri?.path?.isNotEmpty() == true) {

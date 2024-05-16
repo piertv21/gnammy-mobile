@@ -43,6 +43,7 @@ import com.example.gnammy.data.database.Place
 import com.example.gnammy.ui.PlacesState
 import com.example.gnammy.ui.TravelDiaryRoute
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
+import com.example.gnammy.ui.composables.MyNavigationBar
 import com.example.gnammy.ui.composables.Size
 
 @Composable
@@ -56,6 +57,11 @@ fun HomeScreen(state: PlacesState, navController: NavHostController) {
                 Icon(Icons.Outlined.Add, "Add Travel")
             }
         },
+        bottomBar = {
+            MyNavigationBar { selectedItem ->
+                println("L'elemento selezionato è: $selectedItem")
+            }
+        }
     ) { contentPadding ->
         if (state.places.isNotEmpty()) {
             LazyVerticalGrid(
