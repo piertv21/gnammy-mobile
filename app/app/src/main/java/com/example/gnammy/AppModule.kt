@@ -8,8 +8,6 @@ import com.example.gnammy.data.remote.OSMDataSource
 import com.example.gnammy.data.repositories.PlacesRepository
 import com.example.gnammy.data.repositories.SettingsRepository
 import com.example.gnammy.ui.PlacesViewModel
-import com.example.gnammy.ui.screens.addtravel.AddTravelViewModel
-import com.example.gnammy.ui.screens.settings.SettingsViewModel
 import com.example.gnammy.utils.LocationService
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -56,10 +54,6 @@ val appModule = module {
             get<Context>().applicationContext.contentResolver
         )
     }
-
-    viewModel { AddTravelViewModel() }
-
-    viewModel { SettingsViewModel(get()) }
 
     viewModel { PlacesViewModel(get()) }
 }

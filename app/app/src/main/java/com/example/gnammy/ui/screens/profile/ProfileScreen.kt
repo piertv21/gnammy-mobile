@@ -1,4 +1,4 @@
-package com.example.gnammy.ui.screens.home
+package com.example.gnammy.ui.screens.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,7 +12,7 @@ import androidx.navigation.NavHostController
 import com.example.gnammy.ui.composables.BasePage
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun ProfileScreen(navController: NavHostController) {
     BasePage(navController = navController) { paddingValues ->
         Column(
             modifier = Modifier
@@ -21,7 +21,7 @@ fun HomeScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "Home Page")
+            Text(text = "Profile Page")
         }
     }
 }

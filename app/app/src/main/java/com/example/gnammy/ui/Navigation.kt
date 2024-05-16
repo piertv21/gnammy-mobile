@@ -10,77 +10,62 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.gnammy.ui.screens.addtravel.AddTravelScreen
-import com.example.gnammy.ui.screens.addtravel.AddTravelViewModel
 import com.example.gnammy.ui.screens.home.HomeScreen
-import com.example.gnammy.ui.screens.settings.SettingsScreen
-import com.example.gnammy.ui.screens.settings.SettingsViewModel
-import com.example.gnammy.ui.screens.traveldetails.TravelDetailsScreen
+import com.example.gnammy.ui.screens.post.PostScreen
+import com.example.gnammy.ui.screens.profile.ProfileScreen
+import com.example.gnammy.ui.screens.saved.SavedScreen
+import com.example.gnammy.ui.screens.search.SearchScreen
 import org.koin.androidx.compose.koinViewModel
 
-sealed class TravelDiaryRoute(
+sealed class GnammyRoute(
     val route: String,
     val title: String,
     val arguments: List<NamedNavArgument> = emptyList()
 ) {
-    data object Home : TravelDiaryRoute("travels", "TravelDiary")
-    data object TravelDetails : TravelDiaryRoute(
-        "travels/{travelId}",
-        "Travel Details",
-        listOf(navArgument("travelId") { type = NavType.StringType })
-    ) {
-        fun buildRoute(travelId: String) = "travels/$travelId"
-    }
-    data object AddTravel : TravelDiaryRoute("travels/add", "Add Travel")
-    data object Settings : TravelDiaryRoute("settings", "Settings")
+    data object Home : GnammyRoute("home", "Home")
+    data object Search : GnammyRoute("search", "Search")
+    data object Post : GnammyRoute("post", "Post")
+    data object Saved : GnammyRoute("saved", "Saved")
+    data object Profile : GnammyRoute("profile", "Profile")
 
-    companion object {
-        val routes = setOf(Home, TravelDetails, AddTravel, Settings)
+    companion object { // TODO Si potrebbe togliere perchè era usato per ottenere il nome della pagina corrente
+        val routes = setOf(Home, Search, Post, Saved, Profile)
     }
 }
 
 @Composable
-fun TravelDiaryNavGraph(
+fun GnammyNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val placesVm = koinViewModel<PlacesViewModel>()
-    val placesState by placesVm.state.collectAsStateWithLifecycle()
-
     NavHost(
         navController = navController,
-        startDestination = TravelDiaryRoute.Home.route,
+        startDestination = GnammyRoute.Home.route, // TODO Check if user is logged in
         modifier = modifier
     ) {
-        with(TravelDiaryRoute.Home) {
+        with(GnammyRoute.Home) {
             composable(route) {
-                HomeScreen(placesState, navController)
+                HomeScreen(navController)
             }
         }
-        with(TravelDiaryRoute.TravelDetails) {
-            composable(route, arguments) { backStackEntry ->
-                val place = requireNotNull(placesState.places.find {
-                    it.id == backStackEntry.arguments?.getString("travelId")?.toInt()
-                })
-                TravelDetailsScreen(place)
+        with(GnammyRoute.Search) {
+            composable(route) {
+                SearchScreen(navController)
             }
         }
-        with(TravelDiaryRoute.AddTravel) {
+        with(GnammyRoute.Post) {
             composable(route) {
-                val addTravelVm = koinViewModel<AddTravelViewModel>()
-                val state by addTravelVm.state.collectAsStateWithLifecycle()
-                AddTravelScreen(
-                    state = state,
-                    actions = addTravelVm.actions,
-                    onSubmit = { placesVm.addPlace(state.toPlace()) },
-                    navController = navController
-                )
+                PostScreen(navController)
             }
         }
-        with(TravelDiaryRoute.Settings) {
+        with(GnammyRoute.Saved) {
             composable(route) {
-                val settingsVm = koinViewModel<SettingsViewModel>()
-                SettingsScreen(settingsVm.state, settingsVm::setUsername)
+                SavedScreen(navController)
+            }
+        }
+        with(GnammyRoute.Profile) {
+            composable(route) {
+                ProfileScreen(navController)
             }
         }
     }
