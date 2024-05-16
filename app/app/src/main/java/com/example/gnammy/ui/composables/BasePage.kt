@@ -1,5 +1,6 @@
 package com.example.gnammy.ui.composables
 
+import MyNavigationBar
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable

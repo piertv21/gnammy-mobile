@@ -28,7 +28,7 @@ sealed class GnammyRoute(
     data object Saved : GnammyRoute("saved", "Saved")
     data object Profile : GnammyRoute("profile", "Profile")
 
-    companion object { // TODO Si potrebbe togliere perchè era usato per ottenere il nome della pagina corrente
+    companion object {
         val routes = setOf(Home, Search, Post, Saved, Profile)
     }
 }

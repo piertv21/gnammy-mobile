@@ -21,36 +21,26 @@ import com.example.gnammy.ui.GnammyRoute
 @Composable
 fun MyNavigationBar(navController: NavHostController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute by remember {
-        derivedStateOf {
-            GnammyRoute.routes.find {
-                it.route == backStackEntry?.destination?.route
-            } ?: GnammyRoute.Home
-        }
-    }
+    val currentRoute = backStackEntry?.destination?.route ?: ""
 
     val itemsWithIcons = listOf(
-        Pair("Home", Icons.Filled.Home),
-        Pair("Cerca", Icons.Filled.Search),
-        Pair("Posta", Icons.Filled.Add),
-        Pair("Salvati", Icons.Filled.Favorite),
-        Pair("Profilo", Icons.Filled.Person)
+        Pair(GnammyRoute.Home, Pair("Home", Icons.Filled.Home)),
+        Pair(GnammyRoute.Search, Pair("Cerca", Icons.Filled.Search)),
+        Pair(GnammyRoute.Post, Pair("Posta", Icons.Filled.Add)),
+        Pair(GnammyRoute.Saved, Pair("Salvati", Icons.Filled.Favorite)),
+        Pair(GnammyRoute.Profile, Pair("Profilo", Icons.Filled.Person))
     )
 
-    var selectedItem by remember { mutableStateOf(0) }
-
-    selectedItem = itemsWithIcons.indexOfFirst { it.first.equals(currentRoute) }
-
     NavigationBar {
-        itemsWithIcons.forEachIndexed { index, itemWithIcon ->
+        itemsWithIcons.forEach { (route, itemWithIcon) ->
+            val selected = currentRoute == route.route
             NavigationBarItem(
                 icon = { Icon(itemWithIcon.second, contentDescription = itemWithIcon.first) },
                 label = { Text(itemWithIcon.first) },
-                selected = selectedItem == index,
+                selected = selected,
                 onClick = {
-                    if (selectedItem != index) {
-                        navController.navigate(GnammyRoute.routes[index].route)
-                        selectedItem = index
+                    if (!selected) {
+                        navController.navigate(route.route)
                     }
                 }
             )
