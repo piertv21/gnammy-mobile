@@ -1,6 +1,7 @@
 package com.example.gnammy.ui.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.aspectRatio
@@ -36,7 +37,7 @@ fun RecipeCardSmall(modifier: Modifier) {
             size = Size.Lg,
             description = "Recipe Image",
             Modifier
-                .background(color = MaterialTheme.colorScheme.onSecondary)
+                .background(color = MaterialTheme.colorScheme.inversePrimary)
                 .clip(shape = RoundedCornerShape(20.dp))
                 .padding(50.dp, 50.dp, 50.dp, 90.dp)
                 .fillMaxSize())
@@ -51,7 +52,7 @@ fun RecipeCardSmall(modifier: Modifier) {
         {
             Text(
                 text = "Spicy Sriracha Noodles",
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Center,
                 style = TextStyle(
                     fontSize = 20.sp,
