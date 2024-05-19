@@ -39,7 +39,7 @@ fun ImageWithPlaceholder(uri: Uri?, size: Size, description: String, modifier: M
                 .crossfade(true)
                 .build(),
             description,
-            contentScale = ContentScale.Fit,
+            contentScale = ContentScale.Crop,
             modifier = modifier
         )
     } else {
