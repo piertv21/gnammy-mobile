@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -30,7 +31,7 @@ enum class Size { Sm, Lg }
  */
 
 @Composable
-fun ImageWithPlaceholder(uri: Uri?, size: Size, description: String, shape: Shape) {
+fun ImageWithPlaceholder(uri: Uri?, size: Size, description: String, modifier: Modifier) {
     if (uri?.path?.isNotEmpty() == true) {
         AsyncImage(
             ImageRequest.Builder(LocalContext.current)
@@ -39,21 +40,15 @@ fun ImageWithPlaceholder(uri: Uri?, size: Size, description: String, shape: Shap
                 .build(),
             description,
             contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(shape)
+            modifier = modifier
         )
     } else {
         Image(
             Icons.Outlined.Image,
             description,
             contentScale = ContentScale.Fit,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary),
-            modifier = Modifier
-                .clip(shape)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.secondary)
-                .padding(150.dp)
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            modifier = modifier
         )
     }
 }

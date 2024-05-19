@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gnammy</string>
+    <string name="home_nav_button">Home</string>
+    <string name="search_nav_button">Cerca</string>
+    <string name="publish_nav_button">Posta</string>
+    <string name="saved_nav_button">Salvati</string>
+    <string name="profile_nav_button">Profilo</string>
+</resources>

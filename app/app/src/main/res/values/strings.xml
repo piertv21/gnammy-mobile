@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Gnammy</string>
+    <string name="home_nav_button">Home</string>
+    <string name="search_nav_button">Search</string>
+    <string name="publish_nav_button">Publish</string>
+    <string name="saved_nav_button">Saved</string>
+    <string name="profile_nav_button">Profile</string>
 </resources>

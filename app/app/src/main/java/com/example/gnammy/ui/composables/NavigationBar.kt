@@ -1,3 +1,5 @@
+import android.content.res.Resources
+import android.provider.Settings.Global.getString
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
@@ -17,9 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.wear.compose.material.ContentAlpha
+import com.example.gnammy.R
 import com.example.gnammy.ui.GnammyRoute
 
 
@@ -29,11 +33,11 @@ fun NavigationBar(navController: NavHostController) {
     val currentRoute = backStackEntry?.destination?.route ?: ""
 
     val itemsWithIcons = listOf(
-        Pair(GnammyRoute.Home, Pair("Home", Icons.Filled.Home)),
-        Pair(GnammyRoute.Search, Pair("Cerca", Icons.Filled.Search)),
-        Pair(GnammyRoute.Post, Pair("Posta", Icons.Filled.Add)),
-        Pair(GnammyRoute.Saved, Pair("Salvati", Icons.Filled.Favorite)),
-        Pair(GnammyRoute.Profile, Pair("Profilo", Icons.Filled.Person))
+        Pair(GnammyRoute.Home, Pair(stringResource(R.string.home_nav_button),  Icons.Filled.Home)),
+        Pair(GnammyRoute.Search, Pair(stringResource(R.string.search_nav_button), Icons.Filled.Search)),
+        Pair(GnammyRoute.Post, Pair(stringResource(R.string.publish_nav_button), Icons.Filled.Add)),
+        Pair(GnammyRoute.Saved, Pair(stringResource(R.string.saved_nav_button), Icons.Filled.Favorite)),
+        Pair(GnammyRoute.Profile, Pair(stringResource(R.string.profile_nav_button), Icons.Filled.Person))
     )
 
     NavigationBar {
