@@ -1,5 +1,6 @@
 package com.example.gnammy
 
+import NavigationBar
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,7 +26,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
 
-                    Scaffold() { contentPadding ->
+                    Scaffold(  bottomBar = {
+                        NavigationBar(navController = navController)
+                    }) { contentPadding ->
                         GnammyNavGraph(
                             navController,
                             modifier =  Modifier.padding(contentPadding)

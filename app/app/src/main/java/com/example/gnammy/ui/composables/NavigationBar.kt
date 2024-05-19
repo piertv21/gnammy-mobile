@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
@@ -14,12 +15,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.wear.compose.material.ContentAlpha
 import com.example.gnammy.ui.GnammyRoute
 
+
 @Composable
-fun MyNavigationBar(navController: NavHostController) {
+fun NavigationBar(navController: NavHostController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: ""
 
@@ -35,8 +40,8 @@ fun MyNavigationBar(navController: NavHostController) {
         itemsWithIcons.forEach { (route, itemWithIcon) ->
             val selected = currentRoute == route.route
             NavigationBarItem(
-                icon = { Icon(itemWithIcon.second, contentDescription = itemWithIcon.first) },
-                label = { Text(itemWithIcon.first) },
+                icon = { Icon(itemWithIcon.second, contentDescription = itemWithIcon.first, tint = if (selected) LocalContentColor.current else LocalContentColor.current.copy(alpha = ContentAlpha.disabled)) },
+                label = { Text(itemWithIcon.first, color = if (selected) LocalContentColor.current else LocalContentColor.current.copy(alpha = ContentAlpha.disabled)) },
                 selected = selected,
                 onClick = {
                     if (!selected) {

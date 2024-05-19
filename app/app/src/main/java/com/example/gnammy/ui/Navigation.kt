@@ -45,7 +45,7 @@ fun GnammyNavGraph(
     ) {
         with(GnammyRoute.Home) {
             composable(route) {
-                HomeScreen(navController)
+                HomeScreen(navController, modifier)
             }
         }
         with(GnammyRoute.Search) {
@@ -55,7 +55,7 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Post) {
             composable(route) {
-                PostScreen(navController)
+                PostScreen(navController, modifier)
             }
         }
         with(GnammyRoute.Saved) {
@@ -65,7 +65,7 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Profile) {
             composable(route) {
-                ProfileScreen(navController)
+                ProfileScreen(navController, modifier)
             }
         }
     }
