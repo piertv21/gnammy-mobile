@@ -30,7 +30,11 @@ import com.example.gnammy.ui.GnammyRoute
 @Composable
 fun NavigationBar(navController: NavHostController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route ?: ""
+    val currentRoute by remember {
+        derivedStateOf {
+            backStackEntry?.destination?.route ?: ""
+        }
+    }
 
     val itemsWithIcons = listOf(
         Pair(GnammyRoute.Home, Pair(stringResource(R.string.home_nav_button),  Icons.Filled.Home)),
