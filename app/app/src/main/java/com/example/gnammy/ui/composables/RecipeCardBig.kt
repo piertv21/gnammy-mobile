@@ -27,12 +27,8 @@ import androidx.compose.ui.unit.sp
  */
 @Composable
 fun RecipeCardBig(modifier: Modifier) {
-    val propicUri = Uri.Builder().scheme("https").authority("www.budgetbytes.com")
-        .appendPath("wp-content").appendPath("uploads").appendPath("2022").appendPath("07")
-        .appendPath("Beth-2022-3-60x60.jpg").build()
-    val imageUri = Uri.Builder().scheme("https").authority("www.budgetbytes.com")
-        .appendPath("wp-content").appendPath("uploads").appendPath("2012").appendPath("08")
-        .appendPath("7-Green-onion-and-Cilantro-768x576.jpg").build()
+    val propicUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2022/07/Beth-2022-3-60x60.jpg")
+    val imageUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2012/08/7-Green-onion-and-Cilantro-768x576.jpg")
 
     Column(modifier = modifier
         .clip(RoundedCornerShape(20.dp))
