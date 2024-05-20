@@ -18,7 +18,8 @@ import com.example.gnammy.ui.composables.RecipeCardSmall
 fun SavedScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(top = 20.dp, start = 20.dp, end = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
