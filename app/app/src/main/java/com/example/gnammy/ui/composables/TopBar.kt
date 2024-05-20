@@ -34,7 +34,7 @@ fun TopBar(
     CenterAlignedTopAppBar(
         title = {
             Text(
-                currentRoute,
+                currentRoute.replaceFirstChar { it.uppercase() },
                 fontWeight = FontWeight.Medium,
             )
         },
@@ -50,7 +50,7 @@ fun TopBar(
         },
         actions = {
             if (currentRoute == GnammyRoute.Home.route) {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { navController.navigate(GnammyRoute.Notification.route) }) {
                     Icon(Icons.Outlined.Notifications, contentDescription = "Notifications")
                 }
             }

@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.gnammy.ui.screens.home.HomeScreen
+import com.example.gnammy.ui.screens.notification.NotificationScreen
 import com.example.gnammy.ui.screens.post.PostScreen
 import com.example.gnammy.ui.screens.profile.ProfileScreen
 import com.example.gnammy.ui.screens.saved.SavedScreen
@@ -27,9 +28,10 @@ sealed class GnammyRoute(
     data object Post : GnammyRoute("post", "Post")
     data object Saved : GnammyRoute("saved", "Saved")
     data object Profile : GnammyRoute("profile", "Profile")
+    data object Notification : GnammyRoute("notification", "Notification")
 
     companion object {
-        val routes = setOf(Home, Search, Post, Saved, Profile)
+        val routes = setOf(Home, Search, Post, Saved, Profile, Notification)
     }
 }
 
@@ -66,6 +68,11 @@ fun GnammyNavGraph(
         with(GnammyRoute.Profile) {
             composable(route) {
                 ProfileScreen(navController, modifier)
+            }
+        }
+        with(GnammyRoute.Notification) {
+            composable(route) {
+                NotificationScreen(navController, modifier)
             }
         }
     }
