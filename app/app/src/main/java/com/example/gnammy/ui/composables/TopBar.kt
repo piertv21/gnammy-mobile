@@ -2,6 +2,7 @@ package com.example.gnammy.ui.composables
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,7 +52,7 @@ fun TopBar(
         actions = {
             if (currentRoute == GnammyRoute.Home.route) {
                 IconButton(onClick = { navController.navigate(GnammyRoute.Notification.route) }) {
-                    Icon(Icons.Outlined.Notifications, contentDescription = "Notifications")
+                    Icon(Icons.Filled.Notifications, contentDescription = "Notifications")
                 }
             }
         },
