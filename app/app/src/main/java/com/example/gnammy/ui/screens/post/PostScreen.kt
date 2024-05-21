@@ -66,7 +66,7 @@ fun PostScreen(navController: NavHostController, modifier: Modifier) {
                 label = { Text("Titolo") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 4.dp)
             )
         }
 
@@ -78,7 +78,7 @@ fun PostScreen(navController: NavHostController, modifier: Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 4.dp)
             )
         }
 
@@ -90,13 +90,13 @@ fun PostScreen(navController: NavHostController, modifier: Modifier) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .padding(vertical = 8.dp)
+                    .padding(vertical = 4.dp)
             )
         }
 
         item {
             Button(
-                modifier = Modifier.padding(top = 10.dp, bottom = 20.dp),
+                modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
                 onClick = { /* TO DO */ }
             ) {
                 Text("Pubblica")

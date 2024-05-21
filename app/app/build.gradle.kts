@@ -54,6 +54,7 @@ android {
 dependencies {
     implementation("com.alexstyl.swipeablecard:swipeablecard:0.1.0")
     implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.0")
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation(platform("androidx.compose:compose-bom:2024.05.00"))
