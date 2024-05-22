@@ -1,5 +1,6 @@
 package com.example.gnammy.ui.screens.login
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -59,14 +59,34 @@ fun LoginScreen(navHostController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        Button(
+            onClick = {
+                // Handle registration action
+            }
+        ) {
+            Text("Login")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(Color.Gray)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             "Non hai un'account?",
             color = Color.Gray
         )
 
         Button(
+            modifier = Modifier.padding(top = 8.dp),
             onClick = {
-                // Handle registration action
+                navHostController.navigate("register")
             }
         ) {
             Text("Registrati")

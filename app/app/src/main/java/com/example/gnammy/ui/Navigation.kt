@@ -11,9 +11,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.gnammy.ui.screens.home.HomeScreen
+import com.example.gnammy.ui.screens.login.LoginScreen
 import com.example.gnammy.ui.screens.notification.NotificationScreen
 import com.example.gnammy.ui.screens.post.PostScreen
 import com.example.gnammy.ui.screens.profile.ProfileScreen
+import com.example.gnammy.ui.screens.register.RegisterScreen
 import com.example.gnammy.ui.screens.saved.SavedScreen
 import com.example.gnammy.ui.screens.search.SearchScreen
 import org.koin.androidx.compose.koinViewModel
@@ -29,9 +31,11 @@ sealed class GnammyRoute(
     data object Saved : GnammyRoute("saved", "Saved")
     data object Profile : GnammyRoute("profile", "Profile")
     data object Notification : GnammyRoute("notification", "Notification")
+    data object Login : GnammyRoute("login", "Login")
+    data object Register : GnammyRoute("register", "Register")
 
     companion object {
-        val routes = setOf(Home, Search, Post, Saved, Profile, Notification)
+        val routes = setOf(Home, Search, Post, Saved, Profile, Notification, Login, Register)
     }
 }
 
@@ -73,6 +77,16 @@ fun GnammyNavGraph(
         with(GnammyRoute.Notification) {
             composable(route) {
                 NotificationScreen(navController, modifier)
+            }
+        }
+        with(GnammyRoute.Login) {
+            composable(route) {
+                LoginScreen(navController)
+            }
+        }
+        with(GnammyRoute.Register) {
+            composable(route) {
+                RegisterScreen(navController)
             }
         }
     }
