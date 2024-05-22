@@ -1,13 +1,14 @@
 package com.example.gnammy.ui.screens.home
-
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSwipeableCardApi::class)
 @Composable
-fun HomeScreen(navController: NavHostController, modifier: Modifier) {
+fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) {
     val state = rememberSwipeableCardState()
     val scope = rememberCoroutineScope()
 
@@ -34,7 +35,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.9f)
+                .weight(0.85f)
                 .swipableCard(
                     state = state,
                     onSwiped = { direction ->
@@ -45,40 +46,49 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier) {
                     }
                 )
         ) {
-            RecipeCardBig(modifier = Modifier.padding(16.dp))
+            RecipeCardBig(modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp))
         }
-
-        Row (
+        // Buttons
+        Row(
             modifier = Modifier
-                .weight(0.1f)
-                .fillMaxWidth()
-        ){
-            Button(
+                .weight(0.15f)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
                 onClick = {
                     scope.launch {
                         state.swipe(Direction.Right)
                     }
                 },
                 modifier = Modifier
-                    .fillMaxWidth(1f/2f)
-                    .fillMaxSize()
-                    .align(Alignment.CenterVertically)
-                    .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                    .size(80.dp)
+                    .background(MaterialTheme.colorScheme.inversePrimary, CircleShape)
             ) {
-                Text("Like")
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Like",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(35.dp)
+                )
             }
-            Button(
+            IconButton(
                 onClick = {
                     scope.launch {
                         state.swipe(Direction.Left)
                     }
                 },
                 modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .fillMaxSize()
-                    .padding(16.dp, 0.dp, 16.dp, 16.dp)
+                    .size(80.dp)
+                    .background(MaterialTheme.colorScheme.inversePrimary, CircleShape)
             ) {
-                Text("Dislike")
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = "Dislike",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(35.dp)
+                )
             }
         }
     }
