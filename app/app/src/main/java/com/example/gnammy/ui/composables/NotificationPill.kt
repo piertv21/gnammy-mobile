@@ -122,7 +122,6 @@ fun Pill(){
     Box (
         modifier = Modifier
             .aspectRatio(5f / 1f)
-            .padding(5.dp)
             .fillMaxWidth()
             .clip(shape = androidx.compose.foundation.shape.CircleShape)
             .background(color = MaterialTheme.colorScheme.primary)

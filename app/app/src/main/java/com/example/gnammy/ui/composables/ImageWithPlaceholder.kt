@@ -47,7 +47,7 @@ fun ImageWithPlaceholder(uri: Uri?, size: Size, description: String, modifier: M
             Icons.Outlined.Image,
             description,
             contentScale = ContentScale.Fit,
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background),
             modifier = modifier
         )
     }
