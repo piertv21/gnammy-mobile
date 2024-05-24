@@ -46,7 +46,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) 
                     }
                 )
         ) {
-            RecipeCardBig(modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp))
+            RecipeCardBig(modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp), false)
         }
         // Buttons
         Row(

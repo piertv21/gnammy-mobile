@@ -60,17 +60,25 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 20.dp),
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Zeb89", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Text(
+                    text = "Zeb89",
+                    style = MaterialTheme.typography.headlineMedium .copy()
+                )
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Filled.LocationOn,
                         contentDescription = "Location",
                         modifier = Modifier.size(16.dp)
                     )
-                    Text(text = "Cesena, Italia", fontSize = 16.sp)
+                    Text(
+                        text = "Cesena, Italia",
+                        style = MaterialTheme.typography.titleSmall.copy()
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -80,16 +88,34 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Follower", fontWeight = FontWeight.Bold)
-                        Text(text = "1000")
+                        Text(
+                            text = "Follower",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Text(
+                            text = "1000",
+                            style = MaterialTheme.typography.titleSmall.copy()
+                        )
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Seguiti", fontWeight = FontWeight.Bold)
-                        Text(text = "500")
+                        Text(
+                            text = "Seguiti",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Text(
+                            text = "1000",
+                            style = MaterialTheme.typography.titleSmall.copy()
+                        )
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(text = "Gnam", fontWeight = FontWeight.Bold)
-                        Text(text = "150")
+                        Text(
+                            text = "Follower",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Text(
+                            text = "1000",
+                            style = MaterialTheme.typography.titleSmall.copy()
+                        )
                     }
                 }
             }
@@ -174,7 +200,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                 ) {
                     Text(
                         text = "Impostazioni",
-                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.headlineSmall.copy()
                     )
                     Column(
                         modifier = Modifier.padding(top = 16.dp),

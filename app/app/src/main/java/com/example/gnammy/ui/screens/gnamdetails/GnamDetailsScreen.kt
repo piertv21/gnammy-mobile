@@ -2,6 +2,8 @@ package com.example.gnammy.ui.screens.gnamdetails
 
 import android.content.Intent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -21,13 +23,15 @@ import com.example.gnammy.ui.composables.RecipeCardBig
 @Preview
 fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifier? = null) {
     val context = LocalContext.current
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(scrollState)
     ) {
-        RecipeCardBig(modifier = Modifier.weight(1f))
+        RecipeCardBig(modifier = Modifier, false)
 
         Spacer(modifier = Modifier.height(16.dp))
 

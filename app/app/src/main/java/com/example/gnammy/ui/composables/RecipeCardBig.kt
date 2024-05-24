@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
  It shows a small recipe card with a placeholder image and a description.
  */
 @Composable
-fun RecipeCardBig(modifier: Modifier) {
+fun RecipeCardBig(modifier: Modifier, truncateDescrition: Boolean) {
     val propicUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2022/07/Beth-2022-3-60x60.jpg")
     val imageUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2012/08/7-Green-onion-and-Cilantro-768x576.jpg")
 
@@ -51,10 +51,7 @@ fun RecipeCardBig(modifier: Modifier) {
                 text = "Spicy Sriracha Noodles",
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Start,
-                style =  TextStyle(
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold
-                ),
+                style =  MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier
                     .fillMaxWidth(),
             )
@@ -70,20 +67,17 @@ fun RecipeCardBig(modifier: Modifier) {
                     description = "propic",
                     modifier = Modifier
                         .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
-                        .size(40.dp)
+                        .size(30.dp)
                         .clip(shape = CircleShape)
                         .align(Alignment.CenterVertically)
                         .background(color = MaterialTheme.colorScheme.inversePrimary)
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = " Beth - Budget Bytes",
+                    text = " Beth, Budget Bytes",
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
-                    style = TextStyle(
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .wrapContentHeight(align = Alignment.CenterVertically)
@@ -92,9 +86,7 @@ fun RecipeCardBig(modifier: Modifier) {
                     text = " - 24/05/2024",
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
-                    style = TextStyle(
-                        fontSize = 12.sp
-                    ),
+                    style = MaterialTheme.typography.titleMedium.copy(),
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .wrapContentHeight(align = Alignment.CenterVertically)
@@ -134,14 +126,15 @@ fun RecipeCardBig(modifier: Modifier) {
                     text = "Oh WOW. It should be illegal for noodles to be this easy AND this delicious. These spicy sriracha noodles are my new favorite quick fix! They only take about 15 minutes to make, they’re totally rich, flavorful, and SUPER SPICY. Like, “burn a hole through your stomach” spicy. Call me crazy, but sometimes I want that. No, I crave that. So, this one goes out to all of you heat seekers!",
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
-                    style = TextStyle(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                     modifier = Modifier
                         .fillMaxSize()
                         .wrapContentHeight(align = Alignment.CenterVertically),
-                    overflow = TextOverflow.Ellipsis
+                    overflow = if (truncateDescrition) {
+                        TextOverflow.Ellipsis
+                    } else {
+                        TextOverflow.Visible
+                    }
                 )
             }
         }

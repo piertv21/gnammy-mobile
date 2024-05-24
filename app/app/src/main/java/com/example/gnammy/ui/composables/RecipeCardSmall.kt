@@ -54,10 +54,7 @@ fun RecipeCardSmall(navHostController: NavHostController, modifier: Modifier) {
                 text = "Spicy Sriracha Noodles",
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Center,
-                style = TextStyle(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                ),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentHeight(align = Alignment.CenterVertically)
