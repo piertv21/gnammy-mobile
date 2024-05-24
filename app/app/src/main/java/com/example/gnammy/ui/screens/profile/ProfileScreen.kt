@@ -140,7 +140,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                 .height(600.dp)
         ) {
             items(10) {
-                RecipeCardSmall(modifier = Modifier.padding(5.dp))
+                RecipeCardSmall(navController, Modifier.padding(5.dp))
             }
         }
     }

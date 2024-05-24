@@ -71,7 +71,7 @@ fun SearchScreen(navController: NavHostController) {
             columns = GridCells.Fixed(2)
         ) {
             items(10) {
-                RecipeCardSmall(modifier = Modifier.padding(5.dp))
+                RecipeCardSmall(navController, Modifier.padding(5.dp))
             }
         }
     }

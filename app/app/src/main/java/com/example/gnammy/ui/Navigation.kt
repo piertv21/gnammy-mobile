@@ -10,6 +10,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.gnammy.ui.screens.gnamdetails.GnamDetailsScreen
 import com.example.gnammy.ui.screens.home.HomeScreen
 import com.example.gnammy.ui.screens.login.LoginScreen
 import com.example.gnammy.ui.screens.notification.NotificationScreen
@@ -33,9 +34,10 @@ sealed class GnammyRoute(
     data object Notification : GnammyRoute("notification", "Notification")
     data object Login : GnammyRoute("login", "Login")
     data object Register : GnammyRoute("register", "Register")
+    data object GnamDetails : GnammyRoute("gnamDetails", "Gnam Details")
 
     companion object {
-        val routes = setOf(Home, Search, Post, Saved, Profile, Notification, Login, Register)
+        val routes = setOf(Home, Search, Post, Saved, Profile, Notification, Login, Register, GnamDetails)
     }
 }
 
@@ -87,6 +89,11 @@ fun GnammyNavGraph(
         with(GnammyRoute.Register) {
             composable(route) {
                 RegisterScreen(navController)
+            }
+        }
+        with(GnammyRoute.GnamDetails) {
+            composable(route) {
+                GnamDetailsScreen(navController)
             }
         }
     }

@@ -59,23 +59,6 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) 
             IconButton(
                 onClick = {
                     scope.launch {
-                        state.swipe(Direction.Right)
-                    }
-                },
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(MaterialTheme.colorScheme.inversePrimary, CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Favorite,
-                    contentDescription = "Like",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(35.dp)
-                )
-            }
-            IconButton(
-                onClick = {
-                    scope.launch {
                         state.swipe(Direction.Left)
                     }
                 },
@@ -86,6 +69,23 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) 
                 Icon(
                     imageVector = Icons.Rounded.Close,
                     contentDescription = "Dislike",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(35.dp)
+                )
+            }
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        state.swipe(Direction.Right)
+                    }
+                },
+                modifier = Modifier
+                    .size(80.dp)
+                    .background(MaterialTheme.colorScheme.inversePrimary, CircleShape)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Like",
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(35.dp)
                 )

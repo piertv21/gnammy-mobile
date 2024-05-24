@@ -52,7 +52,7 @@ fun RecipeCardBig(modifier: Modifier) {
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Start,
                 style =  TextStyle(
-                    fontSize = 35.sp,
+                    fontSize = 25.sp,
                     fontWeight = FontWeight.Bold
                 ),
                 modifier = Modifier
@@ -81,8 +81,19 @@ fun RecipeCardBig(modifier: Modifier) {
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = TextStyle(
-                        fontSize = 20.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .wrapContentHeight(align = Alignment.CenterVertically)
+                )
+                Text(
+                    text = " - 24/05/2024",
+                    color = MaterialTheme.colorScheme.background,
+                    textAlign = TextAlign.Start,
+                    style = TextStyle(
+                        fontSize = 12.sp
                     ),
                     modifier = Modifier
                         .align(Alignment.CenterVertically)

@@ -1,6 +1,7 @@
 package com.example.gnammy.ui.composables
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.aspectRatio
@@ -18,17 +19,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 
 /*
  It shows a small recipe card with a placeholder image and a description.
  */
 @Composable
-fun RecipeCardSmall(modifier: Modifier) {
-
+fun RecipeCardSmall(navHostController: NavHostController, modifier: Modifier) {
     Box(modifier = modifier
         .aspectRatio(1f)
         .fillMaxSize()
         .clip(RoundedCornerShape(20.dp))
+        .clickable { navHostController.navigate("gnamDetails") }
     )
     {
         ImageWithPlaceholder(uri = null,
