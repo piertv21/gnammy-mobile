@@ -3,6 +3,7 @@ package com.example.gnammy.ui.screens.search
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,9 +14,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,16 +31,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import com.example.gnammy.ui.composables.Picker
 import com.example.gnammy.ui.composables.RecipeCardSmall
+import com.example.gnammy.ui.composables.rememberPickerState
 
 @OptIn(ExperimentalMaterial3Api::class, )
 @Composable
@@ -47,7 +54,8 @@ fun SearchScreen(navController: NavHostController) {
     val openDialog = remember { mutableStateOf(false) }
     var likesInput by remember { mutableStateOf("") }
 
-    var fromSelectedDate by remember { mutableStateOf("") }
+    val fromSelectedDate = remember { mutableStateOf("") }
+    val toSelectedDate = remember { mutableStateOf("") }
     val fromDatePickerState = rememberDatePickerState()
     val toDatePickerState = rememberDatePickerState()
     val fromDateChipEnabled = remember { mutableStateOf(false) }
@@ -55,9 +63,19 @@ fun SearchScreen(navController: NavHostController) {
     val openFromDatePicker = remember { mutableStateOf(false) }
     val openToDatePicker = remember { mutableStateOf(false) }
 
+    val chipEnabled = remember { mutableStateOf(false) }
+    val openNumberPicker = remember { mutableStateOf(false) }
+    val selectedValue = remember { mutableStateOf("") }
+
     LaunchedEffect(fromDatePickerState.selectedDateMillis) {
         fromDatePickerState.selectedDateMillis?.let {
-            fromSelectedDate = java.text.SimpleDateFormat("yyyy-MM-dd").format(it)
+            fromSelectedDate.value = java.text.SimpleDateFormat("yyyy-MM-dd").format(it)
+        }
+    }
+
+    LaunchedEffect(toDatePickerState.selectedDateMillis) {
+        toDatePickerState.selectedDateMillis?.let {
+            toSelectedDate.value = java.text.SimpleDateFormat("yyyy-MM-dd").format(it)
         }
     }
 
@@ -83,6 +101,17 @@ fun SearchScreen(navController: NavHostController) {
                 }
             }
         )
+        // TODO: Provare a mettere i filtro sotto la search bar
+//        val scrollState = rememberScrollState()
+//
+//        Row (
+//            horizontalArrangement = Arrangement.SpaceEvenly,
+//            verticalAlignment = Alignment.CenterVertically,
+//            modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState, true)
+//        )
+//        {
+//
+//        }
 
         Button(
             onClick = {
@@ -118,52 +147,161 @@ fun SearchScreen(navController: NavHostController) {
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.extraLarge,
             ) {
-                Column(modifier = Modifier.fillMaxWidth().padding(20.dp)) {
-                    InputChip(
-                        onClick = {
-                            if(!fromDateChipEnabled.value) {
-                                openFromDatePicker.value = true
-                                fromDateChipEnabled.value = true
-                            }
-                        },
-                        label = { Text("Publicato dopo il $fromSelectedDate") },
-                        selected = fromDateChipEnabled.value,
-                        avatar = {
-                            Icon(
-                                Icons.Filled.CalendarToday,
-                                contentDescription = "",
-                                Modifier.size(InputChipDefaults.AvatarSize)
-                            )
-                        },
-                        trailingIcon = {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Localized description",
-                                Modifier.size(InputChipDefaults.AvatarSize).clickable( onClick =  {
-                                    fromDateChipEnabled.value = false
-                                    fromSelectedDate = ""
-                                    openFromDatePicker.value = false
-                                })
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth()
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)) {
+                    // TODO: controllo che le date scelte siano compatibili
+                    DateFilter(
+                        fromDateChipEnabled,
+                        openFromDatePicker,
+                        fromSelectedDate,
+                        fromDatePickerState,
+                        "Dal"
                     )
-
-                    if (openFromDatePicker.value) {
-                        DatePicker(
-                            state = fromDatePickerState,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp),
-                            title = null,
-                            headline = null,
-                            showModeToggle = false
-                        )
-                        if(fromSelectedDate.isNotEmpty()) {
-                            openFromDatePicker.value = false
-                        }
-                    }
+                    DateFilter(
+                        toDateChipEnabled,
+                        openToDatePicker,
+                        toSelectedDate,
+                        toDatePickerState,
+                        "Al"
+                    )
+                    NumberFilter(
+                        chipEnabled,
+                        openNumberPicker,
+                        selectedValue,
+                        listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"),
+                        "Likes")
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateFilter(
+    inputChipEnabled: MutableState<Boolean>,
+    openDatePicker: MutableState<Boolean>,
+    selectedDate: MutableState<String>,
+    datePickerState: DatePickerState,
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        InputChip(
+            onClick = {
+                if (!inputChipEnabled.value) {
+                    openDatePicker.value = true
+                    inputChipEnabled.value = true
+                }
+            },
+            label = { Text("$description ${selectedDate.value}") },
+            selected = inputChipEnabled.value,
+            avatar = {
+                Icon(
+                    Icons.Filled.CalendarToday,
+                    contentDescription = "",
+                    Modifier.size(InputChipDefaults.AvatarSize)
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "Localized description",
+                    Modifier
+                        .size(InputChipDefaults.AvatarSize)
+                        .clickable(onClick = {
+                            inputChipEnabled.value = false
+                            selectedDate.value = ""
+                            openDatePicker.value = false
+                        })
+                )
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if (openDatePicker.value) {
+            DatePicker(
+                state = datePickerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                title = null,
+                headline = null,
+                showModeToggle = false
+            )
+            if (selectedDate.value.isNotEmpty()) {
+                openDatePicker.value = false
+            }
+        }
+    }
+}
+
+@Composable
+fun NumberFilter(
+    chipEnabled: MutableState<Boolean>,
+    openNumberPicker: MutableState<Boolean>,
+    selectedValue: MutableState<String>,
+    values: List<String>,
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    val valuesPickerState = rememberPickerState()
+    Column(modifier = modifier) {
+        InputChip(
+            onClick = {
+                if(!chipEnabled.value) {
+                    openNumberPicker.value = true
+                    chipEnabled.value = true
+                }
+            },
+            label = { Text("$description ${selectedValue.value}") },
+            selected = chipEnabled.value,
+            avatar = {
+                Icon(
+                    Icons.Default.Favorite,
+                    contentDescription = "",
+                    Modifier.size(InputChipDefaults.AvatarSize)
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = "Localized description",
+                    Modifier
+                        .size(InputChipDefaults.AvatarSize)
+                        .clickable(onClick = {
+                            chipEnabled.value = false
+                            selectedValue.value = ""
+                            openNumberPicker.value = false
+                        })
+                )
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        if (openNumberPicker.value) {
+            Row (modifier = Modifier.fillMaxWidth()) {
+                Picker (
+                    items = values,
+                    state = valuesPickerState,
+                    modifier = Modifier.fillMaxWidth(),
+                    startIndex = 0,
+                    visibleItemsCount = 3,
+                    textModifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(16.dp),
+                    textStyle = MaterialTheme.typography.titleLarge,
+                )
+            }
+            Button(
+                onClick = { openNumberPicker.value = false},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("DONE")
+            }
+            LaunchedEffect(valuesPickerState.selectedItem) {
+                selectedValue.value = valuesPickerState.selectedItem
             }
         }
     }
