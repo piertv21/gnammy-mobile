@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gnammy.ui.composables.Achievement
 
@@ -20,7 +21,7 @@ fun GoalsScreen() {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
         item {
             Text(
@@ -40,7 +41,9 @@ fun GoalsScreen() {
             ) {
                 for (index in 0 until 10) {
                     Achievement(modifier = Modifier
-                        .fillMaxWidth(0.5f))
+                        .fillMaxWidth(0.5f)
+                        .padding(end = 6.dp, bottom = 6.dp)
+                    )
                 }
             }
         }
@@ -51,12 +54,16 @@ fun GoalsScreen() {
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp)
+                    .padding(start = 16.dp, bottom = 8.dp)
             )
         }
 
-        items(10) { index ->
-            Achievement()
+        items(10) {
+            Achievement(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 18.dp, end = 18.dp, bottom = 6.dp)
+            )
         }
     }
 }
