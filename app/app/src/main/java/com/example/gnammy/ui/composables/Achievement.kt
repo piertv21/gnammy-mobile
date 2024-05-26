@@ -1,7 +1,6 @@
 package com.example.gnammy.ui.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -23,9 +22,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Preview
-fun Achievement() {
+fun Achievement(modifier: Modifier = Modifier) {
     Row (
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(2f / 1f)
             .fillMaxSize()
             .clip(RoundedCornerShape(20.dp))
