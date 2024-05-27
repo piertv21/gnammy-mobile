@@ -1,9 +1,11 @@
 package com.example.gnammy.ui.screens.search
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Close
@@ -66,6 +69,8 @@ fun SearchScreen(navController: NavHostController) {
     val chipEnabled = remember { mutableStateOf(false) }
     val openNumberPicker = remember { mutableStateOf(false) }
     val selectedValue = remember { mutableStateOf("") }
+    val valuesPickerState = rememberPickerState()
+
 
     LaunchedEffect(fromDatePickerState.selectedDateMillis) {
         fromDatePickerState.selectedDateMillis?.let {
@@ -101,17 +106,96 @@ fun SearchScreen(navController: NavHostController) {
                 }
             }
         )
-        // TODO: Provare a mettere i filtro sotto la search bar
-//        val scrollState = rememberScrollState()
-//
-//        Row (
-//            horizontalArrangement = Arrangement.SpaceEvenly,
-//            verticalAlignment = Alignment.CenterVertically,
-//            modifier = Modifier.fillMaxWidth().horizontalScroll(scrollState, true)
-//        )
-//        {
-//
-//        }
+
+        val scrollstate = rememberScrollState()
+        val width = 120.dp
+        Row (modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(scrollstate),
+        ) {
+            // TODO: controllo che le date scelte siano compatibili
+            DateFilter(
+                fromDateChipEnabled,
+                openFromDatePicker,
+                fromSelectedDate,
+                fromDatePickerState,
+                "Pubblicato dopo il",
+                modifier = Modifier.defaultMinSize(minWidth = width).padding(end = 8.dp)
+            )
+            DateFilter(
+                toDateChipEnabled,
+                openToDatePicker,
+                toSelectedDate,
+                toDatePickerState,
+                "Pubblicato prima il",
+                modifier = Modifier.defaultMinSize(minWidth = width).padding(end = 8.dp)
+
+            )
+            NumberFilter(
+                chipEnabled,
+                openNumberPicker,
+                selectedValue,
+                listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"),
+                "Likes",
+                modifier = Modifier.defaultMinSize(minWidth = width)
+            )
+        }
+
+
+        if (openFromDatePicker.value) {
+            DatePicker(
+                state = fromDatePickerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                title = null,
+                headline = null,
+                showModeToggle = false
+            )
+            if (fromSelectedDate.value.isNotEmpty()) {
+                openFromDatePicker.value = false
+            }
+        }
+
+        if (openToDatePicker.value) {
+            DatePicker(
+                state = toDatePickerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                title = null,
+                headline = null,
+                showModeToggle = false
+            )
+            if (toSelectedDate.value.isNotEmpty()) {
+                openToDatePicker.value = false
+            }
+        }
+
+        if (openNumberPicker.value) {
+            Row (modifier = Modifier.fillMaxWidth()) {
+                Picker (
+                    items = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"),
+                    state = valuesPickerState,
+                    modifier = Modifier.fillMaxWidth(),
+                    startIndex = 0,
+                    visibleItemsCount = 3,
+                    textModifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(16.dp),
+                    textStyle = MaterialTheme.typography.titleLarge,
+                )
+            }
+            Button(
+                onClick = { openNumberPicker.value = false},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("DONE")
+            }
+            LaunchedEffect(valuesPickerState.selectedItem) {
+                selectedValue.value = valuesPickerState.selectedItem
+            }
+        }
 
         Button(
             onClick = {
@@ -187,7 +271,6 @@ fun DateFilter(
     description: String,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
         InputChip(
             onClick = {
                 if (!inputChipEnabled.value) {
@@ -217,24 +300,9 @@ fun DateFilter(
                         })
                 )
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier
         )
 
-        if (openDatePicker.value) {
-            DatePicker(
-                state = datePickerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                title = null,
-                headline = null,
-                showModeToggle = false
-            )
-            if (selectedDate.value.isNotEmpty()) {
-                openDatePicker.value = false
-            }
-        }
-    }
 }
 
 @Composable
@@ -246,8 +314,6 @@ fun NumberFilter(
     description: String,
     modifier: Modifier = Modifier
 ) {
-    val valuesPickerState = rememberPickerState()
-    Column(modifier = modifier) {
         InputChip(
             onClick = {
                 if(!chipEnabled.value) {
@@ -277,32 +343,6 @@ fun NumberFilter(
                         })
                 )
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier
         )
-
-        if (openNumberPicker.value) {
-            Row (modifier = Modifier.fillMaxWidth()) {
-                Picker (
-                    items = values,
-                    state = valuesPickerState,
-                    modifier = Modifier.fillMaxWidth(),
-                    startIndex = 0,
-                    visibleItemsCount = 3,
-                    textModifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(16.dp),
-                    textStyle = MaterialTheme.typography.titleLarge,
-                )
-            }
-            Button(
-                onClick = { openNumberPicker.value = false},
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("DONE")
-            }
-            LaunchedEffect(valuesPickerState.selectedItem) {
-                selectedValue.value = valuesPickerState.selectedItem
-            }
-        }
-    }
 }
