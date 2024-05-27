@@ -190,7 +190,7 @@ fun SearchScreen(navController: NavHostController) {
                 onClick = { openNumberPicker.value = false},
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("DONE")
+                Text("Fatto")
             }
             LaunchedEffect(valuesPickerState.selectedItem) {
                 selectedValue.value = valuesPickerState.selectedItem

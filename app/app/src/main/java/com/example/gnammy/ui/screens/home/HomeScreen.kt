@@ -6,7 +6,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(8.dp, 8.dp, 8.dp)
                 .weight(0.85f)
                 .swipableCard(
                     state = state,
