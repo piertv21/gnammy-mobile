@@ -20,11 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.Size
@@ -87,7 +89,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Follower",
+                            text = stringResource(R.string.profile_followers),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
@@ -97,7 +99,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Seguiti",
+                            text = stringResource(R.string.profile_followed),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
@@ -107,7 +109,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Follower",
+                            text = stringResource(R.string.profile_gnams),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
@@ -130,7 +132,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     .padding(end = 8.dp),
                 onClick = { /* Follow action */ }
             ) {
-                Text(text = "Segui")
+                Text(text = stringResource(R.string.profile_follow))
             }
             Button(
                 modifier = Modifier
@@ -138,7 +140,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     .padding(start = 8.dp, end = 8.dp),
                 onClick = { /* Share action */ }
             ) {
-                Text(text = "Condividi")
+                Text(text = stringResource(R.string.profile_share))
             }
             Button(
                 modifier = Modifier
@@ -201,7 +203,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = if (isDarkTheme) "Night Mode" else "Light Mode")
+                        Text(text = if (isDarkTheme) stringResource(R.string.profile_night_mode) else stringResource(R.string.profile_light_mode))
                         Switch(
                             checked = isDarkTheme,
                             onCheckedChange = { isDarkTheme = it }
@@ -213,7 +215,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                         modifier = Modifier.fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
-                        Text(text = "Aggiorna posizione mostrata")
+                        Text(text = stringResource(R.string.profile_update_gps))
                     }
 
                     OutlinedTextField(
@@ -229,7 +231,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                         modifier = Modifier.fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
-                        Text(text = "Select Profile Picture")
+                        Text(text = stringResource(R.string.profile_select_propic))
                     }
 
                     profilePictureUri?.let {
@@ -250,7 +252,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                                 .weight(1f)
                                 .padding(end = 8.dp)
                         ) {
-                            Text(text = "Annulla")
+                            Text(text = stringResource(R.string.profile_cancel))
                         }
 
                         Button(
@@ -259,7 +261,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                                 .weight(1f)
                                 .padding(start = 8.dp)
                         ) {
-                            Text(text = "Salva")
+                            Text(text = stringResource(R.string.profile_save))
                         }
                     }
 
@@ -270,7 +272,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                             .fillMaxWidth(0.5f)
                             .padding(vertical = 8.dp)
                     ) {
-                        Text(text = "Logout", color = Color.White)
+                        Text(text = stringResource(R.string.profile_logout), color = Color.White)
                     }
                 }
 

@@ -5,4 +5,26 @@
     <string name="publish_nav_button">Publish</string>
     <string name="saved_nav_button">Saved</string>
     <string name="profile_nav_button">Profile</string>
+    <string name="search_search">Search</string>
+    <string name="search_published_after">Published after</string>
+    <string name="search_published_before">Published before</string>
+    <string name="search_done">Done</string>
+    <string name="search_likes">Likes</string>
+    <string name="post_select_image">Select an image</string>
+    <string name="post_title">Title</string>
+    <string name="post_brief_desc">Brief description</string>
+    <string name="post_ingr_and_recipe">Ingredients and recipe</string>
+    <string name="post_publish">Publish</string>
+    <string name="profile_followers">Followers</string>
+    <string name="profile_followed">Followed</string>
+    <string name="profile_gnams">Gnam</string>
+    <string name="profile_follow">Follow</string>
+    <string name="profile_share">Share</string>
+    <string name="profile_light_mode">Light mode</string>
+    <string name="profile_night_mode">Night mode</string>
+    <string name="profile_update_gps">Update showed position</string>
+    <string name="profile_select_propic">Select profile image</string>
+    <string name="profile_cancel">Cancel</string>
+    <string name="profile_save">Save</string>
+    <string name="profile_logout">Logout</string>
 </resources>

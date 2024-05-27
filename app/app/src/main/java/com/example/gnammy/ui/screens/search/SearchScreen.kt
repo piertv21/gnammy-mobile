@@ -41,10 +41,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.ui.composables.Picker
 import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.rememberPickerState
@@ -94,7 +96,7 @@ fun SearchScreen(navController: NavHostController) {
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
-            label = { Text("Cerca") },
+            label = { Text(stringResource(R.string.search_search) + "...") },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 IconButton(
@@ -119,7 +121,7 @@ fun SearchScreen(navController: NavHostController) {
                 openFromDatePicker,
                 fromSelectedDate,
                 fromDatePickerState,
-                "Pubblicato dopo il",
+                stringResource(R.string.search_published_after),
                 modifier = Modifier.defaultMinSize(minWidth = width).padding(end = 8.dp)
             )
             DateFilter(
@@ -127,7 +129,7 @@ fun SearchScreen(navController: NavHostController) {
                 openToDatePicker,
                 toSelectedDate,
                 toDatePickerState,
-                "Pubblicato prima il",
+                stringResource(R.string.search_published_before),
                 modifier = Modifier.defaultMinSize(minWidth = width).padding(end = 8.dp)
 
             )
@@ -190,7 +192,7 @@ fun SearchScreen(navController: NavHostController) {
                 onClick = { openNumberPicker.value = false},
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Fatto")
+                Text(stringResource(R.string.search_done))
             }
             LaunchedEffect(valuesPickerState.selectedItem) {
                 selectedValue.value = valuesPickerState.selectedItem
@@ -203,7 +205,7 @@ fun SearchScreen(navController: NavHostController) {
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Cerca")
+            Text(stringResource(R.string.search_search))
         }
 
         LazyVerticalGrid(
@@ -254,7 +256,7 @@ fun SearchScreen(navController: NavHostController) {
                         openNumberPicker,
                         selectedValue,
                         listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"),
-                        "Likes")
+                        stringResource(R.string.search_likes))
                 }
             }
         }
