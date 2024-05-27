@@ -28,7 +28,7 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp, 16.dp, 16.dp)
             .verticalScroll(scrollState)
     ) {
         RecipeCardBig(modifier = Modifier, false)

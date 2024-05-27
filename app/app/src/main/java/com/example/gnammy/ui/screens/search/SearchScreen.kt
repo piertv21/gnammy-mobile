@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Close
@@ -29,6 +28,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
@@ -48,8 +48,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.ui.composables.Picker
 import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.rememberPickerState
@@ -94,7 +96,7 @@ fun SearchScreen(navController: NavHostController) {
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
-            label = { Text("Cerca") },
+            label = { Text(stringResource(R.string.search_search) + "...") },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 Icon(imageVector = Icons.Outlined.Search, contentDescription = null)
@@ -105,7 +107,6 @@ fun SearchScreen(navController: NavHostController) {
             .fillMaxWidth()
             .horizontalScroll(chipsRowScrollState),
         ) {
-
             InputChip(
                 onClick = {
                     if (!dateChipEnabled.value) {
@@ -197,14 +198,13 @@ fun SearchScreen(navController: NavHostController) {
             ExpandedChip.NONE -> {}
         }
 
-
         Button(
             onClick = {
                 // TODO Handle search action
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Cerca")
+            Text(stringResource(R.string.search_search))
         }
 
         LazyVerticalGrid(
@@ -233,7 +233,7 @@ fun DatePickerFilter(
     val selectedDateStart = remember { mutableStateOf("") }
     val selectedDateEnd = remember { mutableStateOf("") }
 
-    Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
+    HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
 
     Row (
         verticalAlignment = Alignment.CenterVertically,
@@ -268,7 +268,7 @@ fun DatePickerFilter(
         }
     }
 
-    Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
+    HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
 
     if (datePickerType.value == DatePickerType.RANGE) {
         DateRangePicker (
@@ -292,7 +292,7 @@ fun DatePickerFilter(
         )
     }
 
-    Divider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
+    HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
 
     LaunchedEffect(datePickerState.selectedDateMillis) {
         datePickerState.selectedDateMillis?.let {

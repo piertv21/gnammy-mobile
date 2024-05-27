@@ -3,16 +3,12 @@ package com.example.gnammy.ui.screens.profile
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -24,12 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.Size
@@ -44,7 +41,10 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             .fillMaxSize()
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
             ImageWithPlaceholder(
                 uri = propicUri,
                 size = Size.Sm,
@@ -53,9 +53,8 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     .border(2.dp, MaterialTheme.colorScheme.inversePrimary, CircleShape)
                     .size(120.dp)
                     .clip(CircleShape)
+                    .padding(bottom = 16.dp)
             )
-
-            Spacer(modifier = Modifier.width(16.dp))
 
             Column(
                 modifier = Modifier
@@ -69,7 +68,10 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     style = MaterialTheme.typography.headlineMedium .copy()
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
                     Icon(
                         imageVector = Icons.Filled.LocationOn,
                         contentDescription = "Location",
@@ -81,15 +83,13 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Follower",
+                            text = stringResource(R.string.profile_followers),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
@@ -99,7 +99,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Seguiti",
+                            text = stringResource(R.string.profile_followed),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
@@ -109,7 +109,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "Follower",
+                            text = stringResource(R.string.profile_gnams),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
@@ -121,11 +121,10 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier.fillMaxWidth()
+                .padding(bottom = 16.dp)
         ) {
             Button(
                 modifier = Modifier
@@ -133,7 +132,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     .padding(end = 8.dp),
                 onClick = { /* Follow action */ }
             ) {
-                Text(text = "Segui")
+                Text(text = stringResource(R.string.profile_follow))
             }
             Button(
                 modifier = Modifier
@@ -141,7 +140,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                     .padding(start = 8.dp, end = 8.dp),
                 onClick = { /* Share action */ }
             ) {
-                Text(text = "Condividi")
+                Text(text = stringResource(R.string.profile_share))
             }
             Button(
                 modifier = Modifier
@@ -156,8 +155,6 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                 SettingsModal(onDismissRequest = { showDialog = false })
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
@@ -203,45 +200,50 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                         style = MaterialTheme.typography.headlineSmall.copy()
                     )
                     Column(
-                        modifier = Modifier.padding(top = 16.dp),
+                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = if (isDarkTheme) "Night Mode" else "Day Mode")
+                        Text(text = if (isDarkTheme) stringResource(R.string.profile_night_mode) else stringResource(R.string.profile_light_mode))
                         Switch(
                             checked = isDarkTheme,
                             onCheckedChange = { isDarkTheme = it }
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(
+                        onClick = { /* TODO */ },
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    ) {
+                        Text(text = stringResource(R.string.profile_update_gps))
+                    }
 
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
                         label = { Text("Username") },
                         modifier = Modifier.fillMaxWidth()
+                            .padding(bottom = 16.dp)
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
                         onClick = { launcher.launch("image/*") },
                         modifier = Modifier.fillMaxWidth()
+                            .padding(bottom = 8.dp)
                     ) {
-                        Text(text = "Select Profile Picture")
+                        Text(text = stringResource(R.string.profile_select_propic))
                     }
 
                     profilePictureUri?.let {
                         Text(
                             text = "Selected Image: $it",
-                            modifier = Modifier.padding(top = 8.dp)
+                            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(bottom = 16.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         Button(
@@ -250,7 +252,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                                 .weight(1f)
                                 .padding(end = 8.dp)
                         ) {
-                            Text(text = "Annulla")
+                            Text(text = stringResource(R.string.profile_cancel))
                         }
 
                         Button(
@@ -259,11 +261,9 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                                 .weight(1f)
                                 .padding(start = 8.dp)
                         ) {
-                            Text(text = "Salva")
+                            Text(text = stringResource(R.string.profile_save))
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
                         onClick = { /* Logout action */ },
@@ -272,7 +272,7 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                             .fillMaxWidth(0.5f)
                             .padding(vertical = 8.dp)
                     ) {
-                        Text(text = "Logout", color = Color.White)
+                        Text(text = stringResource(R.string.profile_logout), color = Color.White)
                     }
                 }
 

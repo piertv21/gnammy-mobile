@@ -32,6 +32,7 @@ fun TopBar(
             if (currentRoute in setOf(
                     GnammyRoute.Notification,
                     GnammyRoute.GnamDetails,
+                    GnammyRoute.Goals
             )) {
                 IconButton(onClick = { navController.navigateUp() }) {
                     Icon(

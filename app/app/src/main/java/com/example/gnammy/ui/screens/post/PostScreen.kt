@@ -11,10 +11,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import com.example.gnammy.R
 
 @Composable
 fun PostScreen(navController: NavHostController, modifier: Modifier) {
@@ -33,12 +35,12 @@ fun PostScreen(navController: NavHostController, modifier: Modifier) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 20.dp, start = 20.dp, end = 20.dp),
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         item {
             Button(onClick = { imagePickerLauncher.launch("image/*") }) {
-                Text("Seleziona un'immagine")
+                Text(stringResource(R.string.post_select_image))
             }
         }
 
@@ -63,7 +65,7 @@ fun PostScreen(navController: NavHostController, modifier: Modifier) {
             OutlinedTextField(
                 value = title,
                 onValueChange = { title = it },
-                label = { Text("Titolo") },
+                label = { Text(stringResource(R.string.post_title)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
@@ -74,7 +76,7 @@ fun PostScreen(navController: NavHostController, modifier: Modifier) {
             OutlinedTextField(
                 value = shortDescription,
                 onValueChange = { shortDescription = it },
-                label = { Text("Descrizione breve") },
+                label = { Text(stringResource(R.string.post_brief_desc)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)
@@ -86,7 +88,7 @@ fun PostScreen(navController: NavHostController, modifier: Modifier) {
             OutlinedTextField(
                 value = ingredientsAndRecipe,
                 onValueChange = { ingredientsAndRecipe = it },
-                label = { Text("Ingredienti e Ricetta") },
+                label = { Text(stringResource(R.string.post_ingr_and_recipe)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
@@ -99,7 +101,7 @@ fun PostScreen(navController: NavHostController, modifier: Modifier) {
                 modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
                 onClick = { /* TO DO */ }
             ) {
-                Text("Pubblica")
+                Text(stringResource(R.string.post_publish))
             }
         }
     }
