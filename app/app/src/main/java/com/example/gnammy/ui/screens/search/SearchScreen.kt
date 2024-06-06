@@ -101,7 +101,7 @@ fun SearchScreen(navController: NavHostController) {
             trailingIcon = {
                 Icon(imageVector = Icons.Outlined.Search, contentDescription = null)
             },
-            shape = RoundedCornerShape(20.dp)
+            shape = RoundedCornerShape(30.dp)
         )
 
         Row (modifier = Modifier
@@ -172,7 +172,8 @@ fun SearchScreen(navController: NavHostController) {
                             })
                     )
                 },
-                modifier = chipsModifier
+                modifier = chipsModifier,
+                shape = RoundedCornerShape(20.dp)
             )
 
             Spacer(modifier = Modifier.padding(4.dp))
