@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -144,7 +145,8 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
             Button(
@@ -233,7 +235,8 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
 
                     Button(
                         onClick = { /* TODO */ },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
                         Text(text = stringResource(R.string.profile_update_gps))
@@ -243,14 +246,16 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                         value = username,
                         onValueChange = { username = it },
                         label = { Text("Username") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(bottom = 16.dp),
                         shape = RoundedCornerShape(30.dp)
                     )
 
                     Button(
                         onClick = { launcher.launch("image/*") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
                         Text(text = stringResource(R.string.profile_select_propic))
@@ -263,36 +268,25 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                         )
                     }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Button(
-                            onClick = { onDismissRequest() },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 8.dp)
-                        ) {
-                            Text(text = stringResource(R.string.profile_cancel))
-                        }
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                        Button(
-                            onClick = { /* Save action */ },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 8.dp)
-                        ) {
-                            Text(text = stringResource(R.string.profile_save))
-                        }
+                    Button(
+                        onClick = { /* Save action */ },
+                        // TODO: scegliere un verde specifico da mettere nel tema
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8f)),
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            ) {
+                        Text(text = stringResource(R.string.profile_save))
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
                         onClick = { /* Logout action */ },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
-                            .padding(vertical = 8.dp)
                     ) {
                         Text(text = stringResource(R.string.profile_logout), color = Color.White)
                     }
