@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             //test colori in altri temi:  GnammyTheme (darkTheme = false) {
-            GnammyTheme {
+            GnammyTheme(dynamicColor = false) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

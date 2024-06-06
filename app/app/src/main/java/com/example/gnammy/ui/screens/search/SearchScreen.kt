@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -34,7 +33,9 @@ import androidx.compose.material3.InputChip
 import androidx.compose.material3.InputChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDateRangePickerState
@@ -47,7 +48,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -100,7 +100,8 @@ fun SearchScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 Icon(imageVector = Icons.Outlined.Search, contentDescription = null)
-            }
+            },
+            shape = RoundedCornerShape(20.dp)
         )
 
         Row (modifier = Modifier
@@ -136,7 +137,8 @@ fun SearchScreen(navController: NavHostController) {
                             })
                     )
                 },
-                modifier = chipsModifier
+                modifier = chipsModifier,
+                shape = RoundedCornerShape(20.dp)
             )
 
             Spacer(modifier = Modifier.padding(4.dp))
@@ -242,27 +244,17 @@ fun DatePickerFilter(
             .selectableGroup()
             .fillMaxWidth()
     ) {
-        DatePickerType.entries.forEach { entry ->
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .weight(0.3f)
-                    .clip(shape = RoundedCornerShape(20.dp))
-                    .clickable(onClick = { datePickerType.value = entry })
-                    .padding(vertical = 10.dp)
-            ) {
-                Row (
-                    verticalAlignment = Alignment.CenterVertically
+        val options = DatePickerType.entries.toList()
+        SingleChoiceSegmentedButtonRow {
+            options.forEachIndexed { index, type ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(index = index, count = options.size),
+                    onClick = {
+                        datePickerType.value = type
+                    },
+                    selected = datePickerType.value == type
                 ) {
-                    RadioButton(
-                        selected = datePickerType.value == entry,
-                        onClick = null,
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = entry.descriptor
-                    )
+                    Text(type.descriptor)
                 }
             }
         }
