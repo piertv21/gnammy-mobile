@@ -18,16 +18,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissDirection
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissState
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.FractionalThreshold
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Icon
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.SwipeToDismiss
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -55,7 +63,7 @@ class PillState {
 
 @Composable
 fun NotificationPill(pillText: String, pillImageUri: Uri?, pillState: PillState) {
-    var show by remember { mutableStateOf(true) }
+    val show by remember { mutableStateOf(true) }
 
     val dismissState = rememberDismissState(
         confirmStateChange = {
@@ -82,7 +90,7 @@ fun NotificationPill(pillText: String, pillImageUri: Uri?, pillState: PillState)
                     modifier = Modifier
                         .aspectRatio(5f / 1f)
                         .fillMaxWidth()
-                        .clip(shape = androidx.compose.foundation.shape.CircleShape)
+                        .clip(shape = CircleShape)
                         .background(color = MaterialTheme.colorScheme.primary)
                 ){
                     ImageWithPlaceholder(
@@ -93,7 +101,7 @@ fun NotificationPill(pillText: String, pillImageUri: Uri?, pillState: PillState)
                         Modifier
                             .padding(5.dp)
                             .aspectRatio(1f)
-                            .clip(shape = androidx.compose.foundation.shape.CircleShape)
+                            .clip(shape = CircleShape)
                             .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
                     )
 
