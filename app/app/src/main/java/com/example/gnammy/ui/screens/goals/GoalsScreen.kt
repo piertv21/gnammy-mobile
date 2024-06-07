@@ -11,9 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gnammy.ui.composables.Achievement
+import com.example.gnammy.ui.composables.GnamSpecificAchievement
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -59,7 +59,7 @@ fun GoalsScreen() {
         }
 
         items(10) {
-            Achievement(
+            GnamSpecificAchievement(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 18.dp, end = 18.dp, bottom = 6.dp)

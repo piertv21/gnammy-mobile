@@ -1,14 +1,18 @@
 package com.example.gnammy.ui.screens.notification
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -17,13 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.wear.compose.material.Text
 import com.example.gnammy.ui.composables.Achievement
 import com.example.gnammy.ui.composables.NotificationPill
 import com.example.gnammy.ui.composables.PillState
 import com.example.gnammy.ui.composables.rememberPillState
 
 @Composable
-fun NotificationScreen(navController: NavHostController, modifier: Modifier) {
+fun NotificationScreen(navHostController: NavHostController, modifier: Modifier) {
     var notifications = remember { mutableStateOf(listOf("0", "1", "2", "3", "4", "5")) }
 
     Column(
@@ -33,6 +38,9 @@ fun NotificationScreen(navController: NavHostController, modifier: Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+
+        Text(text = "Achievements", style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(bottom = 8.dp))
+
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -43,7 +51,20 @@ fun NotificationScreen(navController: NavHostController, modifier: Modifier) {
             items(5) {
                 Achievement()
             }
+            item{
+                Box(modifier = Modifier.fillMaxHeight())
+                {
+                    TextButton(
+                        onClick = { navHostController.navigate("goals")  },
+                        modifier = Modifier.align(Alignment.Center)
+                    ) {
+                        Text("See all")
+                    }
+                }
+            }
         }
+
+        Text(text = "Notifications", style = MaterialTheme.typography.headlineLarge, modifier = Modifier.padding(bottom = 8.dp))
 
         LazyColumn (
             modifier = Modifier

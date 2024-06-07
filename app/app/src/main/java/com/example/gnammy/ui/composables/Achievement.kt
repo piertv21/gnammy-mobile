@@ -29,7 +29,6 @@ fun Achievement(modifier: Modifier = Modifier) {
             .fillMaxSize()
             .clip(RoundedCornerShape(20.dp))
             .background(color = MaterialTheme.colorScheme.primary)
-            .padding(5.dp)
     ){
         ImageWithPlaceholder(
             uri = null,
@@ -58,9 +57,9 @@ fun Achievement(modifier: Modifier = Modifier) {
 
 @Composable
 @Preview
-fun GnamSpecificAchievement() {
+fun GnamSpecificAchievement(modifier: Modifier = Modifier) {
     Row (
-        modifier = Modifier
+        modifier = modifier
             .aspectRatio(3f/1f)
             .padding(5.dp)
             .fillMaxWidth()
