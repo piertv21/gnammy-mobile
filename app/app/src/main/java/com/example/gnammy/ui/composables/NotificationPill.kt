@@ -3,7 +3,7 @@
 
 package com.example.gnammy.ui.composables
 
-import android.widget.Toast
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
@@ -31,7 +31,6 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,10 +38,85 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+@Composable
+fun rememberPillState() = remember { PillState() }
+
+class PillState {
+    enum class State {
+        Read,
+        Unread
+    }
+
+    var currentState by mutableStateOf(State.Unread)
+}
+
+@Composable
+fun NotificationPill(pillText: String, pillImageUri: Uri?, pillState: PillState) {
+    var show by remember { mutableStateOf(true) }
+
+    val dismissState = rememberDismissState(
+        confirmStateChange = {
+            if (it == DismissValue.DismissedToStart || it == DismissValue.DismissedToEnd) {
+                pillState.currentState = PillState.State.Read
+                true
+            } else {
+                false
+            }
+        }
+    )
+    AnimatedVisibility(
+        visible = show,
+        exit = fadeOut(spring())
+    ) {
+        SwipeToDismiss(
+            state = dismissState,
+            modifier = Modifier,
+            background = {
+                DismissBackground(dismissState)
+            },
+            dismissContent = {
+                Box (
+                    modifier = Modifier
+                        .aspectRatio(5f / 1f)
+                        .fillMaxWidth()
+                        .clip(shape = androidx.compose.foundation.shape.CircleShape)
+                        .background(color = MaterialTheme.colorScheme.primary)
+                ){
+                    ImageWithPlaceholder(
+                        uri = pillImageUri,
+                        size = Size.Sm,
+                        description = "propic",
+                        modifier =
+                        Modifier
+                            .padding(5.dp)
+                            .aspectRatio(1f)
+                            .clip(shape = androidx.compose.foundation.shape.CircleShape)
+                            .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
+                    )
+
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = pillText,
+                            color = MaterialTheme.colorScheme.background,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+            },
+            dismissThresholds = {
+                FractionalThreshold(0.5f)
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DismissBackground(dismissState: DismissState) {
     val direction = dismissState.dismissDirection
@@ -75,77 +149,6 @@ fun DismissBackground(dismissState: DismissState) {
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.error)
                     .padding(15.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun NotificationPill() {
-    val context = LocalContext.current
-    var show by remember { mutableStateOf(true) }
-    val dismissState = rememberDismissState(
-        confirmStateChange = {
-            if (it == DismissValue.DismissedToStart || it == DismissValue.DismissedToEnd) {
-                show = false
-                true
-            } else false
-        }
-    )
-    AnimatedVisibility(
-        show, exit = fadeOut(spring())
-    ) {
-        SwipeToDismiss(
-            state = dismissState,
-            modifier = Modifier,
-            background = {
-                DismissBackground(dismissState)
-            },
-            dismissContent = {
-                Pill()
-            },
-            dismissThresholds = {
-                FractionalThreshold(0.5f)
-            }
-        )
-    }
-
-    LaunchedEffect(show) {
-        if (!show) {
-            Toast.makeText(context, "Item removed", Toast.LENGTH_SHORT).show()
-        }
-    }
-}
-
-@Composable
-fun Pill(){
-    Box (
-        modifier = Modifier
-            .aspectRatio(5f / 1f)
-            .fillMaxWidth()
-            .clip(shape = androidx.compose.foundation.shape.CircleShape)
-            .background(color = MaterialTheme.colorScheme.primary)
-    ){
-        ImageWithPlaceholder(
-            uri = null,
-            size = Size.Sm,
-            description = "propic",
-            modifier =
-            Modifier
-                .padding(5.dp)
-                .aspectRatio(1f)
-                .clip(shape = androidx.compose.foundation.shape.CircleShape)
-                .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
-        )
-
-        Box(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Text(
-                text = "Paolo ha salvato il tuo gnam!",
-                color = MaterialTheme.colorScheme.background,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.align(Alignment.Center)
             )
         }
     }
