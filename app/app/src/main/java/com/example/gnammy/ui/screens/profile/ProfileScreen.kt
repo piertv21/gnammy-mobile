@@ -72,7 +72,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                 size = Size.Sm,
                 description = "propic",
                 modifier = Modifier
-                    .border(2.dp, MaterialTheme.colorScheme.inversePrimary, CircleShape)
+                    .border(2.dp, MaterialTheme.colorScheme.primaryContainer, CircleShape)
                     .size(120.dp)
                     .clip(CircleShape)
                     .padding(bottom = 16.dp)
