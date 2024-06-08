@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.Text
@@ -55,10 +56,14 @@ fun NotificationScreen(navHostController: NavHostController, modifier: Modifier)
                 Box(modifier = Modifier.fillMaxHeight())
                 {
                     TextButton(
-                        onClick = { navHostController.navigate("goals")  },
+                        onClick = { navHostController.navigate("goals") },
                         modifier = Modifier.align(Alignment.Center)
                     ) {
-                        Text("See all")
+                        Text(
+                            "See all",
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }
