@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
  It shows a small recipe card with a placeholder image and a description.
  */
 @Composable
-fun RecipeCardBig(modifier: Modifier, truncateDescrition: Boolean) {
+fun RecipeCardBig(modifier: Modifier) {
     val propicUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2022/07/Beth-2022-3-60x60.jpg")
     val imageUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2012/08/7-Green-onion-and-Cilantro-768x576.jpg")
 
@@ -136,11 +136,7 @@ fun RecipeCardBig(modifier: Modifier, truncateDescrition: Boolean) {
                     modifier = Modifier
                         .fillMaxSize()
                         .wrapContentHeight(align = Alignment.CenterVertically),
-                    overflow = if (truncateDescrition) {
-                        TextOverflow.Ellipsis
-                    } else {
-                        TextOverflow.Visible
-                    }
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
