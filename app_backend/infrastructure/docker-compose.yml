@@ -13,6 +13,8 @@ services:
       - be_database_data:/var/lib/postgresql/data
     networks:
       - backend-database-network
+    ports:
+      - "5432:5432"
 
   be-gnammy:
     build:

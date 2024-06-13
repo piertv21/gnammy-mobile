@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker compose -f infrastructure/prod/docker-compose.yml up --build
+docker compose -f ../infrastructure/docker-compose.yml up --build
