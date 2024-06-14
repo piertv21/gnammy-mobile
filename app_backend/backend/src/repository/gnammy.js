@@ -17,10 +17,10 @@ async function addUser(username, password, callback) {
     }
 }
 
-async function listUsers(limit, callback) {
+async function listUsers(callback) {
     try {
         const users = await prisma.user.findMany({
-            take: limit
+            take: 5
         });
         callback(null, users);
     } catch (error) {
@@ -28,7 +28,20 @@ async function listUsers(limit, callback) {
     }
 }
 
-async function changeUserInfo(userId, username, password, callback) {
+async function getUser(userId, callback) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        });
+        callback(null, user);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function changeUserInfo(userId, username, password, image, callback) {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const updatedUser = await prisma.user.update({
@@ -44,10 +57,6 @@ async function changeUserInfo(userId, username, password, callback) {
     } catch (error) {
         callback(error, null);
     }
-}
-
-async function changeUserImage(userId, image, callback) {
-    // TODO
 }
 
 async function addGnam(authorId, title, short_description, full_recipe, image, callback) {
@@ -138,7 +147,7 @@ async function getGnam(gnamId, callback) {
     }
 }
 
-async function listGnam(callback) {
+async function listGnams(callback) {
     try {
         const gnams = await prisma.gnam.findMany({
             take: 5
@@ -192,9 +201,9 @@ async function getNewNotifications(userId, callback) {
     }
 }
 
-async function shortListAchievements(userId, callback) {
+async function shortListGoals(userId, callback) {
     try {
-        const userType = await prisma.goals_type.findUnique({
+        const userType = await prisma.Goals_type.findUnique({
             where: {
                 is_for: 'user'
             }
@@ -204,55 +213,56 @@ async function shortListAchievements(userId, callback) {
             throw new Error('User type not found');
         }
 
-        const achievements = await prisma.achievement.findMany({
+        const Goals = await prisma.Goal.findMany({
             where: {
-                goalTypeId: userType.id,
+                GoalTypeId: userType.id,
                 userId: userId
             }
         });
 
-        callback(null, achievements);
+        callback(null, Goals);
     } catch (error) {
         callback(error, null);
     }
 }
 
-async function completeListAchievements(userId, callback) {
+async function completeListGoals(userId, callback) {
     try {
-        const achievement = await prisma.achievement.findUnique({
+        const Goal = await prisma.Goal.findUnique({
             where: {
                 userId: userId
             }
         });
 
-        callback(null, achievements);
+        callback(null, Goals);
     } catch (error) {
         callback(error, null);
     }
 }
 
-async function completeAchievement(userId, achievementId, callback) {
+async function completeGoal(userId, goalId, callback) {
     try {
-        const achievement = await prisma.achievement.findUnique({
+        const Goal = await prisma.Goal.findUnique({
             where: {
-                id: achievementId
+                id: goalId,
+                userId: userId
             }
         });
 
-        if (!achievement) {
-            throw new Error('Achievement not found');
+        if (!Goal) {
+            throw new Error('Goal not found');
         }
 
-        await prisma.achievement.update({
+        await prisma.Goal.update({
             where: {
-                id: achievementId
+                id: goalId
             },
             data: {
                 completed: true
             }
         });
 
-        callback(null, achievement);
+        callback(null, Goal);
     } catch (error) {
         callback(error, null);
     }
@@ -260,5 +270,17 @@ async function completeAchievement(userId, achievementId, callback) {
 
 module.exports = {
     addUser,
-    listUsers
+    listUsers,
+    getUser,
+    changeUserInfo,
+    addGnam,
+    saveGnam,
+    getGnam,
+    listGnams,
+    searchGnams,
+    getNewNotifications,
+    shortListGoals,
+    completeListGoals,
+    completeGoal,
+    toggleFollowUser
 };

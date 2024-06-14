@@ -4,6 +4,7 @@ const gnammyValidator = require('../../validator/gnammy')
 const gnammyController = require('../../controller/gnammy')
 
 const router = express.Router()
+console.log('Router created')
 
 // Middleware
 router.use((req, res, next) => {
@@ -15,13 +16,13 @@ router.use((req, res, next) => {
 router.post('/addUser/', validate(gnammyValidator.addUser), gnammyController.addUser)
 
 // List users
-router.get('/listUsers/', validate(gnammyValidator.listUsers), gnammyController.listUsers)
+router.get('/listUsers/', gnammyController.listUsers)
+
+// Get user
+router.get('/getUser/', validate(gnammyValidator.getUser), gnammyController.getUser)
 
 // Change user info
 router.put('/changeUserInfo/', validate(gnammyValidator.changeUserInfo), gnammyController.changeUserInfo)
-
-// Change user image
-router.put('/changeUserImage/', validate(gnammyValidator.changeUserImage), gnammyController.changeUserImage)
 
 // Add gnam
 router.post('/addGnam/', validate(gnammyValidator.addGnam), gnammyController.addGnam)
@@ -33,7 +34,7 @@ router.post('/saveGnam/', validate(gnammyValidator.saveGnam), gnammyController.s
 router.get('/getGnam/', validate(gnammyValidator.getGnam), gnammyController.getGnam)
 
 // list gnam
-router.get('/listGnam/', validate(gnammyValidator.listGnam), gnammyController.listGnam)
+router.get('/listGnams/', validate(gnammyValidator.listGnams), gnammyController.listGnams)
 
 // Search gnams
 router.get('/searchGnams/', validate(gnammyValidator.searchGnams), gnammyController.searchGnams)
@@ -44,13 +45,13 @@ router.post('/toggleFollowUser/', validate(gnammyValidator.toggleFollowUser), gn
 // Request notifications
 router.post('/getNewNotifications/', validate(gnammyValidator.getNewNotifications), gnammyController.getNewNotifications)
 
-// List brief achievements
-router.get('/shortListAchievements/', validate(gnammyValidator.shortListAchievements), gnammyController.shortListAchievements)
+// List brief Goals
+router.get('/shortListGoals/', validate(gnammyValidator.shortListGoals), gnammyController.shortListGoals)
 
-// List complete achievements
-router.get('/completeListAchievements/', validate(gnammyValidator.completeListAchievements), gnammyController.completeListAchievements)
+// List complete Goals
+router.get('/completeListGoals/', validate(gnammyValidator.completeListGoals), gnammyController.completeListGoals)
 
-// Add achievement
-router.post('/completeAchievement/', validate(gnammyValidator.completeAchievement), gnammyController.completeAchievement)
+// Add Goal
+router.post('/completeGoal/', validate(gnammyValidator.completeGoal), gnammyController.completeGoal)
 
 module.exports = router
