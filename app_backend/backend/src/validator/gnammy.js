@@ -1,7 +1,8 @@
+const { query } = require('express')
 const Joi = require('joi')
 
 const addUser = {
-    query: Joi.object().keys({
+    body: Joi.object().keys({
         username: Joi.string().required(),
         password: Joi.string().required()
     }),
@@ -10,8 +11,10 @@ const addUser = {
 const listUsers = { }
 
 const changeUserInfo = {
-    query: Joi.object().keys({
+    params: Joi.object().keys({
         userId: Joi.string().required(),
+    }),
+    body: Joi.object().keys({
         username: Joi.string().optional(),
         password: Joi.string().optional(),
         image: Joi.optional(),
@@ -19,13 +22,13 @@ const changeUserInfo = {
 }
 
 const getUser = {
-    query: Joi.object().keys({
+    params: Joi.object().keys({
         userId: Joi.string().required(),
     }),
 }
 
 const addGnam = {
-    query: Joi.object().keys({
+    body: Joi.object().keys({
         authorId: Joi.string().required(),
         title: Joi.string().required(),
         short_description: Joi.string().required(),
@@ -34,15 +37,22 @@ const addGnam = {
     }),
 }
 
-const saveGnam = {
-    query: Joi.object().keys({
+const postLike = {
+    body: Joi.object().keys({
+        userId: Joi.string().required(),
+        gnamId: Joi.string().required(),
+    }),
+}
+
+const getLike = {
+    body: Joi.object().keys({
         userId: Joi.string().required(),
         gnamId: Joi.string().required(),
     }),
 }
 
 const searchGnams = {
-    query: Joi.object().keys({
+    body: Joi.object().keys({
         keywords: Joi.string().optional(),
         dateFrom: Joi.date().optional(),
         dateTo: Joi.date().optional(),
@@ -51,7 +61,7 @@ const searchGnams = {
 }
 
 const getGnam = {
-    query: Joi.object().keys({
+    params: Joi.object().keys({
         gnamId: Joi.string().required(),
     }),
 }
@@ -59,32 +69,55 @@ const getGnam = {
 const listGnams = { }
 
 const toggleFollowUser = {
-    query: Joi.object().keys({
+    body: Joi.object().keys({
+        sourceUser: Joi.string().required(),
+        targetUser: Joi.string().required(),
+    }),
+}
+
+const listFollower = {
+    params: Joi.object().keys({
         userId: Joi.string().required(),
-        gnamId: Joi.string().required(),
+    }),
+}
+
+const listFollowing = {
+    params: Joi.object().keys({
+        userId: Joi.string().required(),
+    }),
+}
+
+
+const doUserFollowUser = {
+    body: Joi.object().keys({
+        sourceUser: Joi.string().required(),
+        targetUser: Joi.string().required(),
     }),
 }
 
 const getNewNotifications = {
-    query: Joi.object().keys({
+    body: Joi.object().keys({
         userId: Joi.string().required(),
     }),
 }
 
 const shortListGoals = {
-    query: Joi.object().keys({
+    body: Joi.object().keys({
         userId: Joi.string().required(),
     })
 }
 
 const completeListGoals = {
-    query: Joi.object().keys({
+    params: Joi.object().keys({
+        limit: Joi.number().required(),
+    }),
+    body: Joi.object().keys({
         userId: Joi.string().required(),
     })
 }
 
 const completeGoal = {
-    query: Joi.object().keys({
+    body: Joi.object().keys({
         userId: Joi.string().required(),
         goalId: Joi.string().required(),
     })
@@ -96,7 +129,8 @@ module.exports = {
     getUser,
     changeUserInfo,
     addGnam,
-    saveGnam,
+    postLike,
+    getLike,
     searchGnams,
     getGnam,
     listGnams,
@@ -105,4 +139,7 @@ module.exports = {
     shortListGoals,
     completeListGoals,
     completeGoal,
+    doUserFollowUser,
+    listFollower,
+    listFollowing
 }

@@ -13,45 +13,58 @@ router.use((req, res, next) => {
 })
 
 // Add user
-router.post('/addUser/', validate(gnammyValidator.addUser), gnammyController.addUser)
+router.post('/user/', validate(gnammyValidator.addUser), gnammyController.addUser)
 
 // List users
-router.get('/listUsers/', gnammyController.listUsers)
+router.get('/user/', gnammyController.listUsers)
 
 // Get user
-router.get('/getUser/', validate(gnammyValidator.getUser), gnammyController.getUser)
+router.get('/user/:userId', validate(gnammyValidator.getUser), gnammyController.getUser)
 
 // Change user info
-router.put('/changeUserInfo/', validate(gnammyValidator.changeUserInfo), gnammyController.changeUserInfo)
-
-// Add gnam
-router.post('/addGnam/', validate(gnammyValidator.addGnam), gnammyController.addGnam)
+router.patch('/user/:userId', validate(gnammyValidator.changeUserInfo), gnammyController.changeUserInfo)
 
 // Save gnam (like)
-router.post('/saveGnam/', validate(gnammyValidator.saveGnam), gnammyController.saveGnam)
+router.post('/like/', validate(gnammyValidator.postLike), gnammyController.postLike)
+
+// Ritorna booleano se l'utente ha messo like
+router.get('/like/', validate(gnammyValidator.getLike), gnammyController.getLike)
+
+// Add gnam
+router.post('/gnam/', validate(gnammyValidator.addGnam), gnammyController.addGnam)
 
 // get gnam
-router.get('/getGnam/', validate(gnammyValidator.getGnam), gnammyController.getGnam)
+router.get('/gnam/:gnamId', validate(gnammyValidator.getGnam), gnammyController.getGnam)
 
 // list gnam
-router.get('/listGnams/', validate(gnammyValidator.listGnams), gnammyController.listGnams)
+router.get('/gnam/', validate(gnammyValidator.listGnams), gnammyController.listGnams)
 
 // Search gnams
-router.get('/searchGnams/', validate(gnammyValidator.searchGnams), gnammyController.searchGnams)
+router.get('/search/', validate(gnammyValidator.searchGnams), gnammyController.searchGnams)
 
 // Toggle follow user
-router.post('/toggleFollowUser/', validate(gnammyValidator.toggleFollowUser), gnammyController.toggleFollowUser)
+router.post('/follower/', validate(gnammyValidator.toggleFollowUser), gnammyController.toggleFollowUser)
 
-// Request notifications
+
+// get follower of user form userId
+router.get('/follower/:userId', validate(gnammyValidator.listFollower), gnammyController.listFollower)
+
+// get follower of user form userId
+router.get('/following/:userId', validate(gnammyValidator.listFollowing), gnammyController.listFollowing)
+
+// Gets if users follow another user
+router.get('/follower/', validate(gnammyValidator.doUserFollowUser), gnammyController.doUserFollowUser)
+
+// Request notifications, TODO tutto in pratica
 router.post('/getNewNotifications/', validate(gnammyValidator.getNewNotifications), gnammyController.getNewNotifications)
 
-// List brief Goals
-router.get('/shortListGoals/', validate(gnammyValidator.shortListGoals), gnammyController.shortListGoals)
+// List brief Goals, TODO tutto in pratica
+router.get('/goal/:limit', validate(gnammyValidator.shortListGoals), gnammyController.shortListGoals)
 
-// List complete Goals
-router.get('/completeListGoals/', validate(gnammyValidator.completeListGoals), gnammyController.completeListGoals)
+// List complete Goals, TODO tutto in pratica
+router.get('/goals/', validate(gnammyValidator.completeListGoals), gnammyController.completeListGoals)
 
-// Add Goal
-router.post('/completeGoal/', validate(gnammyValidator.completeGoal), gnammyController.completeGoal)
+// complete goal, TODO tutto in pratica
+router.post('/goal/', validate(gnammyValidator.completeGoal), gnammyController.completeGoal)
 
 module.exports = router

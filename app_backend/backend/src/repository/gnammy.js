@@ -29,6 +29,7 @@ async function listUsers(callback) {
 }
 
 async function getUser(userId, callback) {
+    console.log(`getUser: ${userId}`)
     try {
         const user = await prisma.user.findUnique({
             where: {
@@ -41,9 +42,12 @@ async function getUser(userId, callback) {
     }
 }
 
-async function changeUserInfo(userId, username, password, image, callback) {
+async function changeUserInfo(userId, username, password, callback) {
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = undefined;
+        if(username?.length > 255) return callback('Username too long', null);
+        if(password?.length > 255) return callback('Password too long', null);
+        if(password != undefined) hashedPassword = await bcrypt.hash(password, 10);
         const updatedUser = await prisma.user.update({
             where: {
                 id: userId
@@ -59,7 +63,7 @@ async function changeUserInfo(userId, username, password, image, callback) {
     }
 }
 
-async function addGnam(authorId, title, short_description, full_recipe, image, callback) {
+async function addGnam(authorId, title, short_description, full_recipe, callback) {
     try {
         const createdGnam = await prisma.gnam.create({
             data: {
@@ -89,12 +93,25 @@ async function saveGnam(userId, gnamId, callback) {
     }
 }
 
+async function didUserLike(userId, gnamId, callback) {
+    try {
+        const likes = await prisma.like.findFirst({
+            where: {
+                userId: userId,
+                gnamId: gnamId
+            }
+        });
+        callback(null, likes == null ? false : true);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) {
-    // Controlla e imposta valori predefiniti per i parametri
     keywords = keywords || '';
-    dateFrom = dateFrom || new Date(0); // Imposta dateFrom a una data molto vecchia
-    dateTo = dateTo || new Date(); // Imposta dateTo alla data corrente
-    numberOfLikes = numberOfLikes || 0; // Imposta il numero di like minimo a 0
+    dateFrom = dateFrom || new Date(0);
+    dateTo = dateTo || new Date();
+    numberOfLikes = numberOfLikes || 0;
 
     try {
         const gnams = await prisma.gnam.findMany({
@@ -116,23 +133,31 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) 
                         }
                     }
                 ],
-                createdAt: {
-                    gte: dateFrom,
-                    lte: dateTo
-                },
-                likes: {
-                    gte: numberOfLikes
+                created_at: {
+                    gte: new Date(dateFrom),
+                    lte: new Date(dateTo)
+                }
+            },
+            include: {
+                _count: {
+                    select: { likes: true }
                 }
             },
             orderBy: {
-                likes: 'desc'
+                likes: {
+                    _count: 'desc'
+                }
             }
         });
-        callback(null, gnams);
+
+        const filteredGnams = gnams.filter(gnam => gnam._count.likes >= numberOfLikes);
+
+        callback(null, filteredGnams);
     } catch (error) {
         callback(error, null);
     }
 }
+
 
 async function getGnam(gnamId, callback) {
     try {
@@ -158,30 +183,93 @@ async function listGnams(callback) {
     }
 }
 
-async function toggleFollowUser(userId, gnamId, callback) {
+async function toggleFollowUser(sourceUser, targetUser, callback) {
     try {
-        const followUser = await prisma.followUser.findUnique({
+        // Check if the following relationship already exists
+        const followUser = await prisma.following.findUnique({
             where: {
-                userId: userId,
-                gnamId: gnamId
+                sourceUser_targetUser: {
+                    sourceUser: sourceUser,
+                    targetUser: targetUser
+                }
             }
         });
+
         if (followUser) {
-            await prisma.followUser.delete({
+            // If it exists, delete the following relationship
+            await prisma.following.delete({
                 where: {
-                    userId: userId,
-                    gnamId: gnamId
+                    id: followUser.id
                 }
             });
+            callback(null, { followed: false });
         } else {
-            await prisma.followUser.create({
+            // If it doesn't exist, create the following relationship
+            await prisma.following.create({
                 data: {
-                    userId: userId,
-                    gnamId: gnamId
+                    sourceUser: sourceUser,
+                    targetUser: targetUser
                 }
             });
+            callback(null, { followed: true });
         }
-        callback(null, followUser);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function doUserFollowUser(sourceUser, targetUser, callback) {
+    try {
+        // Check if the following relationship already exists
+        const followUser = await prisma.following.findUnique({
+            where: {
+                sourceUser_targetUser: {
+                    sourceUser: sourceUser,
+                    targetUser: targetUser
+                }
+            }
+        });
+        callback(null, followUser == null ? false : true);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function listFollower(userId, callback) {
+    try {
+        const followers = await prisma.following.findMany({
+            where: {
+                targetUser: userId
+            },
+            include: {
+                source_user: true
+            }
+        });
+
+        // Extracting the source users from the following relationships
+        const followerUsers = followers.map(follow => follow.source_user);
+
+        callback(null, followerUsers);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function listFollowing(userId, callback) {
+    try {
+        const followings = await prisma.following.findMany({
+            where: {
+                sourceUser: userId
+            },
+            include: {
+                target_user: true
+            }
+        });
+
+        // Extracting the target users from the following relationships
+        const followingUsers = followings.map(follow => follow.target_user);
+
+        callback(null, followingUsers);
     } catch (error) {
         callback(error, null);
     }
@@ -201,7 +289,7 @@ async function getNewNotifications(userId, callback) {
     }
 }
 
-async function shortListGoals(userId, callback) {
+async function shortListGoals(userId, limit, callback) {
     try {
         const userType = await prisma.Goals_type.findUnique({
             where: {
@@ -217,7 +305,8 @@ async function shortListGoals(userId, callback) {
             where: {
                 GoalTypeId: userType.id,
                 userId: userId
-            }
+            },
+            take: limit
         });
 
         callback(null, Goals);
@@ -228,8 +317,19 @@ async function shortListGoals(userId, callback) {
 
 async function completeListGoals(userId, callback) {
     try {
-        const Goal = await prisma.Goal.findUnique({
+        const userType = await prisma.Goals_type.findUnique({
             where: {
+                is_for: 'user'
+            }
+        });
+
+        if (!userType) {
+            throw new Error('User type not found');
+        }
+
+        const Goals = await prisma.Goal.findMany({
+            where: {
+                GoalTypeId: userType.id,
                 userId: userId
             }
         });
@@ -282,5 +382,9 @@ module.exports = {
     shortListGoals,
     completeListGoals,
     completeGoal,
-    toggleFollowUser
+    toggleFollowUser,
+    didUserLike,
+    doUserFollowUser,
+    listFollower,
+    listFollowing
 };

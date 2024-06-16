@@ -1,7 +1,7 @@
-version: '3.8'
-
 services:
   be-database:
+    image: postgres
+    restart: always
     build:
       context: ../database/
       dockerfile: Dockerfile
@@ -9,8 +9,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
       POSTGRES_DB: gnammy
-    volumes:
-      - be_database_data:/var/lib/postgresql/data
+    # volumes:
+    #   - be_database_data:/var/lib/postgresql/data
     networks:
       - backend-database-network
     ports:
@@ -29,8 +29,8 @@ services:
 
 networks:
   backend-database-network:
-    name: backend_database_network
-    driver: bridge
+    # name: backend_database_network
+    # driver: bridge
 
-volumes:
-  be_database_data:
+# volumes:
+#   be_database_data:

@@ -6,7 +6,6 @@
 
 generator client {
   provider   = "prisma-client-js"
-  engineType = "library"
 }
 
 datasource db {
@@ -21,11 +20,11 @@ model User {
   api_key               String         @unique @default(uuid())
   source_following      Following[]    @relation("SourceUser")
   target_following      Following[]    @relation("TargetUser")
-  Author                Gnam[]         @relation("Author")
-  Likes                 Like[]         @relation("UserLikeGnam")
-  SentNotifications     Notification[] @relation("SentNotifications")
-  ReceivedNotifications Notification[] @relation("ReceivedNotifications")
-  Goals                 Goals[]
+  author                Gnam[]         @relation("Author")
+  likes                 Like[]         @relation("UserLikeGnam")
+  sentNotifications     Notification[] @relation("SentNotifications")
+  receivedNotifications Notification[] @relation("ReceivedNotifications")
+  goals                 Goal[]
 }
 
 model Following {
@@ -45,11 +44,11 @@ model Gnam {
   title             String
   short_description String
   full_recipe       String
-  share_count       Int
+  share_count       Int            @default(0)
   created_at        DateTime       @default(now())
   likes             Like[]
   notifications     Notification[]
-  goals             Goals[]
+  goals             Goal[]
 }
 
 model Like {
@@ -82,21 +81,21 @@ model Notification {
   seen               Boolean          @default(false)
 }
 
-model GoalsType {
+model GoalType {
   id            String  @id @unique @default(cuid())
   is_for        String // gnam, user
   template_text String
   goal_number   Int // x likes, x followers
-  goals         Goals[]
+  goals         Goal[]
 }
 
-model Goals {
+model Goal {
   id         String    @id @unique @default(cuid())
   user       User      @relation(fields: [userId], references: [id])
   userId     String
   gnam       Gnam?     @relation(fields: [gnamId], references: [id])
   gnamId     String?
-  goal_type  GoalsType @relation(fields: [goalTypeId], references: [id])
+  goal_type  GoalType @relation(fields: [goalTypeId], references: [id])
   goalTypeId String
   created_at DateTime  @default(now())
   completed  Boolean   @default(false)
