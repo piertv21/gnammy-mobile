@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider   = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -17,10 +17,10 @@ model User {
   id                    String         @id @unique @default(cuid())
   username              String
   password              String
-  api_key               String         @unique @default(uuid())
-  source_following      Following[]    @relation("SourceUser")
-  target_following      Following[]    @relation("TargetUser")
-  author                Gnam[]         @relation("Author")
+  apiKey                String         @unique @default(uuid())
+  followers             Following[]    @relation("SourceUser")
+  following             Following[]    @relation("TargetUser")
+  gnams                 Gnam[]         @relation("Author")
   likes                 Like[]         @relation("UserLikeGnam")
   sentNotifications     Notification[] @relation("SentNotifications")
   receivedNotifications Notification[] @relation("ReceivedNotifications")
@@ -28,27 +28,27 @@ model User {
 }
 
 model Following {
-  id          String @id @unique @default(cuid())
-  source_user User   @relation("SourceUser", fields: [sourceUser], references: [id])
-  sourceUser  String
-  target_user User   @relation("TargetUser", fields: [targetUser], references: [id])
-  targetUser  String
+  id           String @id @unique @default(cuid())
+  sourceUser   User   @relation("SourceUser", fields: [sourceUserId], references: [id])
+  sourceUserId String
+  targetUser   User   @relation("TargetUser", fields: [targetUserId], references: [id])
+  targetUserId String
 
-  @@unique([sourceUser, targetUser])
+  @@unique([sourceUserId, targetUserId])
 }
 
 model Gnam {
-  id                String         @id @unique @default(cuid())
-  author            User           @relation("Author", fields: [authorId], references: [id])
-  authorId          String
-  title             String
-  short_description String
-  full_recipe       String
-  share_count       Int            @default(0)
-  created_at        DateTime       @default(now())
-  likes             Like[]
-  notifications     Notification[]
-  goals             Goal[]
+  id            String         @id @unique @default(cuid())
+  author        User           @relation("Author", fields: [authorId], references: [id])
+  authorId      String
+  title         String
+  description   String
+  recipe        String
+  shareCount    Int            @default(0)
+  createdAt     DateTime       @default(now())
+  likes         Like[]
+  notifications Notification[]
+  goals         Goal[]
 }
 
 model Like {
@@ -63,40 +63,41 @@ model Like {
 
 model NotificationType {
   id            String         @id @unique @default(cuid())
-  template_text String
-  notification  Notification[]
+  typeName      String
+  templateText  String
+  notifications Notification[]
 }
 
 model Notification {
   id                 String           @id @unique @default(cuid())
-  source_user        User             @relation("SentNotifications", fields: [sourceUserId], references: [id])
+  sourceUser         User             @relation("SentNotifications", fields: [sourceUserId], references: [id])
   sourceUserId       String
-  target_user        User             @relation("ReceivedNotifications", fields: [targetUserId], references: [id])
+  targetUser         User             @relation("ReceivedNotifications", fields: [targetUserId], references: [id])
   targetUserId       String
   gnam               Gnam?            @relation(fields: [gnamId], references: [id])
   gnamId             String?
-  notification_type  NotificationType @relation(fields: [notificationTypeId], references: [id])
+  notificationType   NotificationType @relation(fields: [notificationTypeId], references: [id])
   notificationTypeId String
-  created_at         DateTime         @default(now())
+  createdAt          DateTime         @default(now())
   seen               Boolean          @default(false)
 }
 
 model GoalType {
-  id            String  @id @unique @default(cuid())
-  is_for        String // gnam, user
-  template_text String
-  goal_number   Int // x likes, x followers
-  goals         Goal[]
+  id           String @id @unique @default(cuid())
+  isFor        String // gnam, user
+  templateText String
+  goalNumber   Int // x likes, x followers
+  goals        Goal[]
 }
 
 model Goal {
-  id         String    @id @unique @default(cuid())
-  user       User      @relation(fields: [userId], references: [id])
+  id         String   @id @unique @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
   userId     String
-  gnam       Gnam?     @relation(fields: [gnamId], references: [id])
+  gnam       Gnam?    @relation(fields: [gnamId], references: [id])
   gnamId     String?
-  goal_type  GoalType @relation(fields: [goalTypeId], references: [id])
+  goalType   GoalType @relation(fields: [goalTypeId], references: [id])
   goalTypeId String
-  created_at DateTime  @default(now())
-  completed  Boolean   @default(false)
+  createdAt  DateTime @default(now())
+  completed  Boolean  @default(false)
 }

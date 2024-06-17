@@ -69,8 +69,8 @@ async function addGnam(authorId, title, short_description, full_recipe, callback
             data: {
                 authorId: authorId,
                 title: title,
-                short_description: short_description,
-                full_recipe: full_recipe
+                description: short_description,
+                recipe: full_recipe
             }
         });
         callback(null, createdGnam);
@@ -123,17 +123,17 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) 
                         }
                     },
                     {
-                        short_description: {
+                        description: {
                             contains: keywords
                         }
                     },
                     {
-                        full_recipe: {
+                        recipe: {
                             contains: keywords
                         }
                     }
                 ],
-                created_at: {
+                createdAt: {
                     gte: new Date(dateFrom),
                     lte: new Date(dateTo)
                 }
@@ -188,9 +188,9 @@ async function toggleFollowUser(sourceUser, targetUser, callback) {
         // Check if the following relationship already exists
         const followUser = await prisma.following.findUnique({
             where: {
-                sourceUser_targetUser: {
-                    sourceUser: sourceUser,
-                    targetUser: targetUser
+                sourceUserId_targetUserId: {
+                    sourceUserId: sourceUser,
+                    targetUserId: targetUser
                 }
             }
         });
@@ -207,8 +207,8 @@ async function toggleFollowUser(sourceUser, targetUser, callback) {
             // If it doesn't exist, create the following relationship
             await prisma.following.create({
                 data: {
-                    sourceUser: sourceUser,
-                    targetUser: targetUser
+                    sourceUserId: sourceUser,
+                    targetUserId: targetUser
                 }
             });
             callback(null, { followed: true });
@@ -223,9 +223,9 @@ async function doUserFollowUser(sourceUser, targetUser, callback) {
         // Check if the following relationship already exists
         const followUser = await prisma.following.findUnique({
             where: {
-                sourceUser_targetUser: {
-                    sourceUser: sourceUser,
-                    targetUser: targetUser
+                sourceUserId_targetUserId: {
+                    sourceUserId: sourceUser,
+                    targetUserId: targetUser
                 }
             }
         });
@@ -239,15 +239,15 @@ async function listFollower(userId, callback) {
     try {
         const followers = await prisma.following.findMany({
             where: {
-                targetUser: userId
+                targetUserId: userId
             },
             include: {
-                source_user: true
+                sourceUser: true
             }
         });
 
         // Extracting the source users from the following relationships
-        const followerUsers = followers.map(follow => follow.source_user);
+        const followerUsers = followers.map(follow => follow.sourceUser);
 
         callback(null, followerUsers);
     } catch (error) {
@@ -259,15 +259,15 @@ async function listFollowing(userId, callback) {
     try {
         const followings = await prisma.following.findMany({
             where: {
-                sourceUser: userId
+                sourceUserId: userId
             },
             include: {
-                target_user: true
+                targetUser: true
             }
         });
 
         // Extracting the target users from the following relationships
-        const followingUsers = followings.map(follow => follow.target_user);
+        const followingUsers = followings.map(follow => follow.targetUser);
 
         callback(null, followingUsers);
     } catch (error) {
@@ -290,54 +290,11 @@ async function getNewNotifications(userId, callback) {
 }
 
 async function shortListGoals(userId, limit, callback) {
-    try {
-        const userType = await prisma.Goals_type.findUnique({
-            where: {
-                is_for: 'user'
-            }
-        });
 
-        if (!userType) {
-            throw new Error('User type not found');
-        }
-
-        const Goals = await prisma.Goal.findMany({
-            where: {
-                GoalTypeId: userType.id,
-                userId: userId
-            },
-            take: limit
-        });
-
-        callback(null, Goals);
-    } catch (error) {
-        callback(error, null);
-    }
 }
 
 async function completeListGoals(userId, callback) {
-    try {
-        const userType = await prisma.Goals_type.findUnique({
-            where: {
-                is_for: 'user'
-            }
-        });
 
-        if (!userType) {
-            throw new Error('User type not found');
-        }
-
-        const Goals = await prisma.Goal.findMany({
-            where: {
-                GoalTypeId: userType.id,
-                userId: userId
-            }
-        });
-
-        callback(null, Goals);
-    } catch (error) {
-        callback(error, null);
-    }
 }
 
 async function completeGoal(userId, goalId, callback) {
