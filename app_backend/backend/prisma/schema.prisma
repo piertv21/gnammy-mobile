@@ -18,6 +18,7 @@ model User {
   username              String
   password              String
   apiKey                String         @unique @default(uuid())
+  location              String?
   followers             Following[]    @relation("SourceUser")
   following             Following[]    @relation("TargetUser")
   gnams                 Gnam[]         @relation("Author")
@@ -98,6 +99,5 @@ model Goal {
   gnamId     String?
   goalType   GoalType @relation(fields: [goalTypeId], references: [id])
   goalTypeId String
-  createdAt  DateTime @default(now())
-  completed  Boolean  @default(false)
+  achievedOn DateTime @default(now())
 }
