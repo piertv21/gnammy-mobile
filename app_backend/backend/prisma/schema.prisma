@@ -87,7 +87,6 @@ model GoalType {
   id           String @id @unique @default(cuid())
   isFor        String // gnam, user
   templateText String
-  goalNumber   Int // x likes, x followers
   goals        Goal[]
 }
 
@@ -99,5 +98,5 @@ model Goal {
   gnamId     String?
   goalType   GoalType @relation(fields: [goalTypeId], references: [id])
   goalTypeId String
-  achievedOn DateTime @default(now())
+  achievedOn DateTime
 }

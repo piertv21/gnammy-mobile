@@ -65,7 +65,7 @@ router.post('/getNewNotifications/', validate(gnammyValidator.getNewNotification
 router.get('/goal/:limit', validate(gnammyValidator.shortListGoals), gnammyController.shortListGoals)
 
 // List complete Goals, TODO tutto in pratica
-router.get('/goals/', validate(gnammyValidator.completeListGoals), gnammyController.completeListGoals)
+router.get('/goals/', validate(gnammyValidator.listGoals), gnammyController.listGoals)
 
 // complete goal, TODO tutto in pratica
 router.post('/goal/', validate(gnammyValidator.completeGoal), gnammyController.completeGoal)

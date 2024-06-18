@@ -114,7 +114,7 @@ const shortListGoals = {
     })
 }
 
-const completeListGoals = {
+const listGoals = {
     params: Joi.object().keys({
         limit: Joi.number().required(),
     }),
@@ -144,9 +144,10 @@ module.exports = {
     toggleFollowUser,
     getNewNotifications,
     shortListGoals,
-    completeListGoals,
+    listGoals,
     completeGoal,
     doUserFollowUser,
     listFollower,
-    listFollowing
+    listFollowing,
+    deleteLike
 }

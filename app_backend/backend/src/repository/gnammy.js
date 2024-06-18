@@ -103,6 +103,7 @@ async function didUserLike(userId, gnamId, callback) {
         callback(null, likes == null ? false : true);
     } catch (error) {
         callback(error, null);
+        this.id = goalType.id;
     }
 }
 
@@ -289,36 +290,28 @@ async function getNewNotifications(userId, callback) {
 }
 
 async function shortListGoals(userId, limit, callback) {
-
-}
-
-async function completeListGoals(userId, callback) {
-
-}
-
-async function completeGoal(userId, goalId, callback) {
     try {
-        const Goal = await prisma.Goal.findUnique({
+        const goals = await prisma.goal.findMany({
             where: {
-                id: goalId,
                 userId: userId
-            }
-        });
-
-        if (!Goal) {
-            throw new Error('Goal not found');
-        }
-
-        await prisma.Goal.update({
-            where: {
-                id: goalId
             },
-            data: {
-                completed: true
-            }
+            take: limit
         });
+        callback(null, goals);
+    } catch (error) {
+        callback(error, null);
+    }
+}
 
-        callback(null, Goal);
+async function listGoals(userId, callback) {
+    try {
+        const goals = await prisma.goal.findMany({
+            where: {
+                userId: userId
+            },
+            take: 10
+        });
+        callback(null, goals);
     } catch (error) {
         callback(error, null);
     }
@@ -401,6 +394,37 @@ async function deleteLike(userId, gnamId, callback) {
     }
 }
 
+async function createGoal(userId, goalType, gnamId) {
+    const goal = await prisma.goal.create({
+        data: {
+            userId: userId,
+            goalTypeId: goalType.id,
+            gnamId: gnamId
+        }
+    });
+}
+
+async function completeGoal(userId, goalType, gnamId) {
+    const goal = await prisma.goal.findFirst({
+        where: {
+            userId: userId,
+            goalTypeId: goalType.id,
+            gnamId: gnamId
+        }
+    });
+
+    if (goal == null) return;
+
+    await prisma.goal.update({
+        where: {
+            id: goal.id
+        },
+        data: {
+            achievedOn: new Date()
+        }
+    });
+}
+
 module.exports = {
     addUser,
     listUsers,
@@ -413,7 +437,7 @@ module.exports = {
     searchGnams,
     getNewNotifications,
     shortListGoals,
-    completeListGoals,
+    listGoals,
     completeGoal,
     toggleFollowUser,
     didUserLike,
@@ -424,5 +448,7 @@ module.exports = {
     createNotification,
     getUserIdFromGnamId,
     deleteLike,
-    deleteNotification
+    deleteNotification,
+    createGoal,
+    completeGoal
 };
