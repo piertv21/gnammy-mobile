@@ -44,6 +44,13 @@ const postLike = {
     }),
 }
 
+const deleteLike = {
+    body: Joi.object().keys({
+        userId: Joi.string().required(),
+        gnamId: Joi.string().required(),
+    }),
+}
+
 const getLike = {
     body: Joi.object().keys({
         userId: Joi.string().required(),

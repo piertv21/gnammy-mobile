@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
+
 async function addUser(username, password, callback) {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -19,9 +20,7 @@ async function addUser(username, password, callback) {
 
 async function listUsers(callback) {
     try {
-        const users = await prisma.user.findMany({
-            take: 5
-        });
+        const users = await prisma.user.findMany();
         callback(null, users);
     } catch (error) {
         callback(error, null);
@@ -325,6 +324,83 @@ async function completeGoal(userId, goalId, callback) {
     }
 }
 
+async function getNotificationType(name, callback) {
+    try {
+        const notificationType = await prisma.notificationType.findUnique({
+            where: {
+                typeName: name
+            }
+        });
+        callback(null, notificationType);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function createNotification(sourceUser, targetUser, gnamId, notificationType) {
+    await prisma.notification.create({
+        data: {
+            sourceUserId: sourceUser,
+            targetUserId: targetUser,
+            gnamId: gnamId,
+            notificationTypeId: notificationType.id
+        }
+    });
+}
+
+async function deleteNotification(sourceUser, targetUser, gnamId, notificationType) {
+    const existingNotification = await prisma.notification.findFirst({
+            where: {
+                sourceUserId: sourceUser,
+                targetUserId: targetUser,
+                gnamId: gnamId,
+                notificationTypeId: notificationType.id
+            }
+        });
+    if (existingNotification) {
+        await prisma.notification.delete({
+            where: {
+                id: existingNotification.id
+            }
+        });
+    }
+}
+
+
+
+async function getUserIdFromGnamId(gnamId, callback) {
+    try {
+        const gnam = await prisma.gnam.findUnique({
+            where: {
+                id: gnamId
+            }
+        });
+        callback(null, gnam.authorId);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function deleteLike(userId, gnamId, callback) {
+    try {
+        const likes = await prisma.like.findFirst({
+            where: {
+                userId: userId,
+                gnamId: gnamId
+            }
+        });
+        if (likes == null) return callback(null, null);
+        await prisma.like.delete({
+            where: {
+                id: likes.id
+            }
+        });
+        callback(null, likes);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 module.exports = {
     addUser,
     listUsers,
@@ -343,5 +419,10 @@ module.exports = {
     didUserLike,
     doUserFollowUser,
     listFollower,
-    listFollowing
+    listFollowing,
+    getNotificationType,
+    createNotification,
+    getUserIdFromGnamId,
+    deleteLike,
+    deleteNotification
 };

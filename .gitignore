@@ -34,3 +34,4 @@ google-services.json
 
 node_modules
 app_backend/backend/prisma/migrations
+package-lock.json

@@ -1,16 +1,23 @@
 const httpStatus = require("http-status");
 const gnammyRepository = require('../repository/gnammy')
 
-// class NotificationType {
-//     static Like = new NotificationType('Like', 'id, da trovare');
-//     static Follow = new NotificationType('Follow', 'id, da trovare');
 
-//     constructor(name) {
-//         //prendi da db
-//         this.name = name;
-//         this.id = id;
-//     }
-// }
+class NotificationType {
+    static Like = new NotificationType('Like');
+    static Follow = new NotificationType('Follow');
+
+    constructor(name) {
+        if(this.id == undefined) {
+            gnammyRepository.getNotificationType(name, (err, notificationType) => {
+                if (err) {
+                    console.log(err);
+                }
+                this.id = notificationType.id;
+            });
+        }
+        this.name = name;;
+    }
+}
 
 const addUser = (req, res) => {
     const { username, password } = req.body;
@@ -83,8 +90,26 @@ const postLike = (req, res) => {
     gnammyRepository.saveGnam(userId, gnamId, (err, likes) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
-                .json({ error: `Error during the gnam saving: ${err}`});
+                .json({ error: `Error during the gnam like: ${err}`});
         }
+        gnammyRepository.getUserIdFromGnamId(gnamId, (err, targetUserId) => {
+            if(!err) createNotification(userId, targetUserId, gnamId, NotificationType.Like);
+        });
+        res.status(httpStatus.OK).json({ likes });
+    });
+}
+
+const deleteLike = (req, res) => {
+    const { userId, gnamId } = req.body;
+
+    gnammyRepository.deleteLike(userId, gnamId, (err, likes) => {
+        if (err) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ error: `Error during like deletion: ${err}`});
+        }
+        gnammyRepository.getUserIdFromGnamId(gnamId, (err, targetUserId) => {
+            if(!err) deleteNotification(userId, targetUserId, gnamId, NotificationType.Like);
+        });
         res.status(httpStatus.OK).json({ likes });
     });
 }
@@ -137,12 +162,17 @@ const listGnams = (req, res) => {
 const toggleFollowUser = (req, res) => {
     const { sourceUser, targetUser } = req.body;
 
-    gnammyRepository.toggleFollowUser(sourceUser, targetUser, (err, follow) => {
+    gnammyRepository.toggleFollowUser(sourceUser, targetUser, (err, result) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error in toggle follow: ${err}`});
         }
-        res.status(httpStatus.OK).json({ follow });
+        if (result.followed) {
+            createNotification(sourceUser, targetUser, null, NotificationType.Follow);
+        } else {
+            deleteNotification(sourceUser, targetUser, null, NotificationType.Follow);
+        }
+        res.status(httpStatus.OK).json({ result });
     });
 }
 
@@ -231,15 +261,12 @@ const completeGoal = (req, res) => {
     });
 }
 
-async function createNotification(sourceUser, targetUser, gnamId, notificationType, callback) {
-    await prisma.notification.create({
-        data: {
-            sourceUserId: sourceUser,
-            targetUserId: targetUser,
-            gnamId: gnamId,
-            notificationTypeId: notificationType
-        }
-    });
+async function createNotification(sourceUser, targetUser, gnamId, notificationType) {
+    gnammyRepository.createNotification(sourceUser, targetUser, gnamId, notificationType);
+}
+
+async function deleteNotification(sourceUser, targetUser, gnamId, notificationType) {
+    gnammyRepository.deleteNotification(sourceUser, targetUser, gnamId, notificationType);
 }
 
 
@@ -262,4 +289,5 @@ module.exports = {
     doUserFollowUser,
     listFollower,
     listFollowing,
+    deleteLike
 }
