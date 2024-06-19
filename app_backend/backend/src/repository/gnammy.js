@@ -317,8 +317,37 @@ async function listGoals(userId, callback) {
     }
 }
 
+async function createNotificationType(name, templateText, callback) {
+    try {
+        const notificationType = await prisma.notificationType.create({
+            data: {
+                typeName: name,
+                templateText: templateText
+            }
+        });
+        callback(null, notificationType);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function createGoalType(isFor, templateText, callback) {
+    try {
+        const goalType = await prisma.goalType.create({
+            data: {
+                isFor: isFor,
+                templateText: templateText
+            }
+        });
+        callback(null, goalType);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 async function getNotificationType(name, callback) {
     try {
+
         const notificationType = await prisma.notificationType.findUnique({
             where: {
                 typeName: name
@@ -425,6 +454,114 @@ async function completeGoal(userId, goalType, gnamId) {
     });
 }
 
+async function getUserGnamsCount(userId, callback) {
+    try {
+        const gnams = await prisma.gnam.findMany({
+            where: {
+                authorId: userId
+            },
+            select: {
+                id: true
+            }
+        });
+        callback(null, gnams.length);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function getUserGivenLikesCount(userId, callback) {
+    try {
+        const likes = await prisma.like.findMany({
+            where: {
+                userId: userId
+            },
+            select: {
+                gnamId: true
+            }
+        });
+        callback(null, likes.length);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function getUserReceivedLikesCount(userId, callback) {
+    try {
+        const totalLikesCount = await prisma.like.count({
+            where: {
+                gnam: {
+                    authorId: userId
+                }
+            }
+        });
+
+        callback(null, totalLikesCount);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function getGnamLikesCount(gnamId, callback) {
+    try {
+        const likes = await prisma.like.findMany({
+            where: {
+                gnamId: gnamId
+            },
+            select: {
+                userId: true
+            }
+        });
+        callback(null, likes.length);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function getGoalType(name, callback) {
+    try {
+        const goalType = await prisma.goalType.findFirst({
+            where: {
+                templateText: name
+            }
+        });
+        callback(null, goalType);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+//TODO rendere api
+async function getUserGnams(userId, callback) {
+    try {
+        const gnams = await prisma.gnam.findMany({
+            where: {
+                authorId: userId
+            }
+        });
+        callback(null, gnams);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function shareGnam(gnamId, callback) {
+    try {
+        const updatedGnam = await prisma.gnam.update({
+            where: { id: gnamId },
+            data: {
+                shareCount: {
+                    increment: 1
+                }
+            }
+        });
+
+        callback(null, updatedGnam);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 module.exports = {
     addUser,
     listUsers,
@@ -450,5 +587,14 @@ module.exports = {
     deleteLike,
     deleteNotification,
     createGoal,
-    completeGoal
+    completeGoal,
+    getUserGnamsCount,
+    getUserGivenLikesCount,
+    getUserReceivedLikesCount,
+    getGnamLikesCount,
+    getGoalType,
+    getUserGnams,
+    createGoalType,
+    createNotificationType,
+    shareGnam
 };

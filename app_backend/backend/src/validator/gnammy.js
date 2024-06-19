@@ -77,8 +77,8 @@ const listGnams = { }
 
 const toggleFollowUser = {
     body: Joi.object().keys({
-        sourceUser: Joi.string().required(),
-        targetUser: Joi.string().required(),
+        sourceUserId: Joi.string().required(),
+        targetUserId: Joi.string().required(),
     }),
 }
 
@@ -97,8 +97,8 @@ const listFollowing = {
 
 const doUserFollowUser = {
     body: Joi.object().keys({
-        sourceUser: Joi.string().required(),
-        targetUser: Joi.string().required(),
+        sourceUserId: Joi.string().required(),
+        targetUserId: Joi.string().required(),
     }),
 }
 
@@ -130,6 +130,12 @@ const completeGoal = {
     })
 }
 
+const shareGnam = {
+    body: Joi.object().keys({
+        gnamId: Joi.string().required(),
+    })
+}
+
 module.exports = {
     addUser,
     listUsers,
@@ -149,5 +155,6 @@ module.exports = {
     doUserFollowUser,
     listFollower,
     listFollowing,
-    deleteLike
+    deleteLike,
+    shareGnam
 }

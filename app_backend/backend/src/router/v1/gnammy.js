@@ -70,4 +70,6 @@ router.get('/goals/', validate(gnammyValidator.listGoals), gnammyController.list
 // complete goal, TODO tutto in pratica
 router.post('/goal/', validate(gnammyValidator.completeGoal), gnammyController.completeGoal)
 
+router.post('/shareGnam/', validate(gnammyValidator.shareGnam), gnammyController.shareGnam)
+
 module.exports = router

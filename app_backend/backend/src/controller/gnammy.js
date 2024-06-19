@@ -1,55 +1,90 @@
 const httpStatus = require("http-status");
 const gnammyRepository = require('../repository/gnammy')
 
-
 class NotificationType {
     static Like = new NotificationType('Like');
     static Follow = new NotificationType('Follow');
 
-    constructor(name) {
+    constructor(templateText) {
         if(this.id == undefined) {
-            gnammyRepository.getNotificationType(name, (err, notificationType) => {
+            gnammyRepository.getNotificationType(templateText, (err, notificationType) => {
                 if (err) {
                     console.log(err);
                 }
                 this.id = notificationType.id;
             });
         }
-        this.name = name;
+        this.name = templateText;
     }
 }
 
 class GoalType {
-    static Post1 = new GoalType('Hai pubblicato il tuo primo gnam');
-    static Post10 = new GoalType('Hai pubblicato 10 gnam');
-    static Post100 = new GoalType('Hai pubblicato 100 gnam');
-    static Save1 = new GoalType('Hai salvato il tuo primo gnam');
-    static Save10 = new GoalType('Hai salvato 10 gnam');
-    static Save100 = new GoalType('Hai salvato 100 gnam');
-    static OwnGnam10 = new GoalType('I tuoi gnam sono stati salvati 10 volte');
-    static OwnGnam100 = new GoalType('I tuoi gnam sono stati salvati 100 volte');
-    static OwnGnam1000 = new GoalType('I tuoi gnam sono stati salvati 1000 volte');
-    static Follower1 = new GoalType('Hai raggiunto 1 follower');
-    static Follower10 = new GoalType('Hai raggiunto 10 follower');
-    static Follower100 = new GoalType('Hai raggiunto 100 follower');
-    static SpecificRecipeLike1 = new GoalType('Questa ricetta è stata salvata 1 volta');
-    static SpecificRecipeLike10 = new GoalType('Questa ricetta è stata salvata 10 volte');
-    static SpecificRecipeLike100 = new GoalType('Questa ricetta è stata salvata 100 volte');
-    static SpecificRecipeShare1 = new GoalType('Questa ricetta è stata condivisa 1 volta');
-    static SpecificRecipeShare10 = new GoalType('Questa ricetta è stata condivisa 10 volte');
-    static SpecificRecipeShare100 = new GoalType('Questa ricetta è stata condivisa 100 volte');
+    static userGoals = {
+        Post1 : new GoalType('Hai pubblicato il tuo primo gnam'),
+        Post10 : new GoalType('Hai pubblicato 10 gnam'),
+        Post100 : new GoalType('Hai pubblicato 100 gnam'),
+        Save1 : new GoalType('Hai salvato il tuo primo gnam'),
+        Save10 : new GoalType('Hai salvato 10 gnam'),
+        Save100 : new GoalType('Hai salvato 100 gnam'),
+        OwnGnam10 : new GoalType('I tuoi gnam sono stati salvati 10 volte'),
+        OwnGnam100 : new GoalType('I tuoi gnam sono stati salvati 100 volte'),
+        OwnGnam1000 : new GoalType('I tuoi gnam sono stati salvati 1000 volte'),
+        Follower1 : new GoalType('Hai raggiunto 1 follower'),
+        Follower10 : new GoalType('Hai raggiunto 10 follower'),
+        Follower100 : new GoalType('Hai raggiunto 100 follower'),
+    }
+    static gnamGoals = {
+        SpecificRecipeLike1 : new GoalType('Questa ricetta è stata salvata 1 volta'),
+        SpecificRecipeLike10 : new GoalType('Questa ricetta è stata salvata 10 volte'),
+        SpecificRecipeLike100 : new GoalType('Questa ricetta è stata salvata 100 volte'),
+        SpecificShare1 : new GoalType('Questa ricetta è stata condivisa 1 volta'),
+        SpecificShare10 : new GoalType('Questa ricetta è stata condivisa 10 volte'),
+        SpecificShare100 : new GoalType('Questa ricetta è stata condivisa 100 volte'),
+    }
 
-    constructor(name) {
+    constructor(templateText) {
         if(this.id == undefined) {
-            gnammyRepository.getNotificationType(name, (err, notificationType) => {
+            gnammyRepository.getGoalType(templateText, (err, goalType) => {
                 if (err) {
                     console.log(err);
                 }
-                this.id = notificationType.id;
+                this.id = goalType.id;
             });
         }
-        this.name = name;
+        this.templateText = templateText;
     }
+}
+
+
+function initialize() {
+    // Da chiamare se si vuole riempire il database con i tipi.
+    Object.values(GoalType.userGoals).forEach(async goalType => {
+        await gnammyRepository.createGoalType("user", goalType.templateText, (err, goalType) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+    });
+
+    Object.values(GoalType.gnamGoals).forEach(async goalType => {
+        await gnammyRepository.createGoalType("gnam", goalType.templateText, (err, goalType) => {
+            if (err) {
+                console.log(err);
+            }
+        });
+    });
+
+    gnammyRepository.createNotificationType("Like", "ha messo like al tuo gnam", (err, notificationType) => {
+        if (err) {
+            console.log(err);
+        }
+    });
+
+    gnammyRepository.createNotificationType("Follow", "ha iniziato a seguirti", (err, notificationType) => {
+        if (err) {
+            console.log(err);
+        }
+    });
 }
 
 const addUser = (req, res) => {
@@ -60,14 +95,14 @@ const addUser = (req, res) => {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during the user insertion: ${err}`});
         }
-        // TODO: Qua deve creare tutti i goal che non sono per gli gnam.
-
+        Object.values(GoalType.userGoals).forEach(async goalType => {
+            await gnammyRepository.createGoal(user.id, goalType);
+        });
         res.status(httpStatus.OK).json({ user });
     });
 }
 
 const listUsers = (req, res) => {
-    // Call the repository
     gnammyRepository.listUsers((err, users) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -79,8 +114,6 @@ const listUsers = (req, res) => {
 
 const getUser = (req, res) => {
     const { userId } = req.params;
-
-    // Call the repository
     gnammyRepository.getUser(userId, (err, user) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -95,7 +128,6 @@ const changeUserInfo = (req, res) => {
     const { userId } = req.params;
     // TODO handle image change
 
-    // Call the repository
     gnammyRepository.changeUserInfo(userId, username, password, (err, user) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -109,37 +141,129 @@ const addGnam = (req, res) => {
     const { authorId, title, short_description, full_recipe } = req.body;
     // TODO handle image addition
 
-    gnammyRepository.addGnam(authorId, title, short_description, full_recipe, (err, gnam) => {
+    gnammyRepository.addGnam(authorId, title, short_description, full_recipe, async (err, gnam) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during the gnam insertion: ${err}`});
         }
-        // TODO: Qua deve creare tutti i goal per lo gnam appena postato.
-        // TODO: Controllare se bisogna aggiornare i goal:
-        // - Post1, Post10, Post100
+        Object.values(GoalType.gnamGoals).forEach(async goalType => {
+            await gnammyRepository.createGoal(authorId, goalType, gnam.id);
+        });
+        await gnammyRepository.getUserGnams(authorId, (err, gnams) => {
+            if(!err) {
+                switch (gnams.length) {
+                    case 1:
+                        gnammyRepository.completeGoal(authorId, GoalType.userGoals.Post1);
+                        break;
+                    case 10:
+                        gnammyRepository.completeGoal(authorId, GoalType.userGoals.Post10);
+                        break;
+                    case 100:
+                        gnammyRepository.completeGoal(authorId, GoalType.userGoals.Post100);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
         res.status(httpStatus.OK).json({ gnam });
     });
 }
 
-// TODO: Aggiungi shareGnam
-// TODO: controllare se bisogna aggiornare i goal:
-// - SpecificShare1, SpecificShare10, SpecificShare100
+const shareGnam = (req, res) => {
+    const {gnamId } = req.body;
+
+    gnammyRepository.shareGnam(gnamId, async (err, gnam) => {
+        if (err) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ error: `Error during the gnam share: ${err}`});
+        }
+
+        switch (gnam.shareCount) {
+            case 1:
+                gnammyRepository.completeGoal(gnam.authorId, GoalType.gnamGoals.SpecificShare1, gnam.id);
+                break;
+            case 10:
+                gnammyRepository.completeGoal(gnam.authorId, GoalType.gnamGoals.SpecificShare10, gnam.id);
+                break;
+            case 100:
+                gnammyRepository.completeGoal(gnam.authorId, GoalType.gnamGoals.SpecificShare100, gnam.id);
+                break;
+            default:
+                break;
+        }
+        res.status(httpStatus.OK).json({ gnam });
+    });
+}
 
 const postLike = (req, res) => {
     const { userId, gnamId } = req.body;
 
-    gnammyRepository.saveGnam(userId, gnamId, (err, likes) => {
+    gnammyRepository.saveGnam(userId, gnamId, async (err, likes) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during the gnam like: ${err}`});
         }
-        gnammyRepository.getUserIdFromGnamId(gnamId, (err, targetUserId) => {
+        await gnammyRepository.getUserIdFromGnamId(gnamId, async (err, targetUserId) => {
             if(!err) createNotification(userId, targetUserId, gnamId, NotificationType.Like);
+
+            await gnammyRepository.getGnamLikesCount(gnamId, async (err, likesCount) => {
+                console.log(`Gnam with id ${gnamId}, made by ${targetUserId} has ${likesCount} likes`);
+                if(!err) {
+                    switch (likesCount) {
+                        case 1:
+                            await gnammyRepository.completeGoal(targetUserId, GoalType.gnamGoals.SpecificRecipeLike1, gnamId);
+                            break;
+                        case 10:
+                            await gnammyRepository.completeGoal(targetUserId, GoalType.gnamGoals.SpecificRecipeLike10, gnamId);
+                            break;
+                        case 100:
+                            await gnammyRepository.completeGoal(targetUserId, GoalType.gnamGoals.SpecificRecipeLike100, gnamId);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+
+            await gnammyRepository.getUserReceivedLikesCount(targetUserId, async (err, likesCount) => {
+                console.log(`User with id ${targetUserId} has received ${likesCount} likes`);
+                if(!err) {
+                    switch (likesCount) {
+                        case 10:
+                            await gnammyRepository.completeGoal(userId, GoalType.userGoals.OwnGnam10);
+                            break;
+                        case 100:
+                            await gnammyRepository.completeGoal(userId, GoalType.userGoals.OwnGnam100);
+                            break;
+                        case 1000:
+                            await gnammyRepository.completeGoal(userId, GoalType.userGoals.OwnGnam1000);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
         });
-        // TODO: Controllare se bisogna aggiornare i goal:
-        // - Save1, Save10, Save100
-        // - OwnGnam10, OwnGnam100, OwnGnam1000
-        // - SpecificRecipeLike1, SpecificRecipeLike10, SpecificRecipeLike100
+
+        await gnammyRepository.getUserGivenLikesCount(userId, async (err, likesCount) => {
+            console.log(`User with id ${userId} has given ${likesCount} likes`);
+            if(!err) {
+                switch (likesCount) {
+                    case 1:
+                        await gnammyRepository.completeGoal(userId, GoalType.userGoals.Save1);
+                        break;
+                    case 10:
+                        await gnammyRepository.completeGoal(userId, GoalType.userGoals.Save10);
+                        break;
+                    case 100:
+                        await gnammyRepository.completeGoal(userId, GoalType.userGoals.Save100);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
         res.status(httpStatus.OK).json({ likes });
     });
 }
@@ -205,19 +329,55 @@ const listGnams = (req, res) => {
 }
 
 const toggleFollowUser = (req, res) => {
-    const { sourceUser, targetUser } = req.body;
+    const { sourceUserId, targetUserId } = req.body;
 
-    gnammyRepository.toggleFollowUser(sourceUser, targetUser, (err, result) => {
+    gnammyRepository.toggleFollowUser(sourceUserId, targetUserId, async (err, result) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error in toggle follow: ${err}`});
         }
-        // TODO: Controllare se bisogna aggiornare i goal:
+        // TODO: TEST Controllare se bisogna aggiornare i goal:
         // - Follower1, Follower10, Follower100
+        await gnammyRepository.listFollower(targetUserId, (err, followers) => {
+            if (!err) {
+                switch (followers.length) {
+                    case 1:
+                        gnammyRepository.completeGoal(targetUserId, GoalType.userGoals.Follower1);
+                        break;
+                    case 10:
+                        gnammyRepository.completeGoal(targetUserId, GoalType.userGoals.Follower10);
+                        break;
+                    case 100:
+                        gnammyRepository.completeGoal(targetUserId, GoalType.userGoals.Follower100);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        await gnammyRepository.listFollower(sourceUserId, (err, followers) => {
+            if (!err) {
+                switch (followers.length) {
+                    case 1:
+                        gnammyRepository.completeGoal(sourceUserId, GoalType.userGoals.Follower1);
+                        break;
+                    case 10:
+                        gnammyRepository.completeGoal(sourceUserId, GoalType.userGoals.Follower10);
+                        break;
+                    case 100:
+                        gnammyRepository.completeGoal(sourceUserId, GoalType.userGoals.Follower100);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
         if (result.followed) {
-            createNotification(sourceUser, targetUser, null, NotificationType.Follow);
+            createNotification(sourceUserId, targetUserId, null, NotificationType.Follow);
         } else {
-            deleteNotification(sourceUser, targetUser, null, NotificationType.Follow);
+            deleteNotification(sourceUserId, targetUserId, null, NotificationType.Follow);
         }
         res.status(httpStatus.OK).json({ result });
     });
@@ -336,5 +496,6 @@ module.exports = {
     doUserFollowUser,
     listFollower,
     listFollowing,
-    deleteLike
+    deleteLike,
+    shareGnam
 }

@@ -17,7 +17,6 @@ model User {
   id                    String         @id @unique @default(cuid())
   username              String
   password              String
-  apiKey                String         @unique @default(uuid())
   location              String?
   followers             Following[]    @relation("SourceUser")
   following             Following[]    @relation("TargetUser")
@@ -98,5 +97,5 @@ model Goal {
   gnamId     String?
   goalType   GoalType @relation(fields: [goalTypeId], references: [id])
   goalTypeId String
-  achievedOn DateTime
+  achievedOn DateTime?
 }
