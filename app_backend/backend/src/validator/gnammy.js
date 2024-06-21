@@ -6,9 +6,17 @@ const addUser = {
         username: Joi.string().required(),
         password: Joi.string().required()
     }),
+    file: Joi.object().keys({
+        fieldname: Joi.string().required(),
+        originalname: Joi.string().required(),
+        encoding: Joi.string().required(),
+        mimetype: Joi.string().required(),
+        destination: Joi.string().required(),
+        filename: Joi.string().required(),
+        path: Joi.string().required(),
+        size: Joi.number().required()
+    })
 }
-
-const listUsers = { }
 
 const changeUserInfo = {
     params: Joi.object().keys({
@@ -17,8 +25,17 @@ const changeUserInfo = {
     body: Joi.object().keys({
         username: Joi.string().optional(),
         password: Joi.string().optional(),
-        image: Joi.optional(),
     }),
+    file: Joi.optional(Joi.object().keys({
+        fieldname: Joi.string().required(),
+        originalname: Joi.string().required(),
+        encoding: Joi.string().required(),
+        mimetype: Joi.string().required(),
+        destination: Joi.string().required(),
+        filename: Joi.string().required(),
+        path: Joi.string().required(),
+        size: Joi.number().required()
+    }))
 }
 
 const getUser = {
@@ -33,8 +50,17 @@ const addGnam = {
         title: Joi.string().required(),
         short_description: Joi.string().required(),
         full_recipe: Joi.string().required(),
-        image: Joi.optional(),
     }),
+    file: Joi.optional(Joi.object().keys({
+        fieldname: Joi.string().required(),
+        originalname: Joi.string().required(),
+        encoding: Joi.string().required(),
+        mimetype: Joi.string().required(),
+        destination: Joi.string().required(),
+        filename: Joi.string().required(),
+        path: Joi.string().required(),
+        size: Joi.number().required()
+    }))
 }
 
 const postLike = {
@@ -73,8 +99,6 @@ const getGnam = {
     }),
 }
 
-const listGnams = { }
-
 const toggleFollowUser = {
     body: Joi.object().keys({
         sourceUserId: Joi.string().required(),
@@ -94,7 +118,6 @@ const listFollowing = {
     }),
 }
 
-
 const doUserFollowUser = {
     body: Joi.object().keys({
         sourceUserId: Joi.string().required(),
@@ -103,30 +126,30 @@ const doUserFollowUser = {
 }
 
 const getNewNotifications = {
-    body: Joi.object().keys({
+    params: Joi.object().keys({
         userId: Joi.string().required(),
     }),
 }
 
 const shortListGoals = {
-    body: Joi.object().keys({
+    params: Joi.object().keys({
         userId: Joi.string().required(),
+        limit: Joi.number().required(),
     })
 }
 
 const listGoals = {
     params: Joi.object().keys({
-        limit: Joi.number().required(),
-    }),
-    body: Joi.object().keys({
         userId: Joi.string().required(),
-    })
+    }),
 }
 
 const completeGoal = {
+    params: Joi.object().keys({
+        goalId: Joi.string().required(),
+    }),
     body: Joi.object().keys({
         userId: Joi.string().required(),
-        goalId: Joi.string().required(),
     })
 }
 
@@ -136,9 +159,20 @@ const shareGnam = {
     })
 }
 
+const getUserGnams = {
+    params: Joi.object().keys({
+        userId: Joi.string().required(),
+    })
+}
+
+const setNotificationsAsRead = {
+    params: Joi.object().keys({
+        notificationId: Joi.string().required(),
+    })
+}
+
 module.exports = {
     addUser,
-    listUsers,
     getUser,
     changeUserInfo,
     addGnam,
@@ -146,7 +180,6 @@ module.exports = {
     getLike,
     searchGnams,
     getGnam,
-    listGnams,
     toggleFollowUser,
     getNewNotifications,
     shortListGoals,
@@ -156,5 +189,7 @@ module.exports = {
     listFollower,
     listFollowing,
     deleteLike,
-    shareGnam
+    shareGnam,
+    getUserGnams,
+    setNotificationsAsRead
 }

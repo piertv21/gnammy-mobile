@@ -33,7 +33,9 @@ services:
     depends_on:
       be-database:
         condition: service_healthy
-
+    volumes:
+      - ./../images/gnam:/usr/src/app/images/gnam
+      - ./../images/user:/usr/src/app/images/user
 
 networks:
   backend-database-network:

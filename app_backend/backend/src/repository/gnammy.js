@@ -43,10 +43,10 @@ async function getUser(userId, callback) {
 
 async function changeUserInfo(userId, username, password, callback) {
     try {
-        const hashedPassword = undefined;
-        if(username?.length > 255) return callback('Username too long', null);
-        if(password?.length > 255) return callback('Password too long', null);
-        if(password != undefined) hashedPassword = await bcrypt.hash(password, 10);
+        let hashedPassword = undefined;
+        if (username?.length > 255) return callback('Username too long', null);
+        if (password?.length > 255) return callback('Password too long', null);
+        if (password != undefined) hashedPassword = await bcrypt.hash(password, 10);
         const updatedUser = await prisma.user.update({
             where: {
                 id: userId
@@ -103,7 +103,6 @@ async function didUserLike(userId, gnamId, callback) {
         callback(null, likes == null ? false : true);
     } catch (error) {
         callback(error, null);
-        this.id = goalType.id;
     }
 }
 
@@ -295,7 +294,13 @@ async function shortListGoals(userId, limit, callback) {
             where: {
                 userId: userId
             },
-            take: limit
+            take: limit,
+            orderBy: {
+                achievedOn: {
+                    sort: 'desc',
+                    nulls: 'last'
+                }
+            }
         });
         callback(null, goals);
     } catch (error) {
@@ -309,7 +314,12 @@ async function listGoals(userId, callback) {
             where: {
                 userId: userId
             },
-            take: 10
+            orderBy: {
+                achievedOn: {
+                    sort: 'desc',
+                    nulls: 'last'
+                }
+            }
         });
         callback(null, goals);
     } catch (error) {
@@ -372,13 +382,13 @@ async function createNotification(sourceUser, targetUser, gnamId, notificationTy
 
 async function deleteNotification(sourceUser, targetUser, gnamId, notificationType) {
     const existingNotification = await prisma.notification.findFirst({
-            where: {
-                sourceUserId: sourceUser,
-                targetUserId: targetUser,
-                gnamId: gnamId,
-                notificationTypeId: notificationType.id
-            }
-        });
+        where: {
+            sourceUserId: sourceUser,
+            targetUserId: targetUser,
+            gnamId: gnamId,
+            notificationTypeId: notificationType.id
+        }
+    });
     if (existingNotification) {
         await prisma.notification.delete({
             where: {
@@ -424,7 +434,7 @@ async function deleteLike(userId, gnamId, callback) {
 }
 
 async function createGoal(userId, goalType, gnamId) {
-    const goal = await prisma.goal.create({
+    await prisma.goal.create({
         data: {
             userId: userId,
             goalTypeId: goalType.id,
@@ -434,13 +444,24 @@ async function createGoal(userId, goalType, gnamId) {
 }
 
 async function completeGoal(userId, goalType, gnamId) {
-    const goal = await prisma.goal.findFirst({
-        where: {
-            userId: userId,
-            goalTypeId: goalType.id,
-            gnamId: gnamId
-        }
-    });
+    let goal = null;
+    if (gnamId == null) {
+        goal = await prisma.goal.findFirst({
+            where: {
+                userId: userId,
+                goalTypeId: goalType.id
+            }
+        });
+    } else {
+        goal = await prisma.goal.findFirst({
+            where: {
+                userId: userId,
+                goalTypeId: goalType.id,
+                gnamId: gnamId
+            }
+        });
+    }
+
 
     if (goal == null) return;
 
@@ -531,7 +552,6 @@ async function getGoalType(name, callback) {
     }
 }
 
-//TODO rendere api
 async function getUserGnams(userId, callback) {
     try {
         const gnams = await prisma.gnam.findMany({
@@ -557,6 +577,21 @@ async function shareGnam(gnamId, callback) {
         });
 
         callback(null, updatedGnam);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
+async function setNotificationsAsRead(notificationId, callback) {
+    try {
+        const updatedNotification = await prisma.notification.update({
+            where: { id: notificationId },
+            data: {
+                seen: true
+            }
+        });
+
+        callback(null, updatedNotification);
     } catch (error) {
         callback(error, null);
     }
@@ -596,5 +631,6 @@ module.exports = {
     getUserGnams,
     createGoalType,
     createNotificationType,
-    shareGnam
+    shareGnam,
+    setNotificationsAsRead
 };
