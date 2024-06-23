@@ -13,7 +13,7 @@ server.use(cors({
 server.options('*', cors());
 
 const gnammyRouter = require('./router/v1/gnammy')
-server.use('/api/v1', gnammyRouter)
+server.use('', gnammyRouter)
 
 server.listen(port)
 console.log(`Backend started on port ${port}...`)

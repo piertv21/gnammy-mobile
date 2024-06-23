@@ -6,10 +6,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.example.gnammy.ui.screens.gnamdetails.GnamDetailsScreen
 import com.example.gnammy.ui.screens.goals.GoalsScreen
 import com.example.gnammy.ui.screens.home.HomeScreen
@@ -20,6 +18,7 @@ import com.example.gnammy.ui.screens.profile.ProfileScreen
 import com.example.gnammy.ui.screens.register.RegisterScreen
 import com.example.gnammy.ui.screens.saved.SavedScreen
 import com.example.gnammy.ui.screens.search.SearchScreen
+import com.example.gnammy.ui.viewmodels.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 
 sealed class GnammyRoute(
@@ -48,6 +47,10 @@ fun GnammyNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val usersViewModel = koinViewModel<UserViewModel>()
+    val usersState by usersViewModel.state.collectAsStateWithLifecycle()
+    usersViewModel.fetchUser("clxp4kfud000pvldd6n6v74g7")
+
     NavHost(
         navController = navController,
         startDestination = GnammyRoute.Home.route, // TODO Check if user is logged in
@@ -74,8 +77,12 @@ fun GnammyNavGraph(
             }
         }
         with(GnammyRoute.Profile) {
-            composable(route) {
-                ProfileScreen(navController, modifier)
+            composable(route, arguments) {
+
+                val user = requireNotNull(usersState.users.find {
+                    it.id == "clxp4kfud000pvldd6n6v74g7"
+                })
+                ProfileScreen(user, navController, modifier)
             }
         }
         with(GnammyRoute.Notification) {

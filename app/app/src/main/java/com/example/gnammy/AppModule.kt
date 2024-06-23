@@ -3,11 +3,9 @@ package com.example.gnammy
 import android.content.Context
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
-import com.example.gnammy.data.database.GnammyDatabase
-import com.example.gnammy.data.remote.OSMDataSource
-import com.example.gnammy.data.repositories.PlacesRepository
-import com.example.gnammy.data.repositories.SettingsRepository
-import com.example.gnammy.ui.PlacesViewModel
+import com.example.gnammy.data.local.GnammyDatabase
+import com.example.gnammy.data.repository.UserRepository
+import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.LocationService
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -25,7 +23,7 @@ val appModule = module {
         Room.databaseBuilder(
             get(),
             GnammyDatabase::class.java,
-            "travel-diary"
+            "gnammy-db"
         )
             // Sconsigliato per progetti seri! Lo usiamo solo qui per semplicità
             .fallbackToDestructiveMigration()
@@ -42,18 +40,14 @@ val appModule = module {
         }
     }
 
-    single { OSMDataSource(get()) }
-
     single { LocationService(get()) }
 
-    single { SettingsRepository(get()) }
-
     single {
-        PlacesRepository(
-            get<GnammyDatabase>().placesDAO(),
+        UserRepository(
+            get<GnammyDatabase>().userDao(),
             get<Context>().applicationContext.contentResolver
         )
     }
 
-    viewModel { PlacesViewModel(get()) }
+    viewModel { UserViewModel(get()) }
 }

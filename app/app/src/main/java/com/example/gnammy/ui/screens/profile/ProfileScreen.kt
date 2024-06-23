@@ -49,13 +49,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import com.example.gnammy.R
+import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.Size
 
 @Composable
-fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifier) {
-    val propicUri = Uri.parse("https://yt3.googleusercontent.com/ytc/AIdro_mwQSsxeQr7i0F9h6HzA7BuZGsYapkvfIIwAi2grQ_XUwc=s160-c-k-c0x00ffffff-no-rj")
+fun ProfileScreen(
+    user: User,
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
@@ -68,14 +72,13 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
             ImageWithPlaceholder(
-                uri = propicUri,
+                uri = Uri.parse(user.imageUri),
                 size = Size.Sm,
                 description = "propic",
                 modifier = Modifier
                     .border(2.dp, MaterialTheme.colorScheme.primaryContainer, CircleShape)
                     .size(120.dp)
                     .clip(CircleShape)
-                    .padding(bottom = 16.dp)
             )
 
             Column(
@@ -86,8 +89,8 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Zeb89",
-                    style = MaterialTheme.typography.headlineMedium .copy()
+                    text = user.username,
+                    style = MaterialTheme.typography.headlineMedium.copy()
                 )
 
                 Row(
@@ -100,7 +103,7 @@ fun ProfileScreen(navController: NavHostController, modifier: Modifier = Modifie
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "Cesena, Italia",
+                        text = "TODO",
                         style = MaterialTheme.typography.titleSmall.copy()
                     )
                 }
