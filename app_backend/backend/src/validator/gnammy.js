@@ -4,7 +4,8 @@ const Joi = require('joi')
 const addUser = {
     body: Joi.object().keys({
         username: Joi.string().required(),
-        password: Joi.string().required()
+        password: Joi.string().required(),
+        location: Joi.string().optional()
     }),
     file: Joi.object().keys({
         fieldname: Joi.string().required(),
@@ -25,6 +26,7 @@ const changeUserInfo = {
     body: Joi.object().keys({
         username: Joi.string().optional(),
         password: Joi.string().optional(),
+        location: Joi.string().optional()
     }),
     file: Joi.optional(Joi.object().keys({
         fieldname: Joi.string().required(),
@@ -171,6 +173,12 @@ const setNotificationsAsRead = {
     })
 }
 
+const getListOfUsersThatSavedGnam = {
+    params: Joi.object().keys({
+        gnamId: Joi.string().required(),
+    })
+}
+
 module.exports = {
     addUser,
     getUser,
@@ -191,5 +199,6 @@ module.exports = {
     deleteLike,
     shareGnam,
     getUserGnams,
-    setNotificationsAsRead
+    setNotificationsAsRead,
+    getListOfUsersThatSavedGnam
 }

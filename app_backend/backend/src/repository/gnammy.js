@@ -3,13 +3,14 @@ const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
 
-async function addUser(username, password, callback) {
+async function addUser(username, password, location, callback) {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const createdUser = await prisma.user.create({
             data: {
                 username: username,
-                password: hashedPassword
+                password: hashedPassword,
+                location: location
             }
         });
         callback(null, createdUser);
@@ -41,7 +42,7 @@ async function getUser(userId, callback) {
     }
 }
 
-async function changeUserInfo(userId, username, password, callback) {
+async function changeUserInfo(userId, username, password, location, callback) {
     try {
         let hashedPassword = undefined;
         if (username?.length > 255) return callback('Username too long', null);
@@ -53,7 +54,8 @@ async function changeUserInfo(userId, username, password, callback) {
             },
             data: {
                 username: username,
-                password: hashedPassword
+                password: hashedPassword,
+                location: location
             }
         });
         callback(null, updatedUser);
@@ -597,6 +599,23 @@ async function setNotificationsAsRead(notificationId, callback) {
     }
 }
 
+async function getListOfUsersThatSavedGnam(gnamId, callback) {
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                likes: {
+                    some: {
+                        gnamId: gnamId
+                    }
+                }
+            },
+        });
+        callback(null, users);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 module.exports = {
     addUser,
     listUsers,
@@ -632,5 +651,6 @@ module.exports = {
     createGoalType,
     createNotificationType,
     shareGnam,
-    setNotificationsAsRead
+    setNotificationsAsRead,
+    getListOfUsersThatSavedGnam
 };

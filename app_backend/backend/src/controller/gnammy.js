@@ -91,9 +91,9 @@ function initialize() {
 }
 
 const addUser = (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, location } = req.body;
 
-    gnammyRepository.addUser(username, password, (err, user) => {
+    gnammyRepository.addUser(username, password, location, (err, user) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during the user insertion: ${err}` });
@@ -151,10 +151,10 @@ const getUser = (req, res) => {
 }
 
 const changeUserInfo = async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, location } = req.body;
     const { userId } = req.params;
 
-    gnammyRepository.changeUserInfo(userId, username, password, async (err, user) => {
+    gnammyRepository.changeUserInfo(userId, username, password, location, async (err, user) => {
         if (err) {
             console.error('Error during the user update:', err);
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
@@ -278,7 +278,10 @@ const postLike = (req, res) => {
                 .json({ error: `Error during the gnam like: ${err}` });
         }
         await gnammyRepository.getUserIdFromGnamId(gnamId, async (err, targetUserId) => {
-            if (!err) createNotification(userId, targetUserId, gnamId, NotificationType.Like);
+            if (!err) {
+                await gnammyRepository.createNotification(userId, targetUserId, gnamId, NotificationType.Like);
+                console.log(`User with id ${userId} has liked gnam with id ${gnamId} by user with id ${targetUserId}`);
+            }
 
             await gnammyRepository.getGnamLikesCount(gnamId, async (err, likesCount) => {
                 console.log(`Gnam with id ${gnamId}, made by ${targetUserId} has ${likesCount} likes`);
@@ -349,8 +352,8 @@ const deleteLike = (req, res) => {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during like deletion: ${err}` });
         }
-        gnammyRepository.getUserIdFromGnamId(gnamId, (err, targetUserId) => {
-            if (!err) deleteNotification(userId, targetUserId, gnamId, NotificationType.Like);
+        gnammyRepository.getUserIdFromGnamId(gnamId, async (err, targetUserId) => {
+            if (!err) await gnammyRepository.deleteNotification(sourceUser, targetUser, gnamId, NotificationType.Like);
         });
         res.status(httpStatus.OK).json({ likes });
     });
@@ -446,9 +449,9 @@ const toggleFollowUser = (req, res) => {
         });
 
         if (result.followed) {
-            createNotification(sourceUserId, targetUserId, null, NotificationType.Follow);
+            await gnammyRepository.createNotification(sourceUserId, targetUserId, null, NotificationType.Follow);
         } else {
-            deleteNotification(sourceUserId, targetUserId, null, NotificationType.Follow);
+            await gnammyRepository.deleteNotification(sourceUserId, targetUserId, null, NotificationType.Follow);
         }
         res.status(httpStatus.OK).json({ result });
     });
@@ -539,14 +542,6 @@ const completeGoal = (req, res) => {
     });
 }
 
-async function createNotification(sourceUser, targetUser, gnamId, notificationType) {
-    gnammyRepository.createNotification(sourceUser, targetUser, gnamId, notificationType);
-}
-
-async function deleteNotification(sourceUser, targetUser, gnamId, notificationType) {
-    gnammyRepository.deleteNotification(sourceUser, targetUser, gnamId, notificationType);
-}
-
 const getUserImage = (req, res) => {
     const { userId } = req.params;
 
@@ -583,6 +578,18 @@ const setNotificationsAsRead = (req, res) => {
     });
 }
 
+const getListOfUsersThatSavedGnam = (req, res) => {
+    const { gnamId } = req.params;
+
+    gnammyRepository.getListOfUsersThatSavedGnam(gnamId, (err, users) => {
+        if (err) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ error: `Error during the gnam retrieval: ${err}` });
+        }
+        res.status(httpStatus.OK).json({ users });
+    });
+}
+
 module.exports = {
     addUser,
     listUsers,
@@ -607,5 +614,6 @@ module.exports = {
     getUserImage,
     getGnamImage,
     getUserGnams,
-    setNotificationsAsRead
+    setNotificationsAsRead,
+    getListOfUsersThatSavedGnam
 }

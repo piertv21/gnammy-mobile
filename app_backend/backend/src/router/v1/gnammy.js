@@ -83,4 +83,7 @@ router.get('/image/user/:userId', gnammyController.getUserImage)
 // get gnam image
 router.get('/image/gnam/:gnamId', gnammyController.getGnamImage)
 
+// get listOfUsersThatSavedGnam
+router.get('/gnam/savedBy/:gnamId', validate(gnammyValidator.getListOfUsersThatSavedGnam), gnammyController.getListOfUsersThatSavedGnam)
+
 module.exports = router
