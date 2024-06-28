@@ -58,38 +58,6 @@ class GoalType {
     }
 }
 
-
-function initialize() {
-    // Da chiamare se si vuole riempire il database con i tipi.
-    Object.values(GoalType.userGoals).forEach(async goalType => {
-        await gnammyRepository.createGoalType("user", goalType.templateText, (err, goalType) => {
-            if (err) {
-                console.log(err);
-            }
-        });
-    });
-
-    Object.values(GoalType.gnamGoals).forEach(async goalType => {
-        await gnammyRepository.createGoalType("gnam", goalType.templateText, (err, goalType) => {
-            if (err) {
-                console.log(err);
-            }
-        });
-    });
-
-    gnammyRepository.createNotificationType("Like", "ha messo like al tuo gnam", (err, notificationType) => {
-        if (err) {
-            console.log(err);
-        }
-    });
-
-    gnammyRepository.createNotificationType("Follow", "ha iniziato a seguirti", (err, notificationType) => {
-        if (err) {
-            console.log(err);
-        }
-    });
-}
-
 const addUser = (req, res) => {
     const { username, password, location } = req.body;
 
