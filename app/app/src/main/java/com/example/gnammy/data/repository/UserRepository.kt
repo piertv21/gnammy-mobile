@@ -2,22 +2,36 @@ package com.example.gnammy.data.repository
 
 import android.content.ContentResolver
 import android.util.Log
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
 import com.example.gnammy.data.remote.apis.UserApiService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import java.io.IOException
 
 class UserRepository(
     private val userDao: UserDao,
-    private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver,
+    private val dataStore: DataStore<Preferences>
 ) {
     private val apiService: UserApiService = RetrofitClient.instance.create(UserApiService::class.java)
 
+    companion object {
+        private val USER_ID_KEY = stringPreferencesKey("user_id_key")
+    }
+
+    val currentUserId = dataStore.data.map { it[USER_ID_KEY] ?: "" }
+
+    suspend fun setUser(value: String) = dataStore.edit { it[USER_ID_KEY] = value }
+
     val users: Flow<List<User>> = userDao.getAllUsers()
-// gestione immagine
+
 //    suspend fun addUser(user: User) {
 //        try {
 //            val response = apiService.addUser(user, user.imageUri)

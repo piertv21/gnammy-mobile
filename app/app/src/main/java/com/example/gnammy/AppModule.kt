@@ -45,7 +45,8 @@ val appModule = module {
     single {
         UserRepository(
             get<GnammyDatabase>().userDao(),
-            get<Context>().applicationContext.contentResolver
+            get<Context>().applicationContext.contentResolver, // questo serve per salvare le immagini in storage, capiremo se serve o meno.
+            get()
         )
     }
 

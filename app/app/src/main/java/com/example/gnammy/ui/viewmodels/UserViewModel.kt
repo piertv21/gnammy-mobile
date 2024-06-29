@@ -4,10 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.repository.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
 
 data class UsersState(val users: List<User> = emptyList())
 
@@ -19,19 +23,29 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         initialValue = UsersState(emptyList())
     )
 
-//    fun fetchUsers() {
-//        viewModelScope.launch {
-//            repository.listUsers {
-//                it.fold(
-//                    onSuccess = { usersList -> users.value = usersList },
-//                    onFailure = { /* Gestisci l'errore */ }
-//                )
-//            }
-//        }
-//    }
+    private val _currentUserId = MutableStateFlow("")
+    val currentUserId: StateFlow<String> = _currentUserId.asStateFlow()
+
+    private val _isInitialized = MutableStateFlow(false)
+    val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            repository.currentUserId.collect { userId ->
+                _currentUserId.value = userId
+                _isInitialized.value = true
+            }
+        }
+    }
+
+    fun setUserId(value: String) {
+        viewModelScope.launch {
+            repository.setUser(value)
+        }
+    }
 
     fun fetchUser(userId: String) = viewModelScope.launch {
-        repository.getUser(userId)
+            repository.getUser(userId)
     }
 
 //    fun addUser(user: User, image: MultipartBody.Part?) {
