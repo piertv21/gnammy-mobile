@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function login(username, password, callback) {
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
             where: {
                 username: username
             }

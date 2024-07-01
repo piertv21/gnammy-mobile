@@ -34,6 +34,7 @@ import com.example.gnammy.ui.viewmodels.UserViewModel
 fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -44,6 +45,10 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
         Text("Accedi", fontWeight = FontWeight.Bold, fontSize = 30.sp)
 
         Spacer(modifier = Modifier.height(32.dp))
+
+        if (error != "") {
+            Text("Username e password non possono essere vuoti", color = Color.Red)
+        }
 
         OutlinedTextField(
             value = username,
@@ -75,7 +80,12 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
 
         Button(
             onClick = {
-                userViewModel.login(username, password)
+                if (username.isNotBlank() && password.isNotBlank()) {
+                    error = ""
+                    userViewModel.login(username, password)
+                } else {
+                    error = "Username e password non possono essere vuoti"
+                }
             }
         ) {
             Text("Login")

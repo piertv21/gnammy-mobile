@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
+import com.example.gnammy.data.remote.apis.LoginRequest
 import com.example.gnammy.data.remote.apis.UserApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -17,6 +18,7 @@ import java.io.IOException
 
 class UserRepository(
     private val userDao: UserDao,
+    private val contentResolver: ContentResolver,
     private val dataStore: DataStore<Preferences>
 ) {
     private val apiService: UserApiService = RetrofitClient.instance.create(UserApiService::class.java)
@@ -85,10 +87,16 @@ class UserRepository(
 
     suspend fun login(username: String, password: String) {
         try {
-            val response = apiService.getUser(username)
+            val response = apiService.login(LoginRequest(username, password))
+
             if (response.isSuccessful) {
-                response.body()?.let {
-                    userDao.upsert(it.toUser())
+                val userResponse = response.body()?.user
+                if (userResponse != null) {
+                    userDao.upsert(userResponse.toUser())
+                    setUser(userResponse.id)
+                    Log.d("UserRepository", "Login success for user: ${userResponse.username}")
+                } else {
+                    Log.e("UserRepository", "Empty user received in login response")
                 }
             } else {
                 Log.e("UserRepository", "Error in login: ${response.message()}")
@@ -99,6 +107,7 @@ class UserRepository(
             Log.e("UserRepository", "HTTP error in login", e)
         }
     }
+
 
 //    suspend fun changeUserInfo(userId: String, user: User, image: MultipartBody.Part?): Result<User> {
 //        return try {

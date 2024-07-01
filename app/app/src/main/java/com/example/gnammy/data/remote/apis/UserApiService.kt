@@ -1,5 +1,6 @@
 package com.example.gnammy.data.remote.apis
 
+import com.example.gnammy.backendSocket
 import com.example.gnammy.data.local.entities.User
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -21,7 +22,7 @@ class UserResponse {
     var location: String? = null
 
     fun toUser(): User {
-        return User(id, username, password, location, "http://192.168.1.130:3000/image/user/$id")
+        return User(id, username, password, location, "$backendSocket/image/user/$id")
     }
 }
 
@@ -29,9 +30,17 @@ class UserWrapperResponse {
     var user: UserResponse? = null
 }
 
+data class LoginRequest (
+    val username: String,
+    val password: String
+)
+
 interface UserApiService {
     @POST("/user/")
     suspend fun addUser(@Body user: User, @Part image: MultipartBody.Part?): Response<UserWrapperResponse>
+
+    @POST("/login")
+    suspend fun login(@Body request: LoginRequest): Response<UserWrapperResponse>
 
     @GET("/user/")
     suspend fun listUsers(): Response<List<UserWrapperResponse>>
