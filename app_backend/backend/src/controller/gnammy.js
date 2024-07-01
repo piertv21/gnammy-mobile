@@ -58,6 +58,18 @@ class GoalType {
     }
 }
 
+const login = (req, res) => {
+    const { username, password } = req.body;
+
+    gnammyRepository.login(username, password, (err, user) => {
+        if (err) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ error: err });
+        }
+        res.status(httpStatus.OK).json({ user });
+    });
+}
+
 const addUser = (req, res) => {
     const { username, password, location } = req.body;
 
@@ -559,6 +571,7 @@ const getListOfUsersThatSavedGnam = (req, res) => {
 }
 
 module.exports = {
+    login,
     addUser,
     listUsers,
     getUser,

@@ -17,7 +17,6 @@ import java.io.IOException
 
 class UserRepository(
     private val userDao: UserDao,
-    private val contentResolver: ContentResolver,
     private val dataStore: DataStore<Preferences>
 ) {
     private val apiService: UserApiService = RetrofitClient.instance.create(UserApiService::class.java)
@@ -81,6 +80,23 @@ class UserRepository(
             Log.e("UserRepository", "Network error in getting user", e)
         } catch (e: HttpException) {
             Log.e("UserRepository", "HTTP error in getting user", e)
+        }
+    }
+
+    suspend fun login(username: String, password: String) {
+        try {
+            val response = apiService.getUser(username)
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    userDao.upsert(it.toUser())
+                }
+            } else {
+                Log.e("UserRepository", "Error in login: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("UserRepository", "Network error in login", e)
+        } catch (e: HttpException) {
+            Log.e("UserRepository", "HTTP error in login", e)
         }
     }
 

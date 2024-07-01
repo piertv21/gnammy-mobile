@@ -15,8 +15,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +34,6 @@ import com.example.gnammy.ui.viewmodels.UserViewModel
 fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val userId by userViewModel.currentUserId.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -78,7 +75,7 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
 
         Button(
             onClick = {
-                userViewModel.setUserId("clxyfmt8m03nozq1dw303m56a")
+                userViewModel.login(username, password)
             }
         ) {
             Text("Login")
@@ -107,12 +104,6 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
             }
         ) {
             Text("Registrati")
-        }
-    }
-
-    LaunchedEffect(userId) {
-        if (userId.isNotEmpty()) {
-            navHostController.navigate("Home")
         }
     }
 }

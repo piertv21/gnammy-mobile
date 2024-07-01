@@ -17,6 +17,9 @@ router.use((req, res, next) => {
 // Add user
 router.post('/user/', userMulter.single('image'), validate(gnammyValidator.addUser), gnammyController.addUser)
 
+// Login
+router.post('/login/', validate(gnammyValidator.login), gnammyController.login)
+
 // List users
 router.get('/user/', gnammyController.listUsers)
 
@@ -41,10 +44,10 @@ router.get('/like/', validate(gnammyValidator.getLike), gnammyController.getLike
 // Add gnam
 router.post('/gnam/', gnamMulter.single('image'), validate(gnammyValidator.addGnam), gnammyController.addGnam)
 
-// get gnam
+// Get gnam
 router.get('/gnam/:gnamId', validate(gnammyValidator.getGnam), gnammyController.getGnam)
 
-// list gnam
+// List gnam
 router.get('/gnam/', gnammyController.listGnams)
 
 // Search gnams
@@ -53,10 +56,10 @@ router.get('/search/', validate(gnammyValidator.searchGnams), gnammyController.s
 // Toggle follow user
 router.post('/follower/', validate(gnammyValidator.toggleFollowUser), gnammyController.toggleFollowUser)
 
-// get follower of user form userId
+// Get follower of user form userId
 router.get('/follower/:userId', validate(gnammyValidator.listFollower), gnammyController.listFollower)
 
-// get follower of user form userId
+// Get follower of user form userId
 router.get('/following/:userId', validate(gnammyValidator.listFollowing), gnammyController.listFollowing)
 
 // Gets if users follow another user
@@ -74,16 +77,16 @@ router.get('/goals/:userId/:limit', validate(gnammyValidator.shortListGoals), gn
 // List complete Goals
 router.get('/goals/:userId/', validate(gnammyValidator.listGoals), gnammyController.listGoals)
 
-// share gnam
+// Share gnam
 router.post('/shareGnam/', validate(gnammyValidator.shareGnam), gnammyController.shareGnam)
 
-// get user image
+// Get user image
 router.get('/image/user/:userId', gnammyController.getUserImage)
 
-// get gnam image
+// Get gnam image
 router.get('/image/gnam/:gnamId', gnammyController.getGnamImage)
 
-// get listOfUsersThatSavedGnam
+// Get listOfUsersThatSavedGnam
 router.get('/gnam/savedBy/:gnamId', validate(gnammyValidator.getListOfUsersThatSavedGnam), gnammyController.getListOfUsersThatSavedGnam)
 
 module.exports = router

@@ -2,6 +2,24 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
+async function login(username, password, callback) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                username: username
+            }
+        });
+
+        if (user == null) return callback('User not found', null);
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) return callback('Password does not match', null);
+
+        callback(null, user);
+    } catch (error) {
+        callback(error, null);
+    }
+}
 
 async function addUser(username, password, location, callback) {
     try {
@@ -617,6 +635,7 @@ async function getListOfUsersThatSavedGnam(gnamId, callback) {
 }
 
 module.exports = {
+    login,
     addUser,
     listUsers,
     getUser,
