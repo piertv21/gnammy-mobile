@@ -1,22 +1,32 @@
 package com.example.gnammy.data.repository
 
 import android.content.ContentResolver
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.example.camera.utils.getImageMultipartBody
 import com.example.gnammy.backendSocket
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
 import com.example.gnammy.data.remote.apis.UserCredentials
 import com.example.gnammy.data.remote.apis.UserApiService
+import com.example.gnammy.data.remote.apis.UserWrapperResponse
 import com.example.gnammy.utils.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
+import retrofit2.Response
 import java.io.IOException
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class UserRepository(
     private val userDao: UserDao,
@@ -93,27 +103,45 @@ class UserRepository(
         }
     }
 
-    suspend fun register(username: String, password: String) {
+    suspend fun register(context: Context, username: String, password: String, profilePictureUri: Uri) {
         try {
-            // convert profilePictureUri to multipart body
-            val response = apiService.addUser(UserCredentials(username, password), null) // TODO: Add image
+            val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
+            val passwordPart = password.toRequestBody("text/plain".toMediaTypeOrNull())
+            val locationPart = "Nessuno".toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val imagePart: MultipartBody.Part? = profilePictureUri?.let { uri ->
+                val file = File(context.cacheDir, "tempProfilePicture")
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    file.outputStream().use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+
+                val requestFile = RequestBody.create(
+                    context.contentResolver.getType(uri)?.toMediaTypeOrNull(),
+                    file
+                )
+                MultipartBody.Part.createFormData("image", file.name, requestFile)
+            }
+
+            val response = apiService.addUser(usernamePart, passwordPart, locationPart, imagePart)
 
             if (response.isSuccessful) {
                 val userResponse = response.body()?.user
                 if (userResponse != null) {
-                    //userDao.upsert(userResponse.toUser())
+                    fetchUser(userResponse.id)
                     setUser(userResponse.id)
-                    Log.d("UserRepository", "Register success for user: ${userResponse.username}")
+                    Result.Success("Register success for user: ${userResponse.username}")
                 } else {
-                    Log.e("UserRepository", "Empty user received in register response")
+                    Result.Error("Empty user received in register response")
                 }
             } else {
-                Log.e("UserRepository", "Error in register: ${response.message()}")
+                Result.Error("Error in register: ${response.message()}")
             }
         } catch (e: IOException) {
-            Log.e("UserRepository", "Network error in register", e)
+            Result.Error("Network error in register")
         } catch (e: HttpException) {
-            Log.e("UserRepository", "HTTP error in register", e)
+            Result.Error("HTTP error in register")
         }
     }
 }

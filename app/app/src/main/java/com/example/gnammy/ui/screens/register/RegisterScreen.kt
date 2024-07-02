@@ -12,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -29,6 +30,8 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
     var confirmPassword by remember { mutableStateOf("") }
     var error by remember { mutableStateOf("") }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
+
+    val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -114,7 +117,11 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
             onClick = {
                 error = validateInput(username, password, confirmPassword, profilePictureUri)
                 if (error.isEmpty()) {
-                    userViewModel.register(username, password)
+                    profilePictureUri?.let {
+                        userViewModel.register(context, username, password,
+                            it
+                        )
+                    }
                 }
             }
         ) {

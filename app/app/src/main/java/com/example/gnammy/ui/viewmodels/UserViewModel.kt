@@ -1,5 +1,7 @@
 package com.example.gnammy.ui.viewmodels
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.User
@@ -54,9 +56,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-    fun register(username: String, password: String) {
+    fun register(context: Context, username: String, password: String, profilePictureUri: Uri) {
         viewModelScope.launch {
-            repository.register(username, password)
+            repository.register(context, username, password, profilePictureUri)
         }
     }
 }

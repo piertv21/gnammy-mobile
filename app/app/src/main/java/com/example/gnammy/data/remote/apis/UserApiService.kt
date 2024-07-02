@@ -2,9 +2,11 @@ package com.example.gnammy.data.remote.apis
 
 import com.example.gnammy.data.local.entities.User
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -39,8 +41,14 @@ data class UserCredentials (
 )
 
 interface UserApiService {
+    @Multipart
     @POST("/user/")
-    suspend fun addUser(@Body user: UserCredentials, @Part image: MultipartBody.Part?): Response<UserWrapperResponse>
+    suspend fun addUser(
+        @Part("username") username: RequestBody,
+        @Part("password") password: RequestBody,
+        @Part("location") location: RequestBody,
+        @Part image: MultipartBody.Part?
+    ): Response<UserWrapperResponse>
 
     @POST("/login/")
     suspend fun login(@Body request: UserCredentials): Response<UserWrapperResponse>
