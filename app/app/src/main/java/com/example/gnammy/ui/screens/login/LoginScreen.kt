@@ -15,6 +15,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.gnammy.data.repository.UserRepository
 import com.example.gnammy.ui.viewmodels.UserViewModel
 
 @Composable
@@ -45,10 +48,6 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
         Text("Accedi", fontWeight = FontWeight.Bold, fontSize = 30.sp)
 
         Spacer(modifier = Modifier.height(32.dp))
-
-        if (error != "") {
-            Text("Username e password non possono essere vuoti", color = Color.Red)
-        }
 
         OutlinedTextField(
             value = username,

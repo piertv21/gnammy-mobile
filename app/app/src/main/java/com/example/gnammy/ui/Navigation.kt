@@ -125,7 +125,7 @@ fun GnammyNavGraph(
             }
             with(GnammyRoute.Register) {
                 composable(route) {
-                    RegisterScreen(navController)
+                    RegisterScreen(navController, userViewModel)
                 }
             }
             with(GnammyRoute.GnamDetails) {

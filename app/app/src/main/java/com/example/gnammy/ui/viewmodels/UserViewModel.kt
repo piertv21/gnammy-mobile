@@ -29,6 +29,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
 
+    private val _loginState = MutableStateFlow<UserRepository.LoginResult?>(null)
+    val loginState: StateFlow<UserRepository.LoginResult?> = _loginState
+
     init {
         viewModelScope.launch {
             repository.currentUserId.collect { userId ->
@@ -50,7 +53,14 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
-            repository.login(username, password)
+            val result = repository.login(username, password)
+            _loginState.value = result
+        }
+    }
+
+    fun register(username: String, password: String) {
+        viewModelScope.launch {
+            repository.register(username, password)
         }
     }
 

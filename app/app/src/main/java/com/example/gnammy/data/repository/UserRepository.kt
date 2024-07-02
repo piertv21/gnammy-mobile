@@ -9,7 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
-import com.example.gnammy.data.remote.apis.LoginRequest
+import com.example.gnammy.data.remote.apis.UserCredentials
 import com.example.gnammy.data.remote.apis.UserApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -101,12 +101,12 @@ class UserRepository(
 
     suspend fun login(username: String, password: String) {
         try {
-            val response = apiService.login(LoginRequest(username, password))
+            val response = apiService.login(UserCredentials(username, password))
 
             if (response.isSuccessful) {
                 val userResponse = response.body()?.user
                 if (userResponse != null) {
-                    userDao.upsert(userResponse.toUser())
+                    //userDao.upsert(userResponse.toUser())
                     setUser(userResponse.id)
                     Log.d("UserRepository", "Login success for user: ${userResponse.username}")
                 } else {
@@ -122,6 +122,29 @@ class UserRepository(
         }
     }
 
+    suspend fun register(username: String, password: String) {
+        try {
+            // convert profilePictureUri to multipart body
+            val response = apiService.addUser(UserCredentials(username, password), null) // TODO: Add image
+
+            if (response.isSuccessful) {
+                val userResponse = response.body()?.user
+                if (userResponse != null) {
+                    //userDao.upsert(userResponse.toUser())
+                    setUser(userResponse.id)
+                    Log.d("UserRepository", "Register success for user: ${userResponse.username}")
+                } else {
+                    Log.e("UserRepository", "Empty user received in register response")
+                }
+            } else {
+                Log.e("UserRepository", "Error in register: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("UserRepository", "Network error in register", e)
+        } catch (e: HttpException) {
+            Log.e("UserRepository", "HTTP error in register", e)
+        }
+    }
 
 //    suspend fun changeUserInfo(userId: String, user: User, image: MultipartBody.Part?): Result<User> {
 //        return try {
