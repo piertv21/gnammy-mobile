@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.example.gnammy.backendSocket
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
@@ -85,7 +86,7 @@ class UserRepository(
                 val userRes = userResponse.body()
                 if (userRes != null) {
                     userRes.user?.let {
-                        val user = User(it.id, it.username, it.location, "http://192.168.1.130:3000/image/user/$it.id", followers, following)
+                        val user = User(it.id, it.username, it.location, "$backendSocket/image/user/$it.id", followers, following)
                         userDao.upsert(user)
                     }
                 }
