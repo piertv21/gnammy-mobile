@@ -524,8 +524,14 @@ const completeGoal = (req, res) => {
 
 const getUserImage = (req, res) => {
     const { userId } = req.params;
+    const filePath = path.join(__dirname, '../../../images/user', `${userId}.jpg`);
 
-    res.sendFile(`/usr/src/app/images/user/${userId}.jpg`);
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            console.error(`Error sending file: ${err}`);
+            res.status(404).send('File not found');
+        }
+    });
 }
 
 const getGnamImage = (req, res) => {
