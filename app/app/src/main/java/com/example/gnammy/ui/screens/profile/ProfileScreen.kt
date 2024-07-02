@@ -118,7 +118,7 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
-                            text = "1000",
+                            text = user.followers.toString(),
                             style = MaterialTheme.typography.titleSmall.copy()
                         )
                     }
@@ -128,7 +128,7 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
-                            text = "1000",
+                            text = user.following.toString(),
                             style = MaterialTheme.typography.titleSmall.copy()
                         )
                     }

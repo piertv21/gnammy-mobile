@@ -19,14 +19,18 @@ class UserResponse {
     var username: String = ""
     var password: String = ""
     var location: String? = null
-
-    fun toUser(): User {
-        return User(id, username, password, location, "http://192.168.1.130:3000/image/user/$id")
-    }
 }
 
 class UserWrapperResponse {
     var user: UserResponse? = null
+}
+
+class followersResponse {
+    var followers: List<UserResponse>? = null
+}
+
+class followingResponse {
+    var following: List<UserResponse>? = null
 }
 
 interface UserApiService {
@@ -38,6 +42,12 @@ interface UserApiService {
 
     @GET("/user/{userId}")
     suspend fun getUser(@Path("userId") userId: String): Response<UserWrapperResponse>
+
+    @GET("/follower/{userId}/")
+    suspend fun getFollowers(@Path("userId") userId: String): Response<followersResponse>
+
+    @GET("/following/{userId}/")
+    suspend fun getFollowing(@Path("userId") userId: String): Response<followingResponse>
 
     @GET("/image/user/{userId}")
     suspend fun getUserImage(@Path("userId") userId: String): Response<ImageResponse>

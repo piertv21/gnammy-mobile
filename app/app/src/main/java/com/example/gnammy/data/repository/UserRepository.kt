@@ -69,10 +69,24 @@ class UserRepository(
             val userResponse = apiService.getUser(userId)
 
             if (userResponse.isSuccessful) {
-                val userRes = userResponse.body()
+                val followerResponse = apiService.getFollowers(userId)
+                val followingResponse = apiService.getFollowing(userId)
+                var followers = 0
+                var following = 0
 
+                if (followerResponse.isSuccessful) {
+                    followers = followerResponse.body()?.followers?.size ?: 0
+                }
+                if (followingResponse.isSuccessful) {
+                    following = followingResponse.body()?.following?.size ?: 0
+                }
+
+                val userRes = userResponse.body()
                 if (userRes != null) {
-                    userRes.user?.let { userDao.upsert(it.toUser()) }
+                    userRes.user?.let {
+                        val user = User(it.id, it.username, it.location, "http://192.168.1.130:3000/image/user/$it.id", followers, following)
+                        userDao.upsert(user)
+                    }
                 }
             } else {
                 Log.e("UserRepository", "Error in getting user: ${userResponse.message()}")
