@@ -2,8 +2,7 @@ const express = require('express')
 const validate = require('../../middleware/validator')
 const gnammyValidator = require('../../validator/gnammy')
 const gnammyController = require('../../controller/gnammy')
-const userMulter = require('../../middleware/userImageHandler')
-const gnamMulter = require('../../middleware/gnamImageHandler')
+const { userMulter, gnamMulter } = require('../../middleware/imageHandlers');
 
 const router = express.Router()
 console.log('Router created')
