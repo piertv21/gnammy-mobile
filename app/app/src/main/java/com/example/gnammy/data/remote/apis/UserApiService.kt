@@ -46,7 +46,6 @@ interface UserApiService {
     suspend fun addUser(
         @Part("username") username: RequestBody,
         @Part("password") password: RequestBody,
-        @Part("location") location: RequestBody,
         @Part image: MultipartBody.Part?
     ): Response<UserWrapperResponse>
 

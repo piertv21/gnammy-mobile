@@ -8,7 +8,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.camera.utils.getImageMultipartBody
 import com.example.gnammy.backendSocket
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
@@ -107,7 +106,6 @@ class UserRepository(
         try {
             val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
             val passwordPart = password.toRequestBody("text/plain".toMediaTypeOrNull())
-            val locationPart = "Nessuno".toRequestBody("text/plain".toMediaTypeOrNull())
 
             val imagePart: MultipartBody.Part? = profilePictureUri?.let { uri ->
                 val file = File(context.cacheDir, "tempProfilePicture")
@@ -124,7 +122,7 @@ class UserRepository(
                 MultipartBody.Part.createFormData("image", file.name, requestFile)
             }
 
-            val response = apiService.addUser(usernamePart, passwordPart, locationPart, imagePart)
+            val response = apiService.addUser(usernamePart, passwordPart, imagePart)
 
             if (response.isSuccessful) {
                 val userResponse = response.body()?.user

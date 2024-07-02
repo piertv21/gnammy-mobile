@@ -103,7 +103,7 @@ fun ProfileScreen(
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = "TODO",
+                        text = user.location ?: stringResource(R.string.profile_location_unknown),
                         style = MaterialTheme.typography.titleSmall.copy()
                     )
                 }
@@ -178,7 +178,7 @@ fun ProfileScreen(
             }
 
             if (showDialog) {
-                SettingsModal(onDismissRequest = { showDialog = false })
+                SettingsModal(onDismissRequest = { showDialog = false }, user = user)
             }
         }
 
@@ -196,8 +196,8 @@ fun ProfileScreen(
 }
 
 @Composable
-fun SettingsModal(onDismissRequest: () -> Unit) {
-    var username by remember { mutableStateOf(TextFieldValue("Zeb89")) }
+fun SettingsModal(onDismissRequest: () -> Unit, user: User) {
+    var username by remember { mutableStateOf(TextFieldValue(user.username)) }
     var isDarkTheme by remember { mutableStateOf(false) }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
 
@@ -261,13 +261,12 @@ fun SettingsModal(onDismissRequest: () -> Unit) {
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
-                        Text(text = stringResource(R.string.profile_select_propic))
-                    }
-
-                    profilePictureUri?.let {
                         Text(
-                            text = "Selected Image: $it",
-                            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)
+                            text = if (profilePictureUri == null) {
+                                stringResource(R.string.profile_select_propic)
+                            } else {
+                                "Selected: " + profilePictureUri?.lastPathSegment
+                            }
                         )
                     }
 
