@@ -1,5 +1,11 @@
-const { query } = require('express')
 const Joi = require('joi')
+
+const login = {
+    body: Joi.object().keys({
+        username: Joi.string().required(),
+        password: Joi.string().required()
+    }),
+}
 
 const addUser = {
     body: Joi.object().keys({
@@ -180,6 +186,7 @@ const getListOfUsersThatSavedGnam = {
 }
 
 module.exports = {
+    login,
     addUser,
     getUser,
     changeUserInfo,

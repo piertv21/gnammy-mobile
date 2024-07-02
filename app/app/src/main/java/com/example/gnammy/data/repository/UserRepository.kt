@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
+import com.example.gnammy.data.remote.apis.LoginRequest
 import com.example.gnammy.data.remote.apis.UserApiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -97,6 +98,30 @@ class UserRepository(
             Log.e("UserRepository", "HTTP error in getting user", e)
         }
     }
+
+    suspend fun login(username: String, password: String) {
+        try {
+            val response = apiService.login(LoginRequest(username, password))
+
+            if (response.isSuccessful) {
+                val userResponse = response.body()?.user
+                if (userResponse != null) {
+                    userDao.upsert(userResponse.toUser())
+                    setUser(userResponse.id)
+                    Log.d("UserRepository", "Login success for user: ${userResponse.username}")
+                } else {
+                    Log.e("UserRepository", "Empty user received in login response")
+                }
+            } else {
+                Log.e("UserRepository", "Error in login: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("UserRepository", "Network error in login", e)
+        } catch (e: HttpException) {
+            Log.e("UserRepository", "HTTP error in login", e)
+        }
+    }
+
 
 //    suspend fun changeUserInfo(userId: String, user: User, image: MultipartBody.Part?): Result<User> {
 //        return try {

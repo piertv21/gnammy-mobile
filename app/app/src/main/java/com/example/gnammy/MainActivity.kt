@@ -44,7 +44,9 @@ class MainActivity : ComponentActivity() {
 
                     Scaffold(
                         bottomBar = {
-                            NavigationBar(navController, currentRoute)
+                            if (currentRoute !in setOf(GnammyRoute.Login, GnammyRoute.Register)) {
+                                NavigationBar(navController, currentRoute)
+                            }
                         },
                         topBar = {
                             TopBar(navController, currentRoute)

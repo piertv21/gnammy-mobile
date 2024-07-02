@@ -48,6 +48,12 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
             repository.getUser(userId)
     }
 
+    fun login(username: String, password: String) {
+        viewModelScope.launch {
+            repository.login(username, password)
+        }
+    }
+
 //    fun addUser(user: User, image: MultipartBody.Part?) {
 //        viewModelScope.launch {
 //            repository.addUser(user, image) {

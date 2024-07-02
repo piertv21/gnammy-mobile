@@ -1,13 +1,12 @@
 package com.example.gnammy.data.remote
 
+import com.example.gnammy.backendSocket
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.1.77:3000"
-
     private val logging = HttpLoggingInterceptor().apply {
         setLevel(HttpLoggingInterceptor.Level.BODY)
     }
@@ -18,7 +17,7 @@ object RetrofitClient {
 
     val instance: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(backendSocket)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient)
             .build()

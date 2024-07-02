@@ -33,9 +33,17 @@ class followingResponse {
     var following: List<UserResponse>? = null
 }
 
+data class LoginRequest (
+    val username: String,
+    val password: String
+)
+
 interface UserApiService {
     @POST("/user/")
     suspend fun addUser(@Body user: User, @Part image: MultipartBody.Part?): Response<UserWrapperResponse>
+
+    @POST("/login")
+    suspend fun login(@Body request: LoginRequest): Response<UserWrapperResponse>
 
     @GET("/user/")
     suspend fun listUsers(): Response<List<UserWrapperResponse>>
