@@ -12,6 +12,7 @@ import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
 import com.example.gnammy.data.remote.apis.UserCredentials
 import com.example.gnammy.data.remote.apis.UserApiService
+import com.example.gnammy.utils.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
@@ -34,39 +35,7 @@ class UserRepository(
 
     val users: Flow<List<User>> = userDao.getAllUsers()
 
-//    suspend fun addUser(user: User) {
-//        try {
-//            val response = apiService.addUser(user, user.imageUri)
-//            if (response.isSuccessful) {
-//                response.body()?.let {
-//                    userDao.upsert(it.toUser())
-//                }
-//            } else {
-//                Log.e("UserRepository", "Error in adding user: ${response.message()}")
-//            }
-//        } catch (e: IOException) {
-//            Log.e("UserRepository", "Network error in adding user", e)
-//        } catch (e: HttpException) {
-//            Log.e("UserRepository", "HTTP error in adding user", e)
-//        }
-//    }
-
-//    suspend fun listUsers(): Result<List<User>> {
-//        return try {
-//            val response = apiService.listUsers()
-//            if (response.isSuccessful) {
-//                Result.success(response.body()?.map { it.toUser() } ?: emptyList())
-//            } else {
-//                Result.failure(Throwable(response.message()))
-//            }
-//        } catch (e: IOException) {
-//            Result.failure(e)
-//        } catch (e: HttpException) {
-//            Result.failure(e)
-//        }
-//    }
-
-    suspend fun getUser(userId: String) {
+    suspend fun fetchUser(userId: String) {
         try {
             val userResponse = apiService.getUser(userId)
 
@@ -86,7 +55,8 @@ class UserRepository(
                 val userRes = userResponse.body()
                 if (userRes != null) {
                     userRes.user?.let {
-                        val user = User(it.id, it.username, it.location, "$backendSocket/image/user/$it.id", followers, following)
+                        val user = User(it.id, it.username, it.location,
+                            "$backendSocket/images/user/${it.id}.jpg", followers, following)
                         userDao.upsert(user)
                     }
                 }
@@ -100,26 +70,26 @@ class UserRepository(
         }
     }
 
-    suspend fun login(username: String, password: String) {
-        try {
+    suspend fun login(username: String, password: String): Result<String> {
+        return try {
             val response = apiService.login(UserCredentials(username, password))
 
             if (response.isSuccessful) {
                 val userResponse = response.body()?.user
                 if (userResponse != null) {
-                    //userDao.upsert(userResponse.toUser())
+                    fetchUser(userResponse.id)
                     setUser(userResponse.id)
-                    Log.d("UserRepository", "Login success for user: ${userResponse.username}")
+                    Result.Success("Login success for user: ${userResponse.username}")
                 } else {
-                    Log.e("UserRepository", "Empty user received in login response")
+                    Result.Error("Empty user received in login response")
                 }
             } else {
-                Log.e("UserRepository", "Error in login: ${response.message()}")
+                Result.Error("Errore: credenziali errate")
             }
         } catch (e: IOException) {
-            Log.e("UserRepository", "Network error in login", e)
+            Result.Error("Network error in login")
         } catch (e: HttpException) {
-            Log.e("UserRepository", "HTTP error in login", e)
+            Result.Error("HTTP error in login")
         }
     }
 
@@ -146,19 +116,4 @@ class UserRepository(
             Log.e("UserRepository", "HTTP error in register", e)
         }
     }
-
-//    suspend fun changeUserInfo(userId: String, user: User, image: MultipartBody.Part?): Result<User> {
-//        return try {
-//            val response = apiService.changeUserInfo(userId, user, image)
-//            if (response.isSuccessful) {
-//                Result.success(response.body() ?: user)
-//            } else {
-//                Result.failure(Throwable(response.message()))
-//            }
-//        } catch (e: IOException) {
-//            Result.failure(e)
-//        } catch (e: HttpException) {
-//            Result.failure(e)
-//        }
-//    }
 }

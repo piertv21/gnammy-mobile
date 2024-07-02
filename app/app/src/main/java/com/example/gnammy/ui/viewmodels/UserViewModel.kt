@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.repository.UserRepository
+import com.example.gnammy.utils.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -29,6 +30,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     private val _isInitialized = MutableStateFlow(false)
     val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
 
+    private val _loginState = MutableStateFlow<Result<String>?>(null)
+    val loginState: StateFlow<Result<String>?> = _loginState
+
     init {
         viewModelScope.launch {
             repository.currentUserId.collect { userId ->
@@ -38,19 +42,15 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-    fun setUserId(value: String) {
+    fun fetchUser(userId: String) {
         viewModelScope.launch {
-            repository.setUser(value)
+            repository.fetchUser(userId)
         }
-    }
-
-    fun fetchUser(userId: String) = viewModelScope.launch {
-            repository.getUser(userId)
     }
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
-            val result = repository.login(username, password)
+            _loginState.value = repository.login(username, password)
         }
     }
 
@@ -59,26 +59,4 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
             repository.register(username, password)
         }
     }
-
-//    fun addUser(user: User, image: MultipartBody.Part?) {
-//        viewModelScope.launch {
-//            repository.addUser(user, image) {
-//                it.fold(
-//                    onSuccess = { /* Gestisci il successo */ },
-//                    onFailure = { /* Gestisci l'errore */ }
-//                )
-//            }
-//        }
-//    }
-//
-//    fun changeUserInfo(userId: String, user: User, image: MultipartBody.Part?) {
-//        viewModelScope.launch {
-//            repository.changeUserInfo(userId, user, image) {
-//                it.fold(
-//                    onSuccess = { /* Gestisci il successo */ },
-//                    onFailure = { /* Gestisci l'errore */ }
-//                )
-//            }
-//        }
-//    }
 }
