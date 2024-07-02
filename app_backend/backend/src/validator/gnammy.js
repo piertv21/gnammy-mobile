@@ -162,7 +162,7 @@ const completeGoal = {
 }
 
 const shareGnam = {
-    body: Joi.object().keys({
+    params: Joi.object().keys({
         gnamId: Joi.string().required(),
     })
 }

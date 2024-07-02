@@ -12,29 +12,36 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.alexstyl.swipeablecard.Direction
 import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
 import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.example.gnammy.ui.composables.RecipeCardBig
+import com.example.gnammy.ui.viewmodels.GnamViewModel
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSwipeableCardApi::class)
 @Composable
 fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) {
     val state = rememberSwipeableCardState()
     val scope = rememberCoroutineScope()
-
+    val gnamViewModel = koinViewModel<GnamViewModel>()
+    val gnamsState by gnamViewModel.state.collectAsStateWithLifecycle()
+    gnamViewModel.fetchGnams()
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -53,7 +60,13 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) 
                     }
                 )
         ) {
-            RecipeCardBig(modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp))
+            if(gnamsState.gnams.isNotEmpty()) {
+                RecipeCardBig(gnamsState.gnams.first(), modifier = Modifier.padding(16.dp, 8.dp, 16.dp, 0.dp))
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
         }
         // Buttons
         Row(

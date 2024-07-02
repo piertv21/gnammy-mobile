@@ -77,7 +77,7 @@ router.get('/goals/:userId/:limit', validate(gnammyValidator.shortListGoals), gn
 router.get('/goals/:userId/', validate(gnammyValidator.listGoals), gnammyController.listGoals)
 
 // Share gnam
-router.post('/shareGnam/', validate(gnammyValidator.shareGnam), gnammyController.shareGnam)
+router.post('/share/:gnamId', validate(gnammyValidator.shareGnam), gnammyController.shareGnam)
 
 // Get user image
 router.get('/image/user/:userId', gnammyController.getUserImage)

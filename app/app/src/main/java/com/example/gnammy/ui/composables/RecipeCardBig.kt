@@ -27,14 +27,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.gnammy.data.local.entities.Gnam
+import com.example.gnammy.utils.DateFormats
+import com.example.gnammy.utils.millisToDateString
 
 /*
  It shows a small recipe card with a placeholder image and a description.
  */
 @Composable
-fun RecipeCardBig(modifier: Modifier) {
+fun RecipeCardBig(gnam: Gnam, modifier: Modifier) {
     val propicUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2022/07/Beth-2022-3-60x60.jpg")
-    val imageUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2012/08/7-Green-onion-and-Cilantro-768x576.jpg")
 
     Column(modifier = modifier
         .clip(RoundedCornerShape(20.dp))
@@ -54,7 +56,7 @@ fun RecipeCardBig(modifier: Modifier) {
         )
         {
             Text(
-                text = "Spicy Sriracha Noodles",
+                text = gnam.title,
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Start,
                 style =  MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
@@ -89,7 +91,7 @@ fun RecipeCardBig(modifier: Modifier) {
                         .wrapContentHeight(align = Alignment.CenterVertically)
                 )
                 Text(
-                    text = " - 24/05/2024",
+                    text = " - " + millisToDateString(gnam.date, DateFormats.SHOW_FORMAT),
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium.copy(),
@@ -107,7 +109,7 @@ fun RecipeCardBig(modifier: Modifier) {
             // image
 
             ImageWithPlaceholder(
-                uri = imageUri,
+                uri = Uri.parse(gnam.imageUri),
                 size = Size.Lg,
                 description = "Recipe Image",
                 Modifier
@@ -129,7 +131,7 @@ fun RecipeCardBig(modifier: Modifier) {
             )
             {
                 Text(
-                    text = "Oh WOW. It should be illegal for noodles to be this easy AND this delicious. These spicy sriracha noodles are my new favorite quick fix! They only take about 15 minutes to make, they’re totally rich, flavorful, and SUPER SPICY. Like, “burn a hole through your stomach” spicy. Call me crazy, but sometimes I want that. No, I crave that. So, this one goes out to all of you heat seekers!",
+                    text = gnam.description,
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),

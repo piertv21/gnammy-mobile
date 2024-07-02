@@ -1,6 +1,7 @@
 package com.example.gnammy.data.remote.apis
 
 import com.example.gnammy.data.local.entities.User
+import com.example.gnammy.utils.ImageResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -11,10 +12,6 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
-
-class ImageResponse {
-    var image: String = ""
-}
 
 class UserResponse {
     var id: String = ""

@@ -224,7 +224,7 @@ const addGnam = (req, res) => {
 }
 
 const shareGnam = (req, res) => {
-    const { gnamId } = req.body;
+    const { gnamId } = req.params;
 
     gnammyRepository.shareGnam(gnamId, async (err, gnam) => {
         if (err) {
