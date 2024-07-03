@@ -1,5 +1,6 @@
 package com.example.gnammy.ui.screens.profile
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -34,6 +35,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -53,14 +56,31 @@ import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.Size
+import com.example.gnammy.ui.viewmodels.UserViewModel
 
 @Composable
 fun ProfileScreen(
     user: User,
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userViewModel: UserViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
+    val currentUserId by userViewModel.currentUserId.collectAsState()
+
+    val ctx = LocalContext.current
+
+    fun shareProfile() {
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, "Check out this profile on Gnam.my: ${user.username}")
+        }
+        val shareIntent = Intent.createChooser(sendIntent, "Share profile")
+        if (shareIntent.resolveActivity(ctx.packageManager) != null) {
+            ctx.startActivity(shareIntent)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -152,29 +172,33 @@ fun ProfileScreen(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            Button(
-                modifier = Modifier
-                    .weight(0.4f)
-                    .padding(end = 8.dp),
-                onClick = { /* Follow action */ }
-            ) {
-                Text(text = stringResource(R.string.profile_follow))
+            if (user.id != currentUserId) { // Hide follow button if it's the user's own profile
+                Button(
+                    modifier = Modifier
+                        .weight(0.4f)
+                        .padding(end = 8.dp),
+                    onClick = { /* Follow action */ }
+                ) {
+                    Text(text = stringResource(R.string.profile_follow))
+                }
             }
             Button(
                 modifier = Modifier
                     .weight(0.4f)
                     .padding(start = 8.dp, end = 8.dp),
-                onClick = { /* Share action */ }
+                onClick = ::shareProfile
             ) {
                 Text(text = stringResource(R.string.profile_share))
             }
-            Button(
-                modifier = Modifier
-                    .weight(0.2f)
-                    .padding(start = 8.dp),
-                onClick = { showDialog = true }
-            ) {
-                Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
+            if (user.id == currentUserId) { // Show settings button only if it's the user's own profile
+                Button(
+                    modifier = Modifier
+                        .weight(0.2f)
+                        .padding(start = 8.dp),
+                    onClick = { showDialog = true }
+                ) {
+                    Icon(imageVector = Icons.Filled.Settings, contentDescription = "Settings")
+                }
             }
 
             if (showDialog) {

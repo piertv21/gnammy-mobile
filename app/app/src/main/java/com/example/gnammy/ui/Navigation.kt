@@ -110,7 +110,7 @@ fun GnammyNavGraph(
                     val user = requireNotNull(usersState.users.find {
                         it.id == userId
                     })
-                    ProfileScreen(user, navController, modifier)
+                    ProfileScreen(user, navController, modifier, userViewModel)
                 }
             }
             with(GnammyRoute.Notification) {
