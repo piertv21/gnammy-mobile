@@ -1,5 +1,7 @@
 package com.example.gnammy.ui.viewmodels
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.Gnam
@@ -33,6 +35,9 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
     private val _loginState = MutableStateFlow<Result<String>?>(null)
     val loginState: StateFlow<Result<String>?> = _loginState
 
+    private val _postGnamState = MutableStateFlow<Result<String>?>(null)
+    val postGnamState: StateFlow<Result<String>?> = _postGnamState
+
     init {
         viewModelScope.launch {
             repository.currentGnamId.collect { gnamId ->
@@ -51,6 +56,19 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
     fun fetchGnams() {
         viewModelScope.launch {
             repository.fetchGnams()
+        }
+    }
+
+    fun publishGnam(
+        context: Context,
+        currentUserId: String,
+        title: String,
+        shortDescription: String,
+        ingredientsAndRecipe: String,
+        imageUri: Uri
+    ) {
+        viewModelScope.launch {
+            _postGnamState.value = repository.publishGnam(context, currentUserId, title, shortDescription, ingredientsAndRecipe, imageUri)
         }
     }
 }

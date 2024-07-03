@@ -2,6 +2,7 @@ package com.example.gnammy.data.remote.apis
 
 import com.example.gnammy.utils.ImageResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -31,10 +32,10 @@ interface GnamApiService {
     @Multipart
     @POST("/gnam/")
     suspend fun addGnam(
-        @Part("author_id") authorId: String,
-        @Part("title") title: String,
-        @Part("short_description") description: String,
-        @Part("full_recipe") recipe: String,
+        @Part("author_id") authorId: RequestBody,
+        @Part("title") title: RequestBody,
+        @Part("short_description") description: RequestBody,
+        @Part("full_recipe") recipe: RequestBody,
         @Part image: MultipartBody.Part?
     ): Response<GnamWrapperResponse>
 

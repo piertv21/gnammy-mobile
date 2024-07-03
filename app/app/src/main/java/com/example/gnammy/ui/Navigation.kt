@@ -26,6 +26,7 @@ import com.example.gnammy.ui.screens.profile.ProfileScreen
 import com.example.gnammy.ui.screens.register.RegisterScreen
 import com.example.gnammy.ui.screens.saved.SavedScreen
 import com.example.gnammy.ui.screens.search.SearchScreen
+import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -60,6 +61,8 @@ fun GnammyNavGraph(
     val isInitialized by userViewModel.isInitialized.collectAsStateWithLifecycle()
     val userId by userViewModel.currentUserId.collectAsStateWithLifecycle()
     val loading = remember{ mutableStateOf(true) }
+
+    val gnamViewModel = koinViewModel<GnamViewModel>()
 
     var startDestination by remember { mutableStateOf(GnammyRoute.Login.route) }
 
@@ -97,7 +100,7 @@ fun GnammyNavGraph(
             }
             with(GnammyRoute.Post) {
                 composable(route) {
-                    PostScreen(navController, modifier)
+                    PostScreen(navController, modifier, userViewModel, gnamViewModel)
                 }
             }
             with(GnammyRoute.Saved) {

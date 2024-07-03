@@ -1,6 +1,8 @@
 package com.example.gnammy.data.repository
 
 import android.content.ContentResolver
+import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -15,7 +17,13 @@ import com.example.gnammy.utils.DateFormats
 import com.example.gnammy.utils.dateStringToMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import com.example.gnammy.utils.Result
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
+import java.io.File
 import java.io.IOException
 
 class GnamRepository(
@@ -89,6 +97,54 @@ class GnamRepository(
             Log.e("GnamRepository", "Network error in getting gnam", e)
         } catch (e: HttpException) {
             Log.e("GnamRepository", "HTTP error in getting gnam", e)
+        }
+    }
+
+    suspend fun publishGnam(
+        context: Context,
+        currentUserId: String,
+        title: String,
+        shortDescription: String,
+        ingredientsAndRecipe: String,
+        imageUri: Uri
+    ): Result<String> {
+        return try {
+            val authorIdPart = currentUserId.toRequestBody("text/plain".toMediaTypeOrNull())
+            val titlePart = title.toRequestBody("text/plain".toMediaTypeOrNull())
+            val descriptionPart = shortDescription.toRequestBody("text/plain".toMediaTypeOrNull())
+            val recipePart = ingredientsAndRecipe.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val imagePart: MultipartBody.Part? = imageUri.let { uri ->
+                val file = File(context.cacheDir, "tempGnamImage")
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    file.outputStream().use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                    }
+                }
+
+                val requestFile = RequestBody.create(
+                    context.contentResolver.getType(uri)?.toMediaTypeOrNull(),
+                    file
+                )
+                MultipartBody.Part.createFormData("image", file.name, requestFile)
+            }
+
+            val response = apiService.addGnam(authorIdPart, titlePart, descriptionPart, recipePart, imagePart)
+
+            if (response.isSuccessful) {
+                val gnamResponse = response.body()?.gnam
+                if (gnamResponse != null) {
+                    Result.Success("Gnam published successfully with ID: ${gnamResponse.id}")
+                } else {
+                    Result.Error("Empty response received in publishGnam")
+                }
+            } else {
+                Result.Error("Error in publishGnam: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Result.Error("Network error in publishGnam")
+        } catch (e: HttpException) {
+            Result.Error("HTTP error in publishGnam")
         }
     }
 }
