@@ -13,6 +13,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +23,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,113 +36,123 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.gnammy.utils.Result
 import com.example.gnammy.ui.viewmodels.UserViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
     val loginState by userViewModel.loginState.collectAsState()
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-            .padding(60.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Accedi", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        if (error.isNotEmpty()) {
-            Text(error, color = Color.Red)
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
+    LaunchedEffect(loginState) {
         when (val state = loginState) {
-            is Result.Error -> {
-                Text(state.message, color = Color.Red)
-            }
             is Result.Success -> {
-                LaunchedEffect(Unit) {
+                scope.launch {
+                    snackbarHostState.showSnackbar("Login avvenuto con successo")
                     navHostController.navigate("Home") {
                         popUpTo("Login") { inclusive = true }
                     }
                 }
             }
-            else -> {}
-        }
-
-        OutlinedTextField(
-            value = username,
-            onValueChange = {
-                username = it
-                error = ""
-            },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(onNext = { /* Focus next input field */ })
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = {
-                password = it
-                error = ""
-            },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = { /* Perform login action */ })
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = {
-                if (username.isNotBlank() && password.isNotBlank()) {
-                    error = ""
-                    userViewModel.login(username, password)
-                } else {
-                    error = "Username e password non possono essere vuoti"
+            is Result.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(state.message)
                 }
             }
-        ) {
-            Text("Login")
+            null -> { /* No action */ }
         }
+    }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+    ) { contentPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(Color.Gray)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            "Non hai un'account?",
-            color = Color.Gray
-        )
-
-        Button(
-            modifier = Modifier.padding(top = 8.dp),
-            onClick = {
-                navHostController.navigate("Register")
-            }
+                .fillMaxSize()
+                .padding(60.dp)
+                .padding(contentPadding),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Registrati")
+            Text("Accedi", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = {
+                    username = it
+                },
+                label = { Text("Username") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { /* Focus next input field */ })
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    password = it
+                },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = { /* Perform login action */ })
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    if (username.isNotBlank() && password.isNotBlank()) {
+                        userViewModel.login(username, password)
+                    } else {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Username e password non possono essere vuoti")
+                        }
+                    }
+                }
+            ) {
+                Text("Login")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Color.Gray)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                "Non hai un account?",
+                color = Color.Gray
+            )
+
+            Button(
+                modifier = Modifier.padding(top = 8.dp),
+                onClick = {
+                    navHostController.navigate("Register")
+                }
+            ) {
+                Text("Registrati")
+            }
         }
     }
 }

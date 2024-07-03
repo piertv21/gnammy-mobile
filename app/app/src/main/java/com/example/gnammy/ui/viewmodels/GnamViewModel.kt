@@ -71,4 +71,8 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
             _postGnamState.value = repository.publishGnam(context, currentUserId, title, shortDescription, ingredientsAndRecipe, imageUri)
         }
     }
+
+    fun resetPostGnamState() {
+        _postGnamState.value = null
+    }
 }

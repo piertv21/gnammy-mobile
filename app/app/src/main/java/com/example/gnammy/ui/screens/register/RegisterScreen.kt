@@ -22,16 +22,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.gnammy.R
 import com.example.gnammy.ui.viewmodels.UserViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(navHostController: NavHostController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf("") }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
 
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -39,118 +41,121 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
         profilePictureUri = uri
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(60.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Registrati", fontWeight = FontWeight.Bold, fontSize = 30.sp)
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        if (error != "") {
-            Text(error, color = Color.Red)
-        }
-
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(onNext = { /* Focus next input field */ })
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(onNext = { /* Focus next input field */ })
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
-            label = { Text("Conferma Password") },
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(onDone = { /* Perform registration action */ })
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { launcher.launch("image/*") },
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { contentPadding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp)
+                .fillMaxSize()
+                .padding(60.dp)
+                .padding(contentPadding),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = if (profilePictureUri == null) {
-                    stringResource(R.string.profile_select_propic)
-                } else {
-                    "Selected: " + profilePictureUri?.lastPathSegment
-                }
+            Text("Registrati", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            OutlinedTextField(
+                value = username,
+                onValueChange = { username = it },
+                label = { Text("Username") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { /* Focus next input field */ })
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                error = validateInput(username, password, confirmPassword, profilePictureUri)
-                if (error.isEmpty()) {
-                    profilePictureUri?.let {
-                        userViewModel.register(context, username, password,
-                            it
-                        )
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Password") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
+                keyboardActions = KeyboardActions(onNext = { /* Focus next input field */ })
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = confirmPassword,
+                onValueChange = { confirmPassword = it },
+                label = { Text("Conferma Password") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = { /* Perform registration action */ })
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { launcher.launch("image/*") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            ) {
+                Text(
+                    text = if (profilePictureUri == null) {
+                        stringResource(R.string.profile_select_propic)
+                    } else {
+                        "Selected: " + profilePictureUri?.lastPathSegment
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = {
+                    val error = validateInput(username, password, confirmPassword, profilePictureUri)
+                    if (error.isEmpty()) {
+                        profilePictureUri?.let {
+                            userViewModel.register(context, username, password, it)
+                        }
+                    } else {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(error)
+                        }
                     }
                 }
+            ) {
+                Text("Registrati")
             }
-        ) {
-            Text("Registrati")
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(1.dp)
-                .background(Color.Gray)
-        )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Color.Gray)
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            "Hai già un account?",
-            color = Color.Gray
-        )
+            Text(
+                "Hai già un account?",
+                color = Color.Gray
+            )
 
-        Button(
-            modifier = Modifier.padding(top = 8.dp),
-            onClick = {
-                navHostController.navigate("login")
+            Button(
+                modifier = Modifier.padding(top = 8.dp),
+                onClick = {
+                    navHostController.navigate("login")
+                }
+            ) {
+                Text("Accedi")
             }
-        ) {
-            Text("Accedi")
         }
     }
 }
