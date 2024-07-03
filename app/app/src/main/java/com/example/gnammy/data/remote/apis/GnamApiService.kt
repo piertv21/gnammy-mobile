@@ -32,7 +32,7 @@ interface GnamApiService {
     @Multipart
     @POST("/gnam/")
     suspend fun addGnam(
-        @Part("author_id") authorId: RequestBody,
+        @Part("authorId") authorId: RequestBody,
         @Part("title") title: RequestBody,
         @Part("short_description") description: RequestBody,
         @Part("full_recipe") recipe: RequestBody,

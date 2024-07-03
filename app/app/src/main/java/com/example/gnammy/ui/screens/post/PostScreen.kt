@@ -47,7 +47,7 @@ fun PostScreen(
     var ingredientsAndRecipe by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var error by remember { mutableStateOf("") }
-    val postGnamState by userViewModel.loginState.collectAsState()
+    val postGnamState by gnamViewModel.postGnamState.collectAsState()
 
     val currentUserId by userViewModel.currentUserId.collectAsState()
 
@@ -73,10 +73,23 @@ fun PostScreen(
                 )
             }
             when (val state = postGnamState) {
-                // TODO
-                is Result.Error -> TODO()
-                is Result.Success -> TODO()
-                null -> TODO()
+                is Result.Error -> {
+                    Log.e("PostScreen", "Error: ${state.message}")
+                    Text(
+                        "Errore durante il caricamento dei dati",
+                        color = Color.Green,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+                is Result.Success -> {
+                    Text(
+                        "Gnam postato con successo",
+                        color = Color.Green,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+                null -> {
+                }
             }
         }
 
