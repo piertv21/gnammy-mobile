@@ -185,6 +185,12 @@ const getListOfUsersThatSavedGnam = {
     })
 }
 
+const getSavedGnams = {
+    params: Joi.object().keys({
+        userId: Joi.string().required(),
+    })
+}
+
 module.exports = {
     login,
     addUser,
@@ -207,5 +213,6 @@ module.exports = {
     shareGnam,
     getUserGnams,
     setNotificationsAsRead,
-    getListOfUsersThatSavedGnam
+    getListOfUsersThatSavedGnam,
+    getSavedGnams
 }

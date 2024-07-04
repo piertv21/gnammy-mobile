@@ -576,6 +576,18 @@ const getListOfUsersThatSavedGnam = (req, res) => {
     });
 }
 
+const getSavedGnams = (req, res) => {
+    const { userId } = req.params;
+
+    gnammyRepository.getSavedGnams(userId, (err, gnams) => {
+        if (err) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ error: `Error during the gnams retrieval: ${err}` });
+        }
+        res.status(httpStatus.OK).json({ gnams });
+    });
+}
+
 module.exports = {
     login,
     addUser,
@@ -602,5 +614,6 @@ module.exports = {
     getGnamImage,
     getUserGnams,
     setNotificationsAsRead,
-    getListOfUsersThatSavedGnam
+    getListOfUsersThatSavedGnam,
+    getSavedGnams
 }
