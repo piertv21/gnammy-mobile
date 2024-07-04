@@ -185,6 +185,12 @@ const getListOfUsersThatSavedGnam = {
     })
 }
 
+const getSavedGnams = {
+    params: Joi.object().keys({
+        userId: Joi.string().required(),
+    })
+}
+
 const getGnamTimeline = {
     params: Joi.object().keys({
         userId: Joi.string().required(),
@@ -215,5 +221,6 @@ module.exports = {
     getUserGnams,
     setNotificationsAsRead,
     getListOfUsersThatSavedGnam,
+    getSavedGnams,
     getGnamTimeline
 }

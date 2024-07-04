@@ -634,6 +634,23 @@ async function getListOfUsersThatSavedGnam(gnamId, callback) {
     }
 }
 
+async function getSavedGnams(userId, callback) {
+    try {
+        const gnams = await prisma.gnam.findMany({
+            where: {
+                likes: {
+                    some: {
+                        userId: userId
+                    }
+                }
+            }
+        });
+        callback(null, gnams);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 async function getGnamTimeline(userId, offset, callback) {
     try {
         const gnams = await prisma.gnam.findMany({
@@ -694,5 +711,6 @@ module.exports = {
     shareGnam,
     setNotificationsAsRead,
     getListOfUsersThatSavedGnam,
+    getSavedGnams,
     getGnamTimeline
 };

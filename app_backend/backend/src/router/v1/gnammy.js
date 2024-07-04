@@ -49,6 +49,9 @@ router.get('/gnam/:gnamId', validate(gnammyValidator.getGnam), gnammyController.
 // List gnam
 router.get('/gnam/', gnammyController.listGnams)
 
+// Get user saved gnams
+router.get('/savedGnams/:userId', validate(gnammyValidator.getSavedGnams), gnammyController.getSavedGnams)
+
 router.get('/gnam/timeline/:userId/:offset', validate(gnammyValidator.getGnamTimeline), gnammyController.getGnamTimeline)
 
 // Search gnams
