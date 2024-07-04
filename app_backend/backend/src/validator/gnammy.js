@@ -185,6 +185,13 @@ const getListOfUsersThatSavedGnam = {
     })
 }
 
+const getGnamTimeline = {
+    params: Joi.object().keys({
+        userId: Joi.string().required(),
+        offset: Joi.number().required(),
+    })
+}
+
 module.exports = {
     login,
     addUser,
@@ -207,5 +214,6 @@ module.exports = {
     shareGnam,
     getUserGnams,
     setNotificationsAsRead,
-    getListOfUsersThatSavedGnam
+    getListOfUsersThatSavedGnam,
+    getGnamTimeline
 }

@@ -634,6 +634,28 @@ async function getListOfUsersThatSavedGnam(gnamId, callback) {
     }
 }
 
+async function getGnamTimeline(userId, offset, callback) {
+    try {
+        const gnams = await prisma.gnam.findMany({
+            where: {
+                authorId: {
+                    $ne: userId
+                }
+            },
+            take: 10,
+            skip: offset,
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+    gnams.offset = offset + 10;
+    callback(null, gnams);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 module.exports = {
     login,
     addUser,
@@ -671,5 +693,6 @@ module.exports = {
     createNotificationType,
     shareGnam,
     setNotificationsAsRead,
-    getListOfUsersThatSavedGnam
+    getListOfUsersThatSavedGnam,
+    getGnamTimeline
 };

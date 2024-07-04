@@ -576,6 +576,18 @@ const getListOfUsersThatSavedGnam = (req, res) => {
     });
 }
 
+const getGnamTimeline = (req, res) => {
+    const { userId, offset } = req.params;
+
+    gnammyRepository.getGnamTimeline(userId, offset, (err, gnams) => {
+        if (err) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json({ error: `Error during the gnam timeline retrieval: ${err}` });
+        }
+        res.status(httpStatus.OK).json({ gnams });
+    });
+}
+
 module.exports = {
     login,
     addUser,
@@ -602,5 +614,6 @@ module.exports = {
     getGnamImage,
     getUserGnams,
     setNotificationsAsRead,
-    getListOfUsersThatSavedGnam
+    getListOfUsersThatSavedGnam,
+    getGnamTimeline
 }
