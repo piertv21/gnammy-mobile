@@ -2,6 +2,7 @@ package com.example.gnammy.ui.viewmodels
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.Gnam
@@ -51,14 +52,15 @@ class GnamViewModel(
     }
 
     fun fetchGnamTimeline() {
+        Log.i("GnamViewModel", "sto fetchando")
         viewModelScope.launch {
             repository.fetchGnamTimeline()
         }
     }
 
-    fun removeFromTimeline(gnamId: Gnam?) {
+    fun removeFromTimeline(gnam: Gnam, liked: Boolean) {
         viewModelScope.launch {
-            repository.removeFromTimeline(gnamId)
+            repository.removeFromTimeline(gnam, liked)
         }
     }
 

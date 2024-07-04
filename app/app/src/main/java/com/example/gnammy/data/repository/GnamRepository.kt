@@ -96,21 +96,21 @@ class GnamRepository(
 
             if (gnamResponse.isSuccessful) {
                 val gnamRes = gnamResponse.body()
-                val listGnams: MutableList<Gnam> = mutableListOf()
+                val listGnams: MutableList<Gnam> = timeline.value.toMutableList()
                 gnamRes?.gnams?.forEach() {
-                    val gnam = Gnam(
-                        id = it.id,
-                        authorId = it.authorId,
-                        title = it.title,
-                        description = it.description,
-                        recipe = it.recipe,
-                        date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
-                        imageUri = "${backendSocket}/images/gnam/${it.id}.jpg"
+                    listGnams.add(
+                        Gnam(
+                            id = it.id,
+                            authorId = it.authorId,
+                            title = it.title,
+                            description = it.description,
+                            recipe = it.recipe,
+                            date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
+                            imageUri = "${backendSocket}/images/gnam/${it.id}.jpg"
+                        )
                     )
-                    val currentTimeline = timeline.value.toMutableList()
-                    currentTimeline.add(gnam)
-                    timeline.value = currentTimeline
                 }
+                timeline.value = listGnams
             } else {
                 Log.e("GnamRepository", "Error in getting gnam: ${gnamResponse.message()}")
             }
@@ -170,12 +170,13 @@ class GnamRepository(
         }
     }
 
-    suspend fun removeFromTimeline(gnam: Gnam?) {
-        if (gnam != null) {
+    suspend fun removeFromTimeline(gnam: Gnam, liked: Boolean) {
+        if (liked) {
             gnamDao.upsert(gnam)
         }
         val currentTimeline = timeline.value.toMutableList()
         currentTimeline.remove(gnam)
         timeline.value = currentTimeline
+        Log.i("GnamRepository", "timeline has now ${timeline.value.size} elements")
     }
 }
