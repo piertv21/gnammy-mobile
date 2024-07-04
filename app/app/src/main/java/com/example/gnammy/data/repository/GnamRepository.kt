@@ -9,20 +9,19 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gnammy.backendSocket
 import com.example.gnammy.data.local.dao.GnamDao
 import com.example.gnammy.data.local.dao.LikedGnamDao
 import com.example.gnammy.data.local.entities.Gnam
-import com.example.gnammy.data.local.entities.LikedGnam
 import com.example.gnammy.data.remote.RetrofitClient
 import com.example.gnammy.data.remote.apis.GnamApiService
 import com.example.gnammy.utils.DateFormats
+import com.example.gnammy.utils.Result
 import com.example.gnammy.utils.dateStringToMillis
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import com.example.gnammy.utils.Result
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -37,7 +36,11 @@ class GnamRepository(
     private val contentResolver: ContentResolver,
     private val dataStore: DataStore<Preferences>
 ) {
-    private val apiService: GnamApiService = RetrofitClient.instance.create(GnamApiService::class.java)
+    private val apiService: GnamApiService =
+        RetrofitClient.instance.create(GnamApiService::class.java)
+
+    val gnams: Flow<List<Gnam>> = gnamDao.getAllGnams()
+    val timeline: MutableStateFlow<List<Gnam>> = MutableStateFlow(emptyList())
 
     companion object {
         private val TIMELINE_OFFSET_KEY = intPreferencesKey("timeline_offset_key")
@@ -46,9 +49,9 @@ class GnamRepository(
 
     val timeline_offset = dataStore.data.map { it[TIMELINE_OFFSET_KEY] ?: 0 }
 
-    suspend fun setTimelineOffsetKey(value: Int) = dataStore.edit { it[TIMELINE_OFFSET_KEY] = value }
+    suspend fun setTimelineOffsetKey(value: Int) =
+        dataStore.edit { it[TIMELINE_OFFSET_KEY] = value }
 
-    val gnams: Flow<List<Gnam>> = gnamDao.getAllGnams()
 
     private suspend fun getCurrentUserId(): String {
         return dataStore.data.map { it[USER_ID_KEY] ?: "" }.first()
@@ -69,7 +72,8 @@ class GnamRepository(
                             description = it.description,
                             recipe = it.recipe,
                             date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
-                            imageUri = "backendSocket/images/gnam/${it.id}.jpg")
+                            imageUri = "backendSocket/images/gnam/${it.id}.jpg"
+                        )
                         gnamDao.upsert(gnam)
                     }
                 }
@@ -94,16 +98,19 @@ class GnamRepository(
                 val gnamRes = gnamResponse.body()
                 val listGnams: MutableList<Gnam> = mutableListOf()
                 gnamRes?.gnams?.forEach() {
-                    listGnams.add(Gnam(
+                    val gnam = Gnam(
                         id = it.id,
                         authorId = it.authorId,
                         title = it.title,
                         description = it.description,
                         recipe = it.recipe,
                         date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
-                        imageUri = "${backendSocket}/images/gnam/${it.id}.jpg"))
+                        imageUri = "${backendSocket}/images/gnam/${it.id}.jpg"
+                    )
+                    val currentTimeline = timeline.value.toMutableList()
+                    currentTimeline.add(gnam)
+                    timeline.value = currentTimeline
                 }
-                gnamDao.insertAll(listGnams)
             } else {
                 Log.e("GnamRepository", "Error in getting gnam: ${gnamResponse.message()}")
             }
@@ -143,7 +150,8 @@ class GnamRepository(
                 MultipartBody.Part.createFormData("image", file.name, requestFile)
             }
 
-            val response = apiService.addGnam(authorIdPart, titlePart, descriptionPart, recipePart, imagePart)
+            val response =
+                apiService.addGnam(authorIdPart, titlePart, descriptionPart, recipePart, imagePart)
 
             if (response.isSuccessful) {
                 val gnamResponse = response.body()?.gnam
@@ -160,5 +168,14 @@ class GnamRepository(
         } catch (e: HttpException) {
             Result.Error("HTTP error in publishGnam")
         }
+    }
+
+    suspend fun removeFromTimeline(gnam: Gnam?) {
+        if (gnam != null) {
+            gnamDao.upsert(gnam)
+        }
+        val currentTimeline = timeline.value.toMutableList()
+        currentTimeline.remove(gnam)
+        timeline.value = currentTimeline
     }
 }

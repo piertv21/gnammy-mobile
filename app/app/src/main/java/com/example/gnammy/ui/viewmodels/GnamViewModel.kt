@@ -10,7 +10,6 @@ import com.example.gnammy.utils.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,6 +25,12 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
         initialValue = GnamsState(emptyList())
     )
 
+    val timelineState = repository.timeline.map { GnamsState(gnams = it) }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = GnamsState(emptyList())
+    )
+
     private val _postGnamState = MutableStateFlow<Result<String>?>(null)
     val postGnamState: StateFlow<Result<String>?> = _postGnamState
 
@@ -35,9 +40,15 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
         }
     }
 
-    fun fetchGnams() {
+    fun fetchGnamTimeline() {
         viewModelScope.launch {
             repository.fetchGnamTimeline()
+        }
+    }
+
+    fun removeFromTimeline(gnamId: Gnam?) {
+        viewModelScope.launch {
+            repository.removeFromTimeline(gnamId)
         }
     }
 
@@ -50,7 +61,14 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
         imageUri: Uri
     ) {
         viewModelScope.launch {
-            _postGnamState.value = repository.publishGnam(context, currentUserId, title, shortDescription, ingredientsAndRecipe, imageUri)
+            _postGnamState.value = repository.publishGnam(
+                context,
+                currentUserId,
+                title,
+                shortDescription,
+                ingredientsAndRecipe,
+                imageUri
+            )
         }
     }
 
