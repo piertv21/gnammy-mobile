@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -22,10 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.gnammy.data.local.entities.Gnam
+import com.example.gnammy.ui.GnammyRoute
 
-/*
- It shows a small recipe card with a placeholder image and a description.
- */
 @Composable
 fun RecipeCardSmall(
     navHostController: NavHostController,
@@ -36,7 +33,9 @@ fun RecipeCardSmall(
         .aspectRatio(1f)
         .fillMaxSize()
         .clip(RoundedCornerShape(20.dp))
-        .clickable { navHostController.navigate("gnamDetails") }
+        .clickable {
+            navHostController.navigate(GnammyRoute.GnamDetails.buildRoute(gnam.id))
+        }
     )
     {
         ImageWithPlaceholder(uri = Uri.parse(gnam.imageUri),
@@ -45,7 +44,6 @@ fun RecipeCardSmall(
             Modifier
                 .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .clip(shape = RoundedCornerShape(20.dp))
-                //.padding(50.dp, 50.dp, 50.dp, 90.dp)
                 .fillMaxSize())
         Box(
             modifier = Modifier

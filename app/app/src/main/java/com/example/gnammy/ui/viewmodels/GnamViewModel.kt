@@ -36,7 +36,7 @@ class GnamViewModel(
         initialValue = GnamsState(emptyList())
     )
 
-    val likedGnamsstate = likedGnamRepository.likedGnams.map { GnamsState(gnams = it) }.stateIn(
+    val likedGnamsState = likedGnamRepository.likedGnams.map { GnamsState(gnams = it) }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = GnamsState(emptyList())

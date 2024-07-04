@@ -31,7 +31,7 @@ fun SavedScreen(
         gnamViewModel.syncSavedGnam(currentUserId)
     }
 
-    val likedGnams by gnamViewModel.likedGnamsstate.collectAsState()
+    val likedGnams by gnamViewModel.likedGnamsState.collectAsState()
 
     Column(
         modifier = Modifier

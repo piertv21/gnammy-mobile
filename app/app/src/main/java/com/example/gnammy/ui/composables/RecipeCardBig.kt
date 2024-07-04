@@ -31,11 +31,11 @@ import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.utils.DateFormats
 import com.example.gnammy.utils.millisToDateString
 
-/*
- It shows a small recipe card with a placeholder image and a description.
- */
 @Composable
-fun RecipeCardBig(gnam: Gnam, modifier: Modifier) {
+fun RecipeCardBig(
+    gnam: Gnam,
+    modifier: Modifier
+) {
     val propicUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2022/07/Beth-2022-3-60x60.jpg")
 
     Column(modifier = modifier

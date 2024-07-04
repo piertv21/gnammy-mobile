@@ -41,9 +41,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.gnammy.data.local.entities.Gnam
+import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.Size
 
+/*
 @Composable
 fun OverlappingColumn(
     modifier: Modifier = Modifier,
@@ -69,16 +72,16 @@ fun overlappingColumnMeasurePolicy(overlapFactor: Float) = MeasurePolicy { measu
             yPos += (placeable.height * overlapFactor).toInt()
         }
     }
-}
+}*/
 
 @Composable
-@Preview
-fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifier? = null) {
+fun GnamDetailsScreen(
+    navController: NavHostController,
+    user: User,
+    gnam: Gnam
+) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
-
-    val propicUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2022/07/Beth-2022-3-60x60.jpg")
-    val imageUri = Uri.parse("https://studiousguy.com/wp-content/uploads/2021/05/Cheese-Slice.jpg")
 
     Column(
         modifier = Modifier
@@ -86,7 +89,6 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
             .padding(16.dp, 16.dp, 16.dp)
             .verticalScroll(scrollState)
     ) {
-
         Column (
             modifier = Modifier
                 .fillMaxWidth()
@@ -96,7 +98,7 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
         )
         {
             Text(
-                text = "Spicy Sriracha Noodles",
+                text = gnam.title,
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Start,
                 style =  MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
@@ -110,7 +112,7 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
                     .align(Alignment.CenterHorizontally)
             ) {
                 ImageWithPlaceholder(
-                    uri = propicUri,
+                    uri = Uri.parse(user.imageUri), //TODO Insert here user propic
                     size = Size.Sm,
                     description = "propic",
                     modifier = Modifier
@@ -122,7 +124,7 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = " Beth, Budget Bytes",
+                    text = " Beth, Budget Bytes",   //TODO Insert here username
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -131,7 +133,7 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
                         .wrapContentHeight(align = Alignment.CenterVertically)
                 )
                 Text(
-                    text = " - 24/05/2024",
+                    text = " - 24/05/2024", //TODO Insert here date
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium.copy(),
@@ -140,13 +142,12 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
                         .wrapContentHeight(align = Alignment.CenterVertically)
                 )
             }
-
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         ImageWithPlaceholder(
-                uri = imageUri,
+                uri = Uri.parse(gnam.imageUri),
                 size = Size.Lg,
                 description = "Recipe Image",
                 modifier = Modifier
@@ -166,7 +167,7 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
                 .padding(10.dp)
         ) {
             Text(
-                text = "Oh WOW. It should be illegal for noodles to be this easy AND this delicious. These spicy sriracha noodles are my new favorite quick fix! They only take about 15 minutes to make, they’re totally rich, flavorful, and SUPER SPICY. Like, “burn a hole through your stomach” spicy. Call me crazy, but sometimes I want that. No, I crave that. So, this one goes out to all of you heat seekers!",
+                text = gnam.description,
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Start,
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
@@ -176,8 +177,6 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
                 overflow = TextOverflow.Ellipsis
             )
         }
-
-
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -190,22 +189,7 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "4 oz. lo mein noodles  (\$1.30)\n" +
-                    "2 Tbsp butter  (\$0.20)\n" +
-                    "1/4 tsp crushed red pepper  (\$0.02)\n" +
-                    "2 large eggs (\$0.42)\n" +
-                    "1 Tbsp brown sugar (\$0.08)\n" +
-                    "1 Tbsp soy sauce  (\$0.06)\n" +
-                    "2 Tbsp sriracha (\$0.22)\n" +
-                    "1 handful fresh cilantro (optional) (\$0.10)\n" +
-                    "1 green onion, sliced  (\$0.10)\n" +
-                    "\n" +
-                    "Prepare the sauce for the noodles. In a small bowl, stir together the brown sugar, soy sauce, and sriracha. Set the sauce aside.\n" +
-                    "Bring  a pot of water to a boil for the noodles. Once boiling, add the noodles  and boil until tender. Drain the noodles in a colander.\n" +
-                    "While waiting for the water to boil, crack two eggs into a bowl then whisk lightly.\n" +
-                    "Heat  the butter in a skillet over medium heat, then add the eggs and crushed  pepper and lightly scramble the eggs. Avoid over cooking the eggs.\n" +
-                    "Once  the noodles have drained, add them to the skillet with the eggs, then  drizzle the sauce over top. Toss the noodles and eggs to coat in the  sauce.\n" +
-                    "Top the noodles with fresh cilantro and sliced green onion, then serve.",
+            text = gnam.recipe,
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.align(Alignment.Start)
         )
@@ -240,23 +224,3 @@ fun GnamDetailsScreen(navController: NavHostController? = null, modifier: Modifi
         }
     }
 }
-
-@Composable
-fun RecipeCardBig(modifier: Modifier) {
-
-    Column(modifier = modifier
-        .clip(RoundedCornerShape(20.dp))
-        .background(color = MaterialTheme.colorScheme.primaryContainer)
-        .padding(10.dp)
-        .fillMaxSize()
-        .clip(RoundedCornerShape(20.dp))
-    )
-    {
-        // titleBar
-
-
-
-
-    }
-}
-

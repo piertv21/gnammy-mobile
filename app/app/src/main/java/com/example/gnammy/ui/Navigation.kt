@@ -14,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.gnammy.ui.screens.gnamdetails.GnamDetailsScreen
 import com.example.gnammy.ui.screens.goals.GoalsScreen
 import com.example.gnammy.ui.screens.home.HomeScreen
@@ -43,11 +45,28 @@ sealed class GnammyRoute(
     data object Notification : GnammyRoute("notification", "Notification")
     data object Login : GnammyRoute("login", "Login")
     data object Register : GnammyRoute("register", "Register")
-    data object GnamDetails : GnammyRoute("gnamDetails", "Gnam Details")
+    data object GnamDetails : GnammyRoute(
+        "gnamDetails/{gnamId}",
+        "Gnam Details",
+        listOf(navArgument("gnamId") { type = NavType.StringType })
+    ) {
+        fun buildRoute(gnamId: String) = "gnamDetails/$gnamId"
+    }
     data object Goals : GnammyRoute("goals", "Goals")
 
     companion object {
-        val routes = setOf(Home, Search, Post, Saved, Profile, Notification, Login, Register, GnamDetails, Goals)
+        val routes = setOf(
+            Home,
+            Search,
+            Post,
+            Saved,
+            Profile,
+            Notification,
+            Login,
+            Register,
+            GnamDetails,
+            Goals
+        )
     }
 }
 
@@ -63,6 +82,7 @@ fun GnammyNavGraph(
     val loading = remember{ mutableStateOf(true) }
 
     val gnamViewModel = koinViewModel<GnamViewModel>()
+    val gnamState by gnamViewModel.state.collectAsStateWithLifecycle()
 
     var startDestination by remember { mutableStateOf(GnammyRoute.Login.route) }
 
@@ -132,8 +152,14 @@ fun GnammyNavGraph(
                 }
             }
             with(GnammyRoute.GnamDetails) {
-                composable(route) {
-                    GnamDetailsScreen(navController)
+                composable(route, arguments) {backStackEntry ->
+                    val gnam = requireNotNull(gnamState.gnams.find {
+                        it.id == backStackEntry.arguments?.getString("gnamId")
+                    })
+                    val user = requireNotNull(usersState.users.find {
+                        it.id == gnam.authorId
+                    })
+                    GnamDetailsScreen(navController, user, gnam)
                 }
             }
             with(GnammyRoute.Goals) {
