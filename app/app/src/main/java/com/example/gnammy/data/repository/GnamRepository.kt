@@ -7,7 +7,9 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gnammy.backendSocket
 import com.example.gnammy.data.local.dao.GnamDao
 import com.example.gnammy.data.local.dao.LikedGnamDao
@@ -20,6 +22,7 @@ import com.example.gnammy.utils.dateStringToMillis
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import com.example.gnammy.utils.Result
+import kotlinx.coroutines.flow.first
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -37,14 +40,19 @@ class GnamRepository(
     private val apiService: GnamApiService = RetrofitClient.instance.create(GnamApiService::class.java)
 
     companion object {
-        private val USER_ID_KEY = stringPreferencesKey("gnam_id_key")
+        private val TIMELINE_OFFSET_KEY = intPreferencesKey("timeline_offset_key")
+        private val USER_ID_KEY = stringPreferencesKey("user_id_key")
     }
 
-    val currentGnamId = dataStore.data.map { it[USER_ID_KEY] ?: "" }
+    val timeline_offset = dataStore.data.map { it[TIMELINE_OFFSET_KEY] ?: 0 }
 
-    suspend fun setGnam(value: String) = dataStore.edit { it[USER_ID_KEY] = value }
+    suspend fun setTimelineOffsetKey(value: Int) = dataStore.edit { it[TIMELINE_OFFSET_KEY] = value }
 
     val gnams: Flow<List<Gnam>> = gnamDao.getAllGnams()
+
+    private suspend fun getCurrentUserId(): String {
+        return dataStore.data.map { it[USER_ID_KEY] ?: "" }.first()
+    }
 
     suspend fun fetchGnam(gnamId: String) {
         try {
@@ -75,9 +83,12 @@ class GnamRepository(
         }
     }
 
-    suspend fun fetchGnams() {
+    suspend fun fetchGnamTimeline() {
         try {
-            val gnamResponse = apiService.listGnams()
+            val offset: Int = timeline_offset.first()
+            val currentUserId = getCurrentUserId()
+            val gnamResponse = apiService.getGnamTimeline(currentUserId, offset)
+            setTimelineOffsetKey(offset + 10)
 
             if (gnamResponse.isSuccessful) {
                 val gnamRes = gnamResponse.body()

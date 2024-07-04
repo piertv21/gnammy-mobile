@@ -39,8 +39,8 @@ interface GnamApiService {
         @Part image: MultipartBody.Part?
     ): Response<GnamWrapperResponse>
 
-    @GET("/gnam/")
-    suspend fun listGnams(): Response<GnamListWrapperResponse>
+    @GET("/gnam/timeline/{userId}/{offset}")
+    suspend fun getGnamTimeline(@Path("userId") userId: String, @Path("offset") offset: Int): Response<GnamListWrapperResponse>
 
     @GET("/gnam/{gnamId}")
     suspend fun getGnam(@Path("gnamId") gnamId: String): Response<GnamWrapperResponse>
