@@ -656,7 +656,7 @@ async function getGnamTimeline(userId, offset, callback) {
         const gnams = await prisma.gnam.findMany({
             where: {
                 authorId: {
-                    $not: userId
+                    not: userId
                 }
             },
             take: 10,
