@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -34,6 +35,7 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -117,6 +119,7 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
 
             Button(
                 onClick = {
+                    keyboardController?.hide()
                     val error = validateInput(username, password, confirmPassword, profilePictureUri)
                     if (error.isEmpty()) {
                         profilePictureUri?.let {

@@ -2,6 +2,7 @@ package com.example.gnammy.ui.viewmodels
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.Gnam
@@ -74,5 +75,12 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
 
     fun resetPostGnamState() {
         _postGnamState.value = null
+    }
+
+    fun syncSavedGnam() {
+        viewModelScope.launch {
+            //repository.syncSavedGnam()
+            Log.e("GnamViewModel", "TESTING syncSavedGnam() called")
+        }
     }
 }

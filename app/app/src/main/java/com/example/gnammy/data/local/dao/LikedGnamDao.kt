@@ -18,7 +18,7 @@ interface LikedGnamDao {
     @Insert
     suspend fun insertAll(likedGnams: List<LikedGnam>)
 
-    @Delete
+    @Query("DELETE FROM liked_gnams")
     suspend fun deleteAll()
 
     @Query("SELECT * FROM liked_gnams")

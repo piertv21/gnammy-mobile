@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -46,6 +47,7 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(loginState) {
         when (val state = loginState) {
@@ -117,6 +119,7 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
 
             Button(
                 onClick = {
+                    keyboardController?.hide()
                     if (username.isNotBlank() && password.isNotBlank()) {
                         userViewModel.login(username, password)
                     } else {

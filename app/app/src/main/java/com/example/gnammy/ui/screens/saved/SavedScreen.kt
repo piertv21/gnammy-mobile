@@ -7,14 +7,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.gnammy.ui.composables.RecipeCardSmall
+import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.UserViewModel
 
 @Composable
-fun SavedScreen(navController: NavHostController) {
+fun SavedScreen(
+    navController: NavHostController,
+    gnamViewModel: GnamViewModel
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -29,5 +35,9 @@ fun SavedScreen(navController: NavHostController) {
                 RecipeCardSmall(navController, Modifier.padding(5.dp))
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        gnamViewModel.syncSavedGnam()
     }
 }
