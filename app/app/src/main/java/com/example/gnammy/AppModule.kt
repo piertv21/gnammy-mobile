@@ -5,6 +5,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.example.gnammy.data.local.GnammyDatabase
 import com.example.gnammy.data.repository.GnamRepository
+import com.example.gnammy.data.repository.LikedGnamRepository
 import com.example.gnammy.data.repository.UserRepository
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
@@ -56,9 +57,16 @@ val appModule = module {
     single {
         GnamRepository(
             get<GnammyDatabase>().gnamDao(),
-            get<GnammyDatabase>().likedGnamDao(),
             get<Context>().applicationContext.contentResolver, // questo serve per salvare le immagini in storage, capiremo se serve o meno.
             get()
+        )
+    }
+
+    single {
+        LikedGnamRepository(
+            get<GnammyDatabase>().gnamDao(),
+            get<GnammyDatabase>().likedGnamDao(),
+            get<Context>().applicationContext.contentResolver
         )
     }
 

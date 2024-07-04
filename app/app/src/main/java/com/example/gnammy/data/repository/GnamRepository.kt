@@ -161,35 +161,4 @@ class GnamRepository(
             Result.Error("HTTP error in publishGnam")
         }
     }
-
-    suspend fun syncSavedGnam(userId: String): Result<String> {
-        return try {
-            val backendGnams = apiService.getSavedGnams(userId)
-
-            if (backendGnams.isSuccessful) {
-                val gnamRes = backendGnams.body()
-                val listGnams: MutableList<Gnam> = mutableListOf()
-                gnamRes?.gnams?.forEach() {
-                    listGnams.add(Gnam(
-                        id = it.id,
-                        authorId = it.authorId,
-                        title = it.title,
-                        description = it.description,
-                        recipe = it.recipe,
-                        date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
-                        imageUri = "${backendSocket}/images/gnam/${it.id}.jpg"))
-                }
-                gnamDao.insertAll(listGnams)
-
-                val likedGnamsIds = listGnams.map { it.id }
-                likedGnamDao.insertAll(likedGnamsIds.map { LikedGnam(it) })
-
-                Result.Success("Saved gnams synced successfully")
-            } else {
-                Result.Error("Error in getting saved gnam: ${backendGnams.message()}")
-            }
-        } catch (e) {
-            Result.Error("Network error in publishGnam")
-        }
-    }
 }
