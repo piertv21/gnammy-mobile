@@ -35,7 +35,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,7 +53,6 @@ import androidx.navigation.NavHostController
 import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
-import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.Size
 import com.example.gnammy.ui.viewmodels.UserViewModel
 
@@ -63,10 +61,10 @@ fun ProfileScreen(
     user: User,
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    loggedUserId: String
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    val currentUserId by userViewModel.currentUserId.collectAsState()
 
     val ctx = LocalContext.current
 
@@ -172,7 +170,7 @@ fun ProfileScreen(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            if (user.id != currentUserId) { // Hide follow button if it's the user's own profile
+            if (user.id != loggedUserId) { // Hide follow button if it's the user's own profile
                 Button(
                     modifier = Modifier
                         .weight(0.4f)
@@ -190,7 +188,7 @@ fun ProfileScreen(
             ) {
                 Text(text = stringResource(R.string.profile_share))
             }
-            if (user.id == currentUserId) { // Show settings button only if it's the user's own profile
+            if (user.id == loggedUserId) { // Show settings button only if it's the user's own profile
                 Button(
                     modifier = Modifier
                         .weight(0.2f)
@@ -253,7 +251,11 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User) {
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = if (isDarkTheme) stringResource(R.string.profile_night_mode) else stringResource(R.string.profile_light_mode))
+                        Text(
+                            text = if (isDarkTheme) stringResource(R.string.profile_night_mode) else stringResource(
+                                R.string.profile_light_mode
+                            )
+                        )
                         Switch(
                             checked = isDarkTheme,
                             onCheckedChange = { isDarkTheme = it }
@@ -302,7 +304,7 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User) {
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8f)),
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
-                            ) {
+                    ) {
                         Text(text = stringResource(R.string.profile_save))
                     }
 

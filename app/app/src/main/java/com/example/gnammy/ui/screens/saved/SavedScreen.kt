@@ -23,10 +23,10 @@ import com.example.gnammy.ui.viewmodels.UserViewModel
 fun SavedScreen(
     navController: NavHostController,
     gnamViewModel: GnamViewModel,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    currentUserId: String
 ) {
-    val currentUserId by userViewModel.currentUserId.collectAsState()
-
+    
     LaunchedEffect(Unit) {
         gnamViewModel.syncSavedGnam(currentUserId)
     }

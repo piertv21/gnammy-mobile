@@ -10,7 +10,7 @@ import com.example.gnammy.utils.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -26,23 +26,12 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         initialValue = UsersState(emptyList())
     )
 
-    private val _currentUserId = MutableStateFlow("")
-    val currentUserId: StateFlow<String> = _currentUserId.asStateFlow()
-
-    private val _isInitialized = MutableStateFlow(false)
-    val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
+    suspend fun getLoggedUserId(): String {
+        return repository.loggedUserId.first()
+    }
 
     private val _loginState = MutableStateFlow<Result<String>?>(null)
     val loginState: StateFlow<Result<String>?> = _loginState
-
-    init {
-        viewModelScope.launch {
-            repository.currentUserId.collect { userId ->
-                _currentUserId.value = userId
-                _isInitialized.value = true
-            }
-        }
-    }
 
     fun fetchUser(userId: String) {
         viewModelScope.launch {

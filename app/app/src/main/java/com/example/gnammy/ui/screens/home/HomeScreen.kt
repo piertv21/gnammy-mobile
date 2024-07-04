@@ -40,12 +40,14 @@ import com.example.gnammy.ui.composables.RecipeCardBig
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.utils.isOnline
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalSwipeableCardApi::class)
 @Composable
-fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) {
-    val gnamViewModel = koinViewModel<GnamViewModel>()
+fun HomeScreen(
+    navController: NavHostController,
+    gnamViewModel: GnamViewModel,
+    modifier: Modifier = Modifier
+) {
     val gnamsState by gnamViewModel.timelineState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -131,7 +133,6 @@ fun HomeScreen(navController: NavHostController, modifier: Modifier = Modifier) 
                     }
                 }
 
-                // Buttons
                 Row(
                     modifier = Modifier
                         .weight(0.15f)

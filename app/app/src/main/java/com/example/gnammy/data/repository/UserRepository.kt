@@ -12,31 +12,32 @@ import com.example.gnammy.backendSocket
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
-import com.example.gnammy.data.remote.apis.UserCredentials
 import com.example.gnammy.data.remote.apis.UserApiService
+import com.example.gnammy.data.remote.apis.UserCredentials
 import com.example.gnammy.utils.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import retrofit2.HttpException
-import java.io.IOException
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 import java.io.File
+import java.io.IOException
 
 class UserRepository(
     private val userDao: UserDao,
     private val contentResolver: ContentResolver,
     private val dataStore: DataStore<Preferences>
 ) {
-    private val apiService: UserApiService = RetrofitClient.instance.create(UserApiService::class.java)
+    private val apiService: UserApiService =
+        RetrofitClient.instance.create(UserApiService::class.java)
 
     companion object {
         private val USER_ID_KEY = stringPreferencesKey("user_id_key")
     }
 
-    val currentUserId = dataStore.data.map { it[USER_ID_KEY] ?: "" }
+    val loggedUserId = dataStore.data.map { it[USER_ID_KEY] ?: "NOT SET" }
 
     suspend fun setUser(value: String) = dataStore.edit { it[USER_ID_KEY] = value }
 
@@ -62,8 +63,10 @@ class UserRepository(
                 val userRes = userResponse.body()
                 if (userRes != null) {
                     userRes.user?.let {
-                        val user = User(it.id, it.username, it.location,
-                            "$backendSocket/images/user/${it.id}.jpg", followers, following)
+                        val user = User(
+                            it.id, it.username, it.location,
+                            "$backendSocket/images/user/${it.id}.jpg", followers, following
+                        )
                         userDao.upsert(user)
                     }
                 }
@@ -100,7 +103,12 @@ class UserRepository(
         }
     }
 
-    suspend fun register(context: Context, username: String, password: String, profilePictureUri: Uri) {
+    suspend fun register(
+        context: Context,
+        username: String,
+        password: String,
+        profilePictureUri: Uri
+    ) {
         try {
             val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
             val passwordPart = password.toRequestBody("text/plain".toMediaTypeOrNull())
