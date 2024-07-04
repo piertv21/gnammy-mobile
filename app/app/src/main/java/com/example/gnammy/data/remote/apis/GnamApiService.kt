@@ -53,5 +53,4 @@ interface GnamApiService {
 
     @GET("/savedGnams/{userId}")
     suspend fun getSavedGnams(@Path("userId") userId: String): Response<GnamListWrapperResponse>
-
 }

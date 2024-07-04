@@ -27,26 +27,8 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
         initialValue = GnamsState(emptyList())
     )
 
-    private val _currentGnamId = MutableStateFlow("")
-    val currentGnamId: StateFlow<String> = _currentGnamId.asStateFlow()
-
-    private val _isInitialized = MutableStateFlow(false)
-    val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
-
-    private val _loginState = MutableStateFlow<Result<String>?>(null)
-    val loginState: StateFlow<Result<String>?> = _loginState
-
     private val _postGnamState = MutableStateFlow<Result<String>?>(null)
     val postGnamState: StateFlow<Result<String>?> = _postGnamState
-
-    init {
-        viewModelScope.launch {
-            repository.currentGnamId.collect { gnamId ->
-                _currentGnamId.value = gnamId
-                _isInitialized.value = true
-            }
-        }
-    }
 
     fun fetchGnam(gnamId: String) {
         viewModelScope.launch {
@@ -79,7 +61,7 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
 
     fun syncSavedGnam(userId: String) {
         viewModelScope.launch {
-            repository.syncSavedGnam(userId)
+            //repository.syncSavedGnam(userId)
         }
     }
 }
