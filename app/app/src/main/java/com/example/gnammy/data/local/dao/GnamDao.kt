@@ -21,10 +21,4 @@ interface GnamDao {
 
     @Upsert
     suspend fun upsert(gnam: Gnam)
-
-    @Query("DELETE FROM gnams WHERE id = :gnamId")
-    suspend fun delete(gnamId: String)
-
-    @Query("SELECT * FROM gnams WHERE id IN (:gnamIds)")
-    suspend fun getAllLikedGnams(gnamIds: List<String>): List<Gnam>
 }

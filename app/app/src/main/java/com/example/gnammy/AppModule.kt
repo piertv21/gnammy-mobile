@@ -57,6 +57,7 @@ val appModule = module {
     single {
         GnamRepository(
             get<GnammyDatabase>().gnamDao(),
+            get<GnammyDatabase>().likedGnamDao(),
             get<Context>().applicationContext.contentResolver, // questo serve per salvare le immagini in storage, capiremo se serve o meno.
             get()
         )
@@ -72,5 +73,5 @@ val appModule = module {
 
     viewModel { UserViewModel(get()) }
 
-    viewModel { GnamViewModel(get()) }
+    viewModel { GnamViewModel(get(), get()) }
 }

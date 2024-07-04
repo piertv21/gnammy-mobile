@@ -213,7 +213,7 @@ fun ProfileScreen(
                 .height(600.dp)
         ) {
             items(10) {
-                RecipeCardSmall(navController, Modifier.padding(5.dp))
+                //RecipeCardSmall(navController, Modifier.padding(5.dp))
             }
         }
     }

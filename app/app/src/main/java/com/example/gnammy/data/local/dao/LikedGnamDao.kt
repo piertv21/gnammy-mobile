@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.OnConflictStrategy
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.data.local.entities.LikedGnam
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LikedGnamDao {
@@ -22,6 +23,6 @@ interface LikedGnamDao {
     @Query("DELETE FROM liked_gnams")
     suspend fun deleteAll()
 
-    @Query("SELECT * FROM liked_gnams")
-    suspend fun getAllLikedGnams(): List<LikedGnam>
+    @Query("SELECT * FROM gnams WHERE id IN (SELECT gnamId FROM liked_gnams)")
+    fun getAllLikedGnams(): Flow<List<Gnam>>
 }
