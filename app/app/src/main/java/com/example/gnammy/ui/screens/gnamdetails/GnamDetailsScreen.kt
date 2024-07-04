@@ -46,7 +46,7 @@ import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.Size
 
-/*
+/* //TODO Remove this commented code (useless ??)
 @Composable
 fun OverlappingColumn(
     modifier: Modifier = Modifier,
@@ -112,7 +112,7 @@ fun GnamDetailsScreen(
                     .align(Alignment.CenterHorizontally)
             ) {
                 ImageWithPlaceholder(
-                    uri = Uri.parse(user.imageUri), //TODO Insert here user propic
+                    uri = Uri.parse(user.imageUri),
                     size = Size.Sm,
                     description = "propic",
                     modifier = Modifier
@@ -124,7 +124,7 @@ fun GnamDetailsScreen(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = " Beth, Budget Bytes",   //TODO Insert here username
+                    text = user.username,
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -133,7 +133,7 @@ fun GnamDetailsScreen(
                         .wrapContentHeight(align = Alignment.CenterVertically)
                 )
                 Text(
-                    text = " - 24/05/2024", //TODO Insert here date
+                    text = " - 24/05/2024", //TODO Insert here converted date
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium.copy(),
@@ -147,14 +147,14 @@ fun GnamDetailsScreen(
         Spacer(modifier = Modifier.height(10.dp))
 
         ImageWithPlaceholder(
-                uri = Uri.parse(gnam.imageUri),
-                size = Size.Lg,
-                description = "Recipe Image",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .aspectRatio(1f)
-                    .clip(shape = RoundedCornerShape(20.dp))
-            )
+            uri = Uri.parse(gnam.imageUri),
+            size = Size.Lg,
+            description = "Recipe Image",
+            modifier = Modifier
+                .fillMaxSize()
+                .aspectRatio(1f)
+                .clip(shape = RoundedCornerShape(20.dp))
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
 
@@ -204,7 +204,7 @@ fun GnamDetailsScreen(
                 modifier = Modifier.padding(end = 8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                 onClick = {
-                    // TODO Handle search action
+                    // TODO Handle unlike action
                 }
             ) {
                 Text("Rimuovi dai preferiti")
@@ -213,7 +213,7 @@ fun GnamDetailsScreen(
                 onClick = {
                     val intent = Intent().apply {
                         action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, "This is a sample recipe text to simulate a recipe description.")
+                        putExtra(Intent.EXTRA_TEXT, gnam.recipe)
                         type = "text/plain"
                     }
                     context.startActivity(Intent.createChooser(intent, "Save Recipe to Notes"))
