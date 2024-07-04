@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.OnConflictStrategy
+import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.data.local.entities.LikedGnam
 
 @Dao
@@ -15,7 +16,7 @@ interface LikedGnamDao {
     @Delete
     suspend fun deleteLikedGnam(likedGnam: LikedGnam)
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(likedGnams: List<LikedGnam>)
 
     @Query("DELETE FROM liked_gnams")

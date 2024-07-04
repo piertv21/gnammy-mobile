@@ -51,4 +51,7 @@ interface GnamApiService {
     @POST("/share/{gnamId}")
     suspend fun shareGnam(@Path("gnamId") gnamId: String): Response<GnamWrapperResponse>
 
+    @GET("/savedGnams/{userId}")
+    suspend fun getSavedGnams(@Path("userId") userId: String): Response<GnamListWrapperResponse>
+
 }

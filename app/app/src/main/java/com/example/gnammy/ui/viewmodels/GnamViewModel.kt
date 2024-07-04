@@ -77,10 +77,9 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
         _postGnamState.value = null
     }
 
-    fun syncSavedGnam() {
+    fun syncSavedGnam(userId: String) {
         viewModelScope.launch {
-            //repository.syncSavedGnam()
-            Log.e("GnamViewModel", "TESTING syncSavedGnam() called")
+            repository.syncSavedGnam(userId)
         }
     }
 }

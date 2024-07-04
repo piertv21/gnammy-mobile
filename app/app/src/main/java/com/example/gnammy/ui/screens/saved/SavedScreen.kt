@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -19,8 +21,11 @@ import com.example.gnammy.ui.viewmodels.UserViewModel
 @Composable
 fun SavedScreen(
     navController: NavHostController,
-    gnamViewModel: GnamViewModel
+    gnamViewModel: GnamViewModel,
+    userViewModel: UserViewModel
 ) {
+    val currentUserId by userViewModel.currentUserId.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,6 +43,6 @@ fun SavedScreen(
     }
 
     LaunchedEffect(Unit) {
-        gnamViewModel.syncSavedGnam()
+        gnamViewModel.syncSavedGnam(currentUserId)
     }
 }

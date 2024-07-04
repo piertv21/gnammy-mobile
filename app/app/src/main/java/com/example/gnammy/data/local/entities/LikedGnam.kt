@@ -14,6 +14,5 @@ import androidx.room.ForeignKey
     )]
 )
 data class LikedGnam(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val gnamId: String
+    @PrimaryKey val gnamId: String
 )
