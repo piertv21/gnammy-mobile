@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.data.repository.GnamRepository
+import com.example.gnammy.data.repository.LikedGnamRepository
 import com.example.gnammy.utils.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,9 +19,18 @@ import kotlinx.coroutines.launch
 
 data class GnamsState(val gnams: List<Gnam> = emptyList())
 
-class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
+class GnamViewModel(
+    private val repository: GnamRepository,
+    private val likedGnamRepository: LikedGnamRepository
+) : ViewModel() {
 
     val state = repository.gnams.map { GnamsState(gnams = it) }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = GnamsState(emptyList())
+    )
+
+    val likedGnamsstate = likedGnamRepository.likedGnams.map { GnamsState(gnams = it) }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
         initialValue = GnamsState(emptyList())
@@ -60,7 +70,7 @@ class GnamViewModel(private val repository: GnamRepository) : ViewModel() {
 
     fun syncSavedGnam(userId: String) {
         viewModelScope.launch {
-            //repository.syncSavedGnam(userId)
+            likedGnamRepository.syncSavedGnam(userId)
         }
     }
 }

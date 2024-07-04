@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -26,6 +27,12 @@ fun SavedScreen(
 ) {
     val currentUserId by userViewModel.currentUserId.collectAsState()
 
+    LaunchedEffect(Unit) {
+        gnamViewModel.syncSavedGnam(currentUserId)
+    }
+
+    val likedGnams by gnamViewModel.likedGnamsstate.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -36,13 +43,13 @@ fun SavedScreen(
         LazyVerticalGrid(
             columns = GridCells.Fixed(2)
         ) {
-            items(10) {
-                RecipeCardSmall(navController, Modifier.padding(5.dp))
+            items(likedGnams.gnams) { likedGnam ->
+                RecipeCardSmall(
+                    navController,
+                    Modifier.padding(5.dp),
+                    gnam = likedGnam
+                )
             }
         }
-    }
-
-    LaunchedEffect(Unit) {
-        gnamViewModel.syncSavedGnam(currentUserId)
     }
 }

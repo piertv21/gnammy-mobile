@@ -1,5 +1,6 @@
 package com.example.gnammy.ui.composables
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -20,12 +21,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.gnammy.data.local.entities.Gnam
 
 /*
  It shows a small recipe card with a placeholder image and a description.
  */
 @Composable
-fun RecipeCardSmall(navHostController: NavHostController, modifier: Modifier) {
+fun RecipeCardSmall(
+    navHostController: NavHostController,
+    modifier: Modifier,
+    gnam: Gnam
+) {
     Box(modifier = modifier
         .aspectRatio(1f)
         .fillMaxSize()
@@ -33,13 +39,13 @@ fun RecipeCardSmall(navHostController: NavHostController, modifier: Modifier) {
         .clickable { navHostController.navigate("gnamDetails") }
     )
     {
-        ImageWithPlaceholder(uri = null,
+        ImageWithPlaceholder(uri = Uri.parse(gnam.imageUri),
             size = Size.Lg,
             description = "Recipe Image",
             Modifier
                 .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .clip(shape = RoundedCornerShape(20.dp))
-                .padding(50.dp, 50.dp, 50.dp, 90.dp)
+                //.padding(50.dp, 50.dp, 50.dp, 90.dp)
                 .fillMaxSize())
         Box(
             modifier = Modifier
@@ -51,7 +57,7 @@ fun RecipeCardSmall(navHostController: NavHostController, modifier: Modifier) {
         )
         {
             Text(
-                text = "Spicy Sriracha Noodles",
+                text = gnam.title,
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
