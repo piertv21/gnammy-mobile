@@ -53,7 +53,7 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
         when (val state = loginState) {
             is Result.Success -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar("Login avvenuto con successo")
+                    snackbarHostState.showSnackbar(state.data)
                     navHostController.navigate("Home") {
                         popUpTo("Login") { inclusive = true }
                     }

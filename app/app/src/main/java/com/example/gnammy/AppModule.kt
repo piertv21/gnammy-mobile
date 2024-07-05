@@ -19,8 +19,8 @@ import org.koin.dsl.module
 
 val Context.dataStore by preferencesDataStore("settings")
 
-// val backendSocket = "http://172.23.176.1:3000"
-val backendSocket = "http://192.168.1.175:3000"
+val backendSocket = "http://172.23.176.1:3000"
+//val backendSocket = "http://192.168.1.175:3000"
 
 val appModule = module {
     single { get<Context>().dataStore }
@@ -31,7 +31,7 @@ val appModule = module {
             GnammyDatabase::class.java,
             "gnammy-db"
         )
-            // Sconsigliato per progetti seri! Lo usiamo solo qui per semplicità
+            // TODO Sconsigliato per progetti seri! Lo usiamo solo qui per semplicità
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -51,7 +51,7 @@ val appModule = module {
     single {
         UserRepository(
             get<GnammyDatabase>().userDao(),
-            get<Context>().applicationContext.contentResolver, // questo serve per salvare le immagini in storage, capiremo se serve o meno.
+            get<Context>().applicationContext.contentResolver, // TODO questo serve per salvare le immagini in storage, capiremo se serve o meno.
             get()
         )
     }
@@ -60,7 +60,7 @@ val appModule = module {
         GnamRepository(
             get<GnammyDatabase>().gnamDao(),
             get<GnammyDatabase>().likedGnamDao(),
-            get<Context>().applicationContext.contentResolver, // questo serve per salvare le immagini in storage, capiremo se serve o meno.
+            get<Context>().applicationContext.contentResolver, // TODO questo serve per salvare le immagini in storage, capiremo se serve o meno.
             get()
         )
     }
@@ -69,7 +69,7 @@ val appModule = module {
         LikedGnamRepository(
             get<GnammyDatabase>().gnamDao(),
             get<GnammyDatabase>().likedGnamDao(),
-            get<Context>().applicationContext.contentResolver
+            get<Context>().applicationContext.contentResolver // TODO questo serve per salvare le immagini in storage, capiremo se serve o meno.
         )
     }
 

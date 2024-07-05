@@ -89,7 +89,7 @@ class UserRepository(
                 if (userResponse != null) {
                     fetchUser(userResponse.id)
                     setUser(userResponse.id)
-                    Result.Success("Login success for user: ${userResponse.username}")
+                    Result.Success("Login avvenuto con successo! Redirect...")
                 } else {
                     Result.Error("Empty user received in login response")
                 }
@@ -108,8 +108,8 @@ class UserRepository(
         username: String,
         password: String,
         profilePictureUri: Uri
-    ) {
-        try {
+    ): Result<String> {
+        return try {
             val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
             val passwordPart = password.toRequestBody("text/plain".toMediaTypeOrNull())
 
@@ -135,7 +135,7 @@ class UserRepository(
                 if (userResponse != null) {
                     fetchUser(userResponse.id)
                     setUser(userResponse.id)
-                    Result.Success("Register success for user: ${userResponse.username}")
+                    Result.Success("Registrazione avvenuta con successo! Redirect...")
                 } else {
                     Result.Error("Empty user received in register response")
                 }

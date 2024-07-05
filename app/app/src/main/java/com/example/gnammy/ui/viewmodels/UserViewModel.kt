@@ -33,6 +33,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     private val _loginState = MutableStateFlow<Result<String>?>(null)
     val loginState: StateFlow<Result<String>?> = _loginState
 
+    private val _registerState = MutableStateFlow<Result<String>?>(null)
+    val registerState: StateFlow<Result<String>?> = _registerState
+
     fun fetchUser(userId: String) {
         viewModelScope.launch {
             repository.fetchUser(userId)
@@ -47,7 +50,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
     fun register(context: Context, username: String, password: String, profilePictureUri: Uri) {
         viewModelScope.launch {
-            repository.register(context, username, password, profilePictureUri)
+            _registerState.value = repository.register(context, username, password, profilePictureUri)
         }
     }
 }

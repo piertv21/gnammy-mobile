@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.gnammy.R
 import com.example.gnammy.ui.viewmodels.UserViewModel
+import com.example.gnammy.utils.Result
 import kotlinx.coroutines.launch
 
 @Composable
@@ -31,6 +32,7 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
+    val registerState by userViewModel.registerState.collectAsState()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -41,6 +43,25 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         profilePictureUri = uri
+    }
+
+    LaunchedEffect(registerState) {
+        when (val state = registerState) {
+            is Result.Success -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(state.data)
+                    navHostController.navigate("Home") {
+                        popUpTo("Register") { inclusive = true }
+                    }
+                }
+            }
+            is Result.Error -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(state.message)
+                }
+            }
+            null -> { /* No action */ }
+        }
     }
 
     Scaffold(
