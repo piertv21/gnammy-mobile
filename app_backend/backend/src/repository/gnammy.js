@@ -767,7 +767,7 @@ async function getGnamTimeline(userId, offset, callback) {
             authorName: gnam.author.username
         }));
 
-        callback(null, finalGnams);
+        callback(null, gnamsWithAuthorName);
     } catch (error) {
         callback(error, null);
     }
