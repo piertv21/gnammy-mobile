@@ -127,7 +127,10 @@ fun HomeScreen(
                         LaunchedEffect(state.swipedDirection) {
                             Log.i("HomeScreen", "swipato ${state.swipedDirection}")
                             if (state.swipedDirection != null) {
-                                gnamViewModel.removeFromTimeline(gnam, false)
+                                gnamViewModel.removeFromTimeline(
+                                    gnam,
+                                    state.swipedDirection != Direction.Left
+                                )
                             }
                         }
                     }

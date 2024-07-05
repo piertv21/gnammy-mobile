@@ -13,6 +13,7 @@ import com.example.gnammy.backendSocket
 import com.example.gnammy.data.local.dao.GnamDao
 import com.example.gnammy.data.local.dao.LikedGnamDao
 import com.example.gnammy.data.local.entities.Gnam
+import com.example.gnammy.data.local.entities.LikedGnam
 import com.example.gnammy.data.remote.RetrofitClient
 import com.example.gnammy.data.remote.apis.GnamApiService
 import com.example.gnammy.utils.DateFormats
@@ -177,6 +178,7 @@ class GnamRepository(
     suspend fun removeFromTimeline(gnam: Gnam, liked: Boolean) {
         if (liked) {
             gnamDao.upsert(gnam)
+            likedGnamDao.insertLikedGnam(LikedGnam(gnam.id))
         }
         val currentTimeline = timeline.value.toMutableList()
         currentTimeline.remove(gnam)
