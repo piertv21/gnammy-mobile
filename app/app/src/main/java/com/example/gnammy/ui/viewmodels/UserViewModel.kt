@@ -7,9 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.repository.UserRepository
 import com.example.gnammy.utils.Result
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -30,27 +28,19 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         return repository.loggedUserId.first()
     }
 
-    private val _loginState = MutableStateFlow<Result<String>?>(null)
-    val loginState: StateFlow<Result<String>?> = _loginState
-
-    private val _registerState = MutableStateFlow<Result<String>?>(null)
-    val registerState: StateFlow<Result<String>?> = _registerState
-
     fun fetchUser(userId: String) {
         viewModelScope.launch {
             repository.fetchUser(userId)
         }
     }
 
-    fun login(username: String, password: String) {
-        viewModelScope.launch {
-            _loginState.value = repository.login(username, password)
-        }
+    suspend fun login(username: String, password: String): Result<String> {
+        return repository.login(username, password)
     }
 
-    fun register(context: Context, username: String, password: String, profilePictureUri: Uri) {
-        viewModelScope.launch {
-            _registerState.value = repository.register(context, username, password, profilePictureUri)
-        }
+    suspend fun register(
+        context: Context, username: String, password: String, profilePictureUri: Uri
+    ): Result<String> {
+        return repository.register(context, username, password, profilePictureUri)
     }
 }

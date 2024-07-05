@@ -4,11 +4,28 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +42,7 @@ import com.example.gnammy.R
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.Result
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun RegisterScreen(navHostController: NavHostController, userViewModel: UserViewModel) {
@@ -32,7 +50,6 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
-    val registerState by userViewModel.registerState.collectAsState()
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -43,25 +60,6 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         profilePictureUri = uri
-    }
-
-    LaunchedEffect(registerState) {
-        when (val state = registerState) {
-            is Result.Success -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(state.data)
-                    navHostController.navigate("Home") {
-                        popUpTo("Register") { inclusive = true }
-                    }
-                }
-            }
-            is Result.Error -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(state.message)
-                }
-            }
-            null -> { /* No action */ }
-        }
     }
 
     Scaffold(
@@ -141,10 +139,37 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
             Button(
                 onClick = {
                     keyboardController?.hide()
-                    val error = validateInput(username, password, confirmPassword, profilePictureUri)
+                    val error =
+                        validateInput(username, password, confirmPassword, profilePictureUri)
                     if (error.isEmpty()) {
-                        profilePictureUri?.let {
-                            userViewModel.register(context, username, password, it)
+                        val propic = profilePictureUri!!
+                        val state = runBlocking {
+                            userViewModel.register(
+                                context,
+                                username,
+                                password,
+                                propic
+                            )
+                        }
+
+                        when (state) {
+                            is Result.Success -> {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(state.data)
+                                    navHostController.navigate("Home") {
+                                        popUpTo("Register") { inclusive = true }
+                                    }
+                                }
+                            }
+
+                            is Result.Error -> {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(state.message)
+                                }
+                            }
+
+                            null -> { /* No action */
+                            }
                         }
                     } else {
                         scope.launch {
@@ -184,7 +209,12 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
     }
 }
 
-private fun validateInput(username: String, password: String, confirmPassword: String, profilePictureUri: Uri?): String {
+private fun validateInput(
+    username: String,
+    password: String,
+    confirmPassword: String,
+    profilePictureUri: Uri?
+): String {
     return when {
         username.isBlank() || password.isBlank() -> "Compila tutti i campi"
         profilePictureUri == null -> "Seleziona una foto profilo"

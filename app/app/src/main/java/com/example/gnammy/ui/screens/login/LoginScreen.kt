@@ -18,8 +18,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,38 +33,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.gnammy.utils.Result
 import com.example.gnammy.ui.viewmodels.UserViewModel
+import com.example.gnammy.utils.Result
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val loginState by userViewModel.loginState.collectAsState()
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(loginState) {
-        when (val state = loginState) {
-            is Result.Success -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(state.data)
-                    navHostController.navigate("Home") {
-                        popUpTo("Login") { inclusive = true }
-                    }
-                }
-            }
-            is Result.Error -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(state.message)
-                }
-            }
-            null -> { /* No action */ }
-        }
-    }
 
     Scaffold(
         snackbarHost = {
@@ -121,7 +100,26 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
                 onClick = {
                     keyboardController?.hide()
                     if (username.isNotBlank() && password.isNotBlank()) {
-                        userViewModel.login(username, password)
+                        val state = runBlocking { userViewModel.login(username, password) }
+                        when (state) {
+                            is Result.Success -> {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(state.data)
+                                }
+                                navHostController.navigate("Home") {
+                                    popUpTo("Login") { inclusive = true }
+                                }
+                            }
+
+                            is Result.Error -> {
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(state.message)
+                                }
+                            }
+
+                            null -> { /* No action */
+                            }
+                        }
                     } else {
                         scope.launch {
                             snackbarHostState.showSnackbar("Username e password non possono essere vuoti")

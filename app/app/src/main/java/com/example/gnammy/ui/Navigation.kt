@@ -24,7 +24,6 @@ import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.runBlocking
-import org.koin.androidx.compose.koinViewModel
 
 sealed class GnammyRoute(
     val route: String,
@@ -109,7 +108,14 @@ fun GnammyNavGraph(
                 val user = requireNotNull(usersState.users.find {
                     it.id == loggedUserId
                 })
-                ProfileScreen(user, navController, modifier, userViewModel, loggedUserId, themeViewModel)
+                ProfileScreen(
+                    user,
+                    navController,
+                    modifier,
+                    userViewModel,
+                    loggedUserId,
+                    themeViewModel
+                )
             }
         }
         with(GnammyRoute.Notification) {
