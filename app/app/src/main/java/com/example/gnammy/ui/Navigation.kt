@@ -21,8 +21,10 @@ import com.example.gnammy.ui.screens.register.RegisterScreen
 import com.example.gnammy.ui.screens.saved.SavedScreen
 import com.example.gnammy.ui.screens.search.SearchScreen
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.runBlocking
+import org.koin.androidx.compose.koinViewModel
 
 sealed class GnammyRoute(
     val route: String,
@@ -66,6 +68,7 @@ sealed class GnammyRoute(
 @Composable
 fun GnammyNavGraph(
     navController: NavHostController,
+    themeViewModel: ThemeViewModel,
     startDestination: String,
     userViewModel: UserViewModel,
     gnamViewModel: GnamViewModel,
@@ -106,7 +109,7 @@ fun GnammyNavGraph(
                 val user = requireNotNull(usersState.users.find {
                     it.id == loggedUserId
                 })
-                ProfileScreen(user, navController, modifier, userViewModel, loggedUserId)
+                ProfileScreen(user, navController, modifier, userViewModel, loggedUserId, themeViewModel)
             }
         }
         with(GnammyRoute.Notification) {

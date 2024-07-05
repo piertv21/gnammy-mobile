@@ -54,6 +54,8 @@ import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.Size
+import com.example.gnammy.ui.theme.Themes
+import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 
 @Composable
@@ -62,7 +64,8 @@ fun ProfileScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel,
-    loggedUserId: String
+    loggedUserId: String,
+    themeViewModel: ThemeViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -200,7 +203,7 @@ fun ProfileScreen(
             }
 
             if (showDialog) {
-                SettingsModal(onDismissRequest = { showDialog = false }, user = user)
+                SettingsModal(onDismissRequest = { showDialog = false }, user = user, themeViewModel)
             }
         }
 
@@ -218,7 +221,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun SettingsModal(onDismissRequest: () -> Unit, user: User) {
+fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: ThemeViewModel) {
     var username by remember { mutableStateOf(TextFieldValue(user.username)) }
     var isDarkTheme by remember { mutableStateOf(false) }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
@@ -247,7 +250,7 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User) {
                         text = "Impostazioni",
                         style = MaterialTheme.typography.headlineSmall.copy()
                     )
-                    Column(
+                    /*Column(
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -260,6 +263,21 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User) {
                             checked = isDarkTheme,
                             onCheckedChange = { isDarkTheme = it }
                         )
+                    }*/
+
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Button(onClick = { themeViewModel.selectTheme(Themes.Light) }) {
+                            Text("Tema Light")
+                        }
+                        Button(onClick = { themeViewModel.selectTheme(Themes.Dark) }) {
+                            Text("Tema Dark")
+                        }
+                        Button(onClick = { themeViewModel.selectTheme(Themes.Auto) }) {
+                            Text("Tema Automatico")
+                        }
+                        Button(onClick = { themeViewModel.selectTheme(Themes.Dynamic) }) {
+                            Text("Tema Dinamico")
+                        }
                     }
 
                     Button(

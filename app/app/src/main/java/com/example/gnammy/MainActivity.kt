@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,69 +22,33 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gnammy.ui.GnammyNavGraph
 import com.example.gnammy.ui.GnammyRoute
 import com.example.gnammy.ui.composables.TopBar
-import com.example.gnammy.ui.theme.GnammyTheme
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.runBlocking
 import org.koin.androidx.compose.koinViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gnammy.data.repository.ThemeRepository
+import com.example.gnammy.ui.theme.AutomaticTheme
+import com.example.gnammy.ui.theme.DarkTheme
+import com.example.gnammy.ui.theme.DynamicTheme
+import com.example.gnammy.ui.theme.LightTheme
+import com.example.gnammy.ui.theme.Themes
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            //test colori in altri temi:  GnammyTheme (darkTheme = false) {
-            GnammyTheme(dynamicColor = false, darkTheme = true) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val userViewModel = koinViewModel<UserViewModel>()
+            val themePreferencesRepository = ThemeRepository(applicationContext)
+            val themeViewModel: ThemeViewModel = viewModel { ThemeViewModel(themePreferencesRepository) }
+            val selectedTheme by themeViewModel.theme.collectAsState()
 
-                    val loggedUserId = runBlocking { userViewModel.getLoggedUserId() }
-
-                    var startDestination by remember { mutableStateOf(GnammyRoute.routes.first()) }
-
-                    startDestination = if (loggedUserId == "NOT SET") {
-                        GnammyRoute.Login
-                    } else {
-                        GnammyRoute.Home
-                    }
-                    if (loggedUserId.isNotEmpty()) {
-                        userViewModel.fetchUser(loggedUserId)
-                    }
-
-                    val navController = rememberNavController()
-                    val backStackEntry by navController.currentBackStackEntryAsState()
-                    val currentRoute by remember {
-                        derivedStateOf {
-                            GnammyRoute.routes.find {
-                                it.route == backStackEntry?.destination?.route
-                            } ?: startDestination
-                        }
-                    }
-
-                    val gnamViewModel = koinViewModel<GnamViewModel>()
-
-                    Scaffold(
-                        bottomBar = {
-                            if (currentRoute !in setOf(GnammyRoute.Login, GnammyRoute.Register)) {
-                                NavigationBar(navController, currentRoute)
-                            }
-                        },
-                        topBar = {
-                            TopBar(navController, currentRoute)
-                        }
-                    ) { contentPadding ->
-                        GnammyNavGraph(
-                            navController,
-                            startDestination.route,
-                            userViewModel,
-                            gnamViewModel,
-                            modifier = Modifier.padding(contentPadding)
-                        )
-                    }
-                }
+            when (selectedTheme) {
+                Themes.Light -> LightTheme { MainScreen(themeViewModel) }
+                Themes.Dark -> DarkTheme { MainScreen(themeViewModel) }
+                Themes.Dynamic -> DynamicTheme { MainScreen(themeViewModel) }
+                else -> AutomaticTheme { MainScreen(themeViewModel) }
             }
         }
     }
@@ -95,5 +61,58 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         //locationService.resumeLocationRequest()
+    }
+}
+
+@Composable
+fun MainScreen(themeViewModel: ThemeViewModel) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        val userViewModel = koinViewModel<UserViewModel>()
+        val loggedUserId = runBlocking { userViewModel.getLoggedUserId() }
+        var startDestination by remember { mutableStateOf(GnammyRoute.routes.first()) }
+
+        startDestination = if (loggedUserId == "NOT SET") {
+            GnammyRoute.Login
+        } else {
+            GnammyRoute.Home
+        }
+        if (loggedUserId.isNotEmpty()) {
+            userViewModel.fetchUser(loggedUserId)
+        }
+
+        val navController = rememberNavController()
+        val backStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute by remember {
+            derivedStateOf {
+                GnammyRoute.routes.find {
+                    it.route == backStackEntry?.destination?.route
+                } ?: startDestination
+            }
+        }
+
+        val gnamViewModel = koinViewModel<GnamViewModel>()
+
+        Scaffold(
+            bottomBar = {
+                if (currentRoute !in setOf(GnammyRoute.Login, GnammyRoute.Register)) {
+                    NavigationBar(navController, currentRoute)
+                }
+            },
+            topBar = {
+                TopBar(navController, currentRoute)
+            }
+        ) { contentPadding ->
+            GnammyNavGraph(
+                navController,
+                themeViewModel,
+                startDestination.route,
+                userViewModel,
+                gnamViewModel,
+                modifier = Modifier.padding(contentPadding)
+            )
+        }
     }
 }
