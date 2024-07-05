@@ -98,7 +98,7 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Saved) {
             composable(route) {
-                SavedScreen(navController, gnamViewModel, userViewModel, loggedUserId)
+                SavedScreen(navController, gnamViewModel, loggedUserId)
             }
         }
         with(GnammyRoute.Profile) {
