@@ -6,17 +6,16 @@ import com.example.gnammy.data.repository.ThemeRepository
 import com.example.gnammy.ui.theme.Themes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class ThemeViewModel(private val themePreferencesRepository: ThemeRepository) : ViewModel() {
+class ThemeViewModel(private val themeRepository: ThemeRepository) : ViewModel() {
 
     private val _theme = MutableStateFlow(Themes.Auto)
     val theme: StateFlow<Themes> = _theme
 
     init {
         viewModelScope.launch {
-            themePreferencesRepository.getThemePreference().collect {
+            themeRepository.getThemePreference().collect {
                 _theme.value = it
             }
         }
@@ -25,7 +24,7 @@ class ThemeViewModel(private val themePreferencesRepository: ThemeRepository) : 
     fun selectTheme(themePreference: Themes) {
         _theme.value = themePreference
         viewModelScope.launch {
-            themePreferencesRepository.saveThemePreference(themePreference)
+            themeRepository.saveThemePreference(themePreference)
         }
     }
 }

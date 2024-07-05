@@ -1,20 +1,14 @@
 package com.example.gnammy.data.repository
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.gnammy.ui.theme.Themes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "theme_preferences")
-
-class ThemeRepository(private val context: Context) {
-
-    private val dataStore = context.dataStore
+class ThemeRepository(private val dataStore: DataStore<Preferences>) {
 
     fun getThemePreference(): Flow<Themes> {
         return dataStore.data.map { preferences ->

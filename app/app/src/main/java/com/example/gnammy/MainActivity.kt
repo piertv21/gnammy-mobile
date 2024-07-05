@@ -1,6 +1,7 @@
 package com.example.gnammy
 
 import NavigationBar
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -40,15 +41,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val themePreferencesRepository = ThemeRepository(applicationContext)
-            val themeViewModel: ThemeViewModel = viewModel { ThemeViewModel(themePreferencesRepository) }
+            val themeViewModel: ThemeViewModel = viewModel()
             val selectedTheme by themeViewModel.theme.collectAsState()
 
             when (selectedTheme) {
                 Themes.Light -> LightTheme { MainScreen(themeViewModel) }
                 Themes.Dark -> DarkTheme { MainScreen(themeViewModel) }
+                Themes.Auto -> AutomaticTheme { MainScreen(themeViewModel) }
                 Themes.Dynamic -> DynamicTheme { MainScreen(themeViewModel) }
-                else -> AutomaticTheme { MainScreen(themeViewModel) }
             }
         }
     }
