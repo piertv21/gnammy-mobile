@@ -6,9 +6,11 @@ import androidx.room.Room
 import com.example.gnammy.data.local.GnammyDatabase
 import com.example.gnammy.data.repository.GnamRepository
 import com.example.gnammy.data.repository.LikedGnamRepository
+import com.example.gnammy.data.repository.NotificationRepository
 import com.example.gnammy.data.repository.ThemeRepository
 import com.example.gnammy.data.repository.UserRepository
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.LocationService
@@ -76,6 +78,13 @@ val appModule = module {
     }
 
     single {
+        NotificationRepository(
+            get<GnammyDatabase>().gnamDao(),
+            get<GnammyDatabase>().notificationDao()
+        )
+    }
+
+    single {
         ThemeRepository(get())
     }
 
@@ -84,5 +93,7 @@ val appModule = module {
     viewModel { GnamViewModel(get(), get()) }
 
     viewModel { ThemeViewModel(get()) }
+
+    viewModel { NotificationViewModel(get()) }
 
 }

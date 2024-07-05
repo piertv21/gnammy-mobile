@@ -21,6 +21,7 @@ import com.example.gnammy.ui.screens.register.RegisterScreen
 import com.example.gnammy.ui.screens.saved.SavedScreen
 import com.example.gnammy.ui.screens.search.SearchScreen
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.runBlocking
@@ -71,6 +72,7 @@ fun GnammyNavGraph(
     startDestination: String,
     userViewModel: UserViewModel,
     gnamViewModel: GnamViewModel,
+    notificationViewModel: NotificationViewModel,
     modifier: Modifier = Modifier
 ) {
     val usersState by userViewModel.state.collectAsStateWithLifecycle()
@@ -120,7 +122,8 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Notification) {
             composable(route) {
-                NotificationScreen(navController, modifier)
+                runBlocking { notificationViewModel.fetchNotifications(userViewModel.getLoggedUserId()) }
+                NotificationScreen(navController, notificationViewModel, userViewModel, modifier)
             }
         }
         with(GnammyRoute.Login) {

@@ -28,6 +28,7 @@ import com.example.gnammy.ui.theme.DynamicTheme
 import com.example.gnammy.ui.theme.LightTheme
 import com.example.gnammy.ui.theme.Themes
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.runBlocking
@@ -91,6 +92,7 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
         }
 
         val gnamViewModel = koinViewModel<GnamViewModel>()
+        val notificationViewModel = koinViewModel<NotificationViewModel>()
 
         Scaffold(
             bottomBar = {
@@ -108,6 +110,7 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
                 startDestination.route,
                 userViewModel,
                 gnamViewModel,
+                notificationViewModel,
                 modifier = Modifier.padding(contentPadding)
             )
         }

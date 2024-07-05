@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.gnammy.data.local.entities.Notification
 
 @Composable
 fun rememberPillState() = remember { PillState() }
@@ -62,7 +63,7 @@ class PillState {
 }
 
 @Composable
-fun NotificationPill(pillText: String, pillImageUri: Uri?, pillState: PillState) {
+fun NotificationPill(notification: Notification, pillState: PillState) {
     val show by remember { mutableStateOf(true) }
 
     val dismissState = rememberDismissState(
@@ -86,15 +87,15 @@ fun NotificationPill(pillText: String, pillImageUri: Uri?, pillState: PillState)
                 DismissBackground(dismissState)
             },
             dismissContent = {
-                Box (
+                Box(
                     modifier = Modifier
                         .aspectRatio(5f / 1f)
                         .fillMaxWidth()
                         .clip(shape = CircleShape)
                         .background(color = MaterialTheme.colorScheme.primary)
-                ){
+                ) {
                     ImageWithPlaceholder(
-                        uri = pillImageUri,
+                        uri = Uri.parse(notification.imageUri),
                         size = Size.Sm,
                         description = "propic",
                         modifier =
@@ -109,7 +110,7 @@ fun NotificationPill(pillText: String, pillImageUri: Uri?, pillState: PillState)
                         modifier = Modifier.fillMaxSize()
                     ) {
                         Text(
-                            text = pillText,
+                            text = notification.content,
                             color = MaterialTheme.colorScheme.background,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.align(Alignment.Center)

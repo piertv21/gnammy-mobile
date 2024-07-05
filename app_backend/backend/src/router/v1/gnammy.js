@@ -70,7 +70,7 @@ router.get('/following/:userId', validate(gnammyValidator.listFollowing), gnammy
 router.get('/follower/', validate(gnammyValidator.doUserFollowUser), gnammyController.doUserFollowUser)
 
 // Request notifications
-router.get('/notifications/:userId', validate(gnammyValidator.getNewNotifications), gnammyController.getNewNotifications)
+router.get('/notification/:userId', validate(gnammyValidator.getNewNotifications), gnammyController.getNewNotifications)
 
 // Set notifications as read
 router.post('/notification/:notificationId', validate(gnammyValidator.setNotificationsAsRead), gnammyController.setNotificationsAsRead)

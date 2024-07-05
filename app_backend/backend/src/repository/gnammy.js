@@ -347,15 +347,35 @@ async function getNewNotifications(userId, callback) {
     try {
         const notifications = await prisma.notification.findMany({
             where: {
-                sourceUserId: userId,
+                targetUserId: userId,
                 seen: false
-            }
+            },
+            include: {
+                sourceUser: true,
+                notificationType: true,
+                gnam: true
+            },
         });
-        callback(null, notifications);
+
+        const finalNotifications = notifications.map(notification => {
+            const sourceName = notification.sourceUser.username;
+            const gnamId = notification.gnam?.id ?? '';
+
+            return {
+                id: notification.id,
+                gnamId: gnamId,
+                sourceId: notification.sourceUserId,
+                content: `${sourceName} ${notification.notificationType.templateText} ${gnamId}`,
+                createdAt: notification.createdAt,
+            };
+        });
+
+        callback(null, finalNotifications);
     } catch (error) {
         callback(error, null);
     }
 }
+
 
 async function shortListGoals(userId, limit, callback) {
     try {
