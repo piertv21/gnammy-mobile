@@ -1,7 +1,6 @@
 package com.example.gnammy
 
 import NavigationBar
-import android.content.res.Resources.Theme
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,25 +22,23 @@ import androidx.navigation.compose.rememberNavController
 import com.example.gnammy.ui.GnammyNavGraph
 import com.example.gnammy.ui.GnammyRoute
 import com.example.gnammy.ui.composables.TopBar
-import com.example.gnammy.ui.viewmodels.GnamViewModel
-import com.example.gnammy.ui.viewmodels.ThemeViewModel
-import com.example.gnammy.ui.viewmodels.UserViewModel
-import kotlinx.coroutines.runBlocking
-import org.koin.androidx.compose.koinViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.gnammy.data.repository.ThemeRepository
 import com.example.gnammy.ui.theme.AutomaticTheme
 import com.example.gnammy.ui.theme.DarkTheme
 import com.example.gnammy.ui.theme.DynamicTheme
 import com.example.gnammy.ui.theme.LightTheme
 import com.example.gnammy.ui.theme.Themes
+import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.ThemeViewModel
+import com.example.gnammy.ui.viewmodels.UserViewModel
+import kotlinx.coroutines.runBlocking
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val themeViewModel: ThemeViewModel = viewModel()
+            val themeViewModel: ThemeViewModel = koinViewModel<ThemeViewModel>()
             val selectedTheme by themeViewModel.theme.collectAsState()
 
             when (selectedTheme) {
