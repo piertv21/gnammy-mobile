@@ -766,7 +766,6 @@ async function getGnamTimeline(userId, offset, callback) {
             createdAt: gnam.createdAt,
             authorName: gnam.author.username
         }));
-        const finalGnams = { ...gnamsWithAuthorName, offset: offset + 10 };
 
         callback(null, finalGnams);
     } catch (error) {
