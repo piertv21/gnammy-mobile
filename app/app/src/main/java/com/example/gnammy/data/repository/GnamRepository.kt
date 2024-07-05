@@ -72,7 +72,9 @@ class GnamRepository(
                             description = it.description,
                             recipe = it.recipe,
                             date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
-                            imageUri = "backendSocket/images/gnam/${it.id}.jpg"
+                            imageUri = "${backendSocket}/images/gnam/${it.id}.jpg",
+                            authorImageUri = "${backendSocket}/images/user/${it.authorId}.jpg",
+                            authorName = it.authorName
                         )
                         gnamDao.upsert(gnam)
                     }
@@ -106,7 +108,9 @@ class GnamRepository(
                             description = it.description,
                             recipe = it.recipe,
                             date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
-                            imageUri = "${backendSocket}/images/gnam/${it.id}.jpg"
+                            imageUri = "${backendSocket}/images/gnam/${it.id}.jpg",
+                            authorImageUri = "${backendSocket}/images/user/${it.authorId}.jpg",
+                            authorName = it.authorName
                         )
                     )
                 }

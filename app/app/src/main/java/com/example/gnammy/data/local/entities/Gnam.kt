@@ -12,4 +12,6 @@ data class Gnam(
     val date: Long,
     val description: String,
     val recipe: String,
+    val authorImageUri: String,
+    val authorName: String
 )

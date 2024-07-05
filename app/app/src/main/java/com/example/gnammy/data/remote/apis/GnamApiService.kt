@@ -18,6 +18,7 @@ class GnamResponse {
     var recipe: String = ""
     var shareCount: Int = 0
     var createdAt: String = ""
+    var authorName: String = ""
 }
 
 class GnamWrapperResponse {
@@ -40,7 +41,10 @@ interface GnamApiService {
     ): Response<GnamWrapperResponse>
 
     @GET("/gnam/timeline/{userId}/{offset}")
-    suspend fun getGnamTimeline(@Path("userId") userId: String, @Path("offset") offset: Int): Response<GnamListWrapperResponse>
+    suspend fun getGnamTimeline(
+        @Path("userId") userId: String,
+        @Path("offset") offset: Int
+    ): Response<GnamListWrapperResponse>
 
     @GET("/gnam/{gnamId}")
     suspend fun getGnam(@Path("gnamId") gnamId: String): Response<GnamWrapperResponse>

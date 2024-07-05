@@ -36,18 +36,17 @@ fun RecipeCardBig(
     gnam: Gnam,
     modifier: Modifier
 ) {
-    val propicUri = Uri.parse("https://budgetbytes.com/wp-content/uploads/2022/07/Beth-2022-3-60x60.jpg")
-
-    Column(modifier = modifier
-        .clip(RoundedCornerShape(20.dp))
-        .background(color = MaterialTheme.colorScheme.primaryContainer)
-        .padding(10.dp)
-        .fillMaxSize()
-        .clip(RoundedCornerShape(20.dp))
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .background(color = MaterialTheme.colorScheme.primaryContainer)
+            .padding(10.dp)
+            .fillMaxSize()
+            .clip(RoundedCornerShape(20.dp))
     )
     {
         // titleBar
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = RoundedCornerShape(20.dp))
@@ -59,18 +58,18 @@ fun RecipeCardBig(
                 text = gnam.title,
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Start,
-                style =  MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier
                     .fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
             ) {
                 ImageWithPlaceholder(
-                    uri = propicUri,
+                    uri = Uri.parse(gnam.authorImageUri),
                     size = Size.Sm,
                     description = "propic",
                     modifier = Modifier
@@ -82,7 +81,7 @@ fun RecipeCardBig(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = " Beth, Budget Bytes",
+                    text = gnam.authorName,
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -116,7 +115,7 @@ fun RecipeCardBig(
                     .background(color = MaterialTheme.colorScheme.primaryContainer)
                     .clip(shape = RoundedCornerShape(20.dp))
                     .fillMaxSize()
-                    .padding(0.dp , 0.dp, 0.dp, 100.dp)
+                    .padding(0.dp, 0.dp, 0.dp, 100.dp)
             )
 
             // descriptionBar

@@ -18,7 +18,8 @@ class LikedGnamRepository(
     private val likedGnamDao: LikedGnamDao,
     private val contentResolver: ContentResolver
 ) {
-    private val apiService: GnamApiService = RetrofitClient.instance.create(GnamApiService::class.java)
+    private val apiService: GnamApiService =
+        RetrofitClient.instance.create(GnamApiService::class.java)
 
     val likedGnams: Flow<List<Gnam>> = likedGnamDao.getAllLikedGnams()
 
@@ -30,14 +31,21 @@ class LikedGnamRepository(
                 val gnamRes = backendGnams.body()
                 val listGnams: MutableList<Gnam> = mutableListOf()
                 gnamRes?.gnams?.forEach() {
-                    listGnams.add(Gnam(
-                        id = it.id,
-                        authorId = it.authorId,
-                        title = it.title,
-                        description = it.description,
-                        recipe = it.recipe,
-                        date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
-                        imageUri = "$backendSocket/images/gnam/${it.id}.jpg"))
+                    listGnams.add(
+                        Gnam(
+                            id = it.id,
+                            authorId = it.authorId,
+                            title = it.title,
+                            description = it.description,
+                            recipe = it.recipe,
+                            date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
+                            imageUri = "$backendSocket/images/gnam/${it.id}.jpg",
+                            authorImageUri = "$backendSocket/images/user/${it.authorId}.jpg",
+                            authorName = it.authorName
+                        )
+                    )
+
+
                 }
                 gnamDao.insertAll(listGnams)
 
