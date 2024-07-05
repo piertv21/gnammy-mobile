@@ -160,6 +160,11 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) 
             include: {
                 _count: {
                     select: { likes: true }
+                },
+                author: {
+                    select: {
+                        username: true
+                    }
                 }
             },
             orderBy: {
@@ -171,7 +176,17 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) 
 
         const filteredGnams = gnams.filter(gnam => gnam._count.likes >= numberOfLikes);
 
-        callback(null, filteredGnams);
+        const gnamsWithAuthorName = filteredGnams.map(gnam => ({
+            id: gnam.id,
+            authorId: gnam.authorId,
+            title: gnam.title,
+            description: gnam.description,
+            recipe: gnam.recipe,
+            shareCount: gnam.shareCount,
+            createdAt: gnam.createdAt,
+            authorName: gnam.author.username
+        }));
+        callback(null, gnamsWithAuthorName);
     } catch (error) {
         callback(error, null);
     }
@@ -183,9 +198,26 @@ async function getGnam(gnamId, callback) {
         const gnam = await prisma.gnam.findUnique({
             where: {
                 id: gnamId
+            },
+            include: {
+                author: {
+                    select: {
+                        username: true
+                    }
+                }
             }
         });
-        callback(null, gnam);
+        const gnamWithAuthorName = {
+            id: gnam.id,
+            authorId: gnam.authorId,
+            title: gnam.title,
+            description: gnam.description,
+            recipe: gnam.recipe,
+            shareCount: gnam.shareCount,
+            createdAt: gnam.createdAt,
+            authorName: gnam.author.username
+        };
+        callback(null, gnamWithAuthorName);
     } catch (error) {
         callback(error, null);
     }
@@ -194,9 +226,26 @@ async function getGnam(gnamId, callback) {
 async function listGnams(callback) {
     try {
         const gnams = await prisma.gnam.findMany({
-            take: 5
+            take: 5,
+            include: {
+                author: {
+                    select: {
+                        username: true
+                    }
+                }
+            }
         });
-        callback(null, gnams);
+        const gnamsWithAuthorName = gnams.map(gnam => ({
+            id: gnam.id,
+            authorId: gnam.authorId,
+            title: gnam.title,
+            description: gnam.description,
+            recipe: gnam.recipe,
+            shareCount: gnam.shareCount,
+            createdAt: gnam.createdAt,
+            authorName: gnam.author.username
+        }));
+        callback(null, gnamsWithAuthorName);
     } catch (error) {
         callback(error, null);
     }
@@ -577,9 +626,26 @@ async function getUserGnams(userId, callback) {
         const gnams = await prisma.gnam.findMany({
             where: {
                 authorId: userId
+            },
+            include: {
+                author: {
+                    select: {
+                        username: true
+                    }
+                }
             }
         });
-        callback(null, gnams);
+        const gnamsWithAuthorName = gnams.map(gnam => ({
+            id: gnam.id,
+            authorId: gnam.authorId,
+            title: gnam.title,
+            description: gnam.description,
+            recipe: gnam.recipe,
+            shareCount: gnam.shareCount,
+            createdAt: gnam.createdAt,
+            authorName: gnam.author.username
+        }));
+        callback(null, gnamsWithAuthorName);
     } catch (error) {
         callback(error, null);
     }
@@ -643,9 +709,26 @@ async function getSavedGnams(userId, callback) {
                         userId: userId
                     }
                 }
+            },
+            include: {
+                author: {
+                    select: {
+                        username: true
+                    }
+                }
             }
         });
-        callback(null, gnams);
+        const gnamsWithAuthorName = gnams.map(gnam => ({
+            id: gnam.id,
+            authorId: gnam.authorId,
+            title: gnam.title,
+            description: gnam.description,
+            recipe: gnam.recipe,
+            shareCount: gnam.shareCount,
+            createdAt: gnam.createdAt,
+            authorName: gnam.author.username
+        }));
+        callback(null, gnamsWithAuthorName);
     } catch (error) {
         callback(error, null);
     }
@@ -663,15 +746,34 @@ async function getGnamTimeline(userId, offset, callback) {
             skip: offset,
             orderBy: {
                 createdAt: 'desc'
+            },
+            include: {
+                author: {
+                    select: {
+                        username: true
+                    }
+                }
             }
         });
 
-    gnams.offset = offset + 10;
-    callback(null, gnams);
+        const gnamsWithAuthorName = gnams.map(gnam => ({
+            id: gnam.id,
+            authorId: gnam.authorId,
+            title: gnam.title,
+            description: gnam.description,
+            recipe: gnam.recipe,
+            shareCount: gnam.shareCount,
+            createdAt: gnam.createdAt,
+            authorName: gnam.author.username
+        }));
+        const finalGnams = { ...gnamsWithAuthorName, offset: offset + 10 };
+
+        callback(null, finalGnams);
     } catch (error) {
         callback(error, null);
     }
 }
+
 
 module.exports = {
     login,
