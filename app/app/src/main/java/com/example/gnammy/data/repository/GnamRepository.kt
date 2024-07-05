@@ -156,7 +156,7 @@ class GnamRepository(
             if (response.isSuccessful) {
                 val gnamResponse = response.body()?.gnam
                 if (gnamResponse != null) {
-                    Result.Success("Gnam published successfully with ID: ${gnamResponse.id}")
+                    Result.Success("Gnam pubblicato con successo!")
                 } else {
                     Result.Error("Empty response received in publishGnam")
                 }

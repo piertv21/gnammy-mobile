@@ -73,18 +73,15 @@ fun PostScreen(
                     ingredientsAndRecipe = ""
                     imageUri = null
                     gnamViewModel.resetPostGnamState()
-                    snackbarHostState.showSnackbar("Gnam postato con successo")
+                    snackbarHostState.showSnackbar(state.data)
                 }
             }
-
             is Result.Error -> {
                 scope.launch {
-                    snackbarHostState.showSnackbar("Errore durante il caricamento dei dati")
+                    snackbarHostState.showSnackbar(state.message)
                 }
             }
-
-            null -> { /* No action */
-            }
+            null -> { /* No action */ }
         }
     }
 
