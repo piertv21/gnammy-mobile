@@ -226,13 +226,15 @@ async function getGnam(gnamId, callback) {
 async function listGnams(callback) {
     try {
         const gnams = await prisma.gnam.findMany({
-            take: 5,
             include: {
                 author: {
                     select: {
                         username: true
                     }
                 }
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         });
         const gnamsWithAuthorName = gnams.map(gnam => ({

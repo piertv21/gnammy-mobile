@@ -38,13 +38,11 @@ import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.Result
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PostScreen(
-    navController: NavHostController,
-    modifier: Modifier,
-    userViewModel: UserViewModel,
     gnamViewModel: GnamViewModel,
     loggedUserId: String
 ) {
@@ -52,7 +50,6 @@ fun PostScreen(
     var shortDescription by remember { mutableStateOf("") }
     var ingredientsAndRecipe by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val postGnamState by gnamViewModel.postGnamState.collectAsState()
 
     val context = LocalContext.current
     val imagePickerLauncher = rememberLauncherForActivityResult(
@@ -63,27 +60,6 @@ fun PostScreen(
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(postGnamState) {
-        when (val state = postGnamState) {
-            is Result.Success -> {
-                scope.launch {
-                    title = ""
-                    shortDescription = ""
-                    ingredientsAndRecipe = ""
-                    imageUri = null
-                    gnamViewModel.resetPostGnamState()
-                    snackbarHostState.showSnackbar(state.data)
-                }
-            }
-            is Result.Error -> {
-                scope.launch {
-                    snackbarHostState.showSnackbar(state.message)
-                }
-            }
-            null -> { /* No action */ }
-        }
-    }
 
     Scaffold(
         snackbarHost = {
@@ -161,22 +137,45 @@ fun PostScreen(
                 Button(
                     modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
                     onClick = {
-                        val error =
-                            validateInput(title, shortDescription, ingredientsAndRecipe, imageUri)
+                        val error = validateInput(
+                            title,
+                            shortDescription,
+                            ingredientsAndRecipe,
+                            imageUri
+                        )
                         if (error.isNotEmpty()) {
                             scope.launch {
                                 snackbarHostState.showSnackbar(error)
                             }
                         } else {
-                            imageUri?.let { uri ->
-                                gnamViewModel.publishGnam(
-                                    context = context,
-                                    currentUserId = loggedUserId,
-                                    title = title,
-                                    shortDescription = shortDescription,
-                                    ingredientsAndRecipe = ingredientsAndRecipe,
-                                    imageUri = uri
-                                )
+                            val state = runBlocking {
+                                imageUri?.let { uri ->
+                                    gnamViewModel.publishGnam(
+                                        context = context,
+                                        currentUserId = loggedUserId,
+                                        title = title.trim(),
+                                        shortDescription = shortDescription.trim(),
+                                        ingredientsAndRecipe = ingredientsAndRecipe.trim(),
+                                        imageUri = uri
+                                    )
+                                }
+                            }
+                            when (state) {
+                                is Result.Success -> {
+                                    scope.launch {
+                                        title = ""
+                                        shortDescription = ""
+                                        ingredientsAndRecipe = ""
+                                        imageUri = null
+                                        snackbarHostState.showSnackbar(state.data)
+                                    }
+                                }
+                                is Result.Error -> {
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar(state.message)
+                                    }
+                                }
+                                null -> { /* No action */ }
                             }
                         }
                     }

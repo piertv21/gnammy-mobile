@@ -42,9 +42,6 @@ class GnamViewModel(
         initialValue = GnamsState(emptyList())
     )
 
-    private val _postGnamState = MutableStateFlow<Result<String>?>(null)
-    val postGnamState: StateFlow<Result<String>?> = _postGnamState
-
     fun fetchGnam(gnamId: String) {
         viewModelScope.launch {
             repository.fetchGnam(gnamId)
@@ -64,28 +61,22 @@ class GnamViewModel(
         }
     }
 
-    fun publishGnam(
+    suspend fun publishGnam(
         context: Context,
         currentUserId: String,
         title: String,
         shortDescription: String,
         ingredientsAndRecipe: String,
         imageUri: Uri
-    ) {
-        viewModelScope.launch {
-            _postGnamState.value = repository.publishGnam(
-                context,
-                currentUserId,
-                title,
-                shortDescription,
-                ingredientsAndRecipe,
-                imageUri
-            )
-        }
-    }
-
-    fun resetPostGnamState() {
-        _postGnamState.value = null
+    ): Result<String> {
+        return repository.publishGnam(
+            context,
+            currentUserId,
+            title,
+            shortDescription,
+            ingredientsAndRecipe,
+            imageUri
+        )
     }
 
     fun syncSavedGnam(userId: String) {
