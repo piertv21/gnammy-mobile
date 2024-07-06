@@ -20,13 +20,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissState
@@ -67,7 +67,7 @@ class PillState {
 
 @Composable
 fun NotificationPill(notification: Notification, pillState: PillState) {
-    val show by remember { mutableStateOf(true) }
+    var show by remember { mutableStateOf(true) }
 
     val dismissState = rememberDismissState(
         confirmStateChange = {
@@ -85,12 +85,12 @@ fun NotificationPill(notification: Notification, pillState: PillState) {
     ) {
         SwipeToDismiss(
             state = dismissState,
-            modifier = Modifier,
             background = {
                 DismissBackground(dismissState)
             },
             dismissContent = {
-                Box(
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .aspectRatio(5f / 1f)
                         .fillMaxWidth()
@@ -100,29 +100,29 @@ fun NotificationPill(notification: Notification, pillState: PillState) {
                             Log.i("NotificationPill", "Notification clicked")
                             pillState.currentState = PillState.State.Read
                         }
+                        .padding(2.dp)
                 ) {
                     ImageWithPlaceholder(
                         uri = Uri.parse(notification.imageUri),
                         size = Size.Sm,
                         description = "propic",
-                        modifier =
-                        Modifier
+                        modifier = Modifier
                             .padding(5.dp)
                             .aspectRatio(1f)
                             .clip(shape = CircleShape)
                             .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
                     )
 
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Text(
-                            text = notification.content,
-                            color = MaterialTheme.colorScheme.background,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
+                    Text(
+                        text = notification.content,
+                        color = MaterialTheme.colorScheme.background,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
                 }
             },
             dismissThresholds = {
@@ -131,6 +131,7 @@ fun NotificationPill(notification: Notification, pillState: PillState) {
         )
     }
 }
+
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

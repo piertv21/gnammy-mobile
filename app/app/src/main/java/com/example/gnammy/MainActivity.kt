@@ -101,7 +101,7 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
                 }
             },
             topBar = {
-                TopBar(navController, currentRoute)
+                TopBar(navController, currentRoute, notificationViewModel)
             }
         ) { contentPadding ->
             GnammyNavGraph(

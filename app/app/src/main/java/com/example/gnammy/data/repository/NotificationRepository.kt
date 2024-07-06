@@ -19,7 +19,7 @@ class NotificationRepository(
 ) {
     private val apiService: NotificationApiService =
         RetrofitClient.instance.create(NotificationApiService::class.java)
-
+    
     val notifications: Flow<List<Notification>> = notificationDao.getAllNotification()
 
     suspend fun fetchNotifications(userId: String) {

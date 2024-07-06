@@ -134,6 +134,7 @@ fun GnammyNavGraph(
             }
         }
         with(GnammyRoute.Notification) {
+            runBlocking { notificationViewModel.fetchNotifications(loggedUserId) }
             composable(route) {
                 NotificationScreen(navController, notificationViewModel, userViewModel, modifier)
             }

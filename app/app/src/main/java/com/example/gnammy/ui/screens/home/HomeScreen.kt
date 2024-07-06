@@ -66,7 +66,9 @@ fun HomeScreen(
         val job = coroutineScope.launch {
             while (true) {
                 Log.i("HomeScreen", "fetching notifications")
-                notificationViewModel.fetchNotifications(loggedUserId)
+                if (notificationViewModel.state.value.notifications.isEmpty()) {
+                    notificationViewModel.fetchNotifications(loggedUserId)
+                }
                 delay(2 * 60 * 1000)
             }
         }
