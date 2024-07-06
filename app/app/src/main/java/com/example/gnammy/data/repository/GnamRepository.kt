@@ -16,6 +16,7 @@ import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.data.local.entities.LikedGnam
 import com.example.gnammy.data.remote.RetrofitClient
 import com.example.gnammy.data.remote.apis.GnamApiService
+import com.example.gnammy.data.remote.apis.LikeRequest
 import com.example.gnammy.utils.DateFormats
 import com.example.gnammy.utils.Result
 import com.example.gnammy.utils.dateStringToMillis
@@ -177,8 +178,19 @@ class GnamRepository(
 
     suspend fun removeFromTimeline(gnam: Gnam, liked: Boolean) {
         if (liked) {
-            gnamDao.upsert(gnam)
-            likedGnamDao.insertLikedGnam(LikedGnam(gnam.id))
+            try {
+                val response = apiService.likeGnam(LikeRequest(gnam.id, getCurrentUserId()))
+                if (response.isSuccessful) {
+                    gnamDao.upsert(gnam)
+                    likedGnamDao.insertLikedGnam(LikedGnam(gnam.id))
+                } else {
+                    Log.e("GnamRepository", "Error in removing like: ${response.message()}")
+                }
+            } catch (e: IOException) {
+                Log.e("GnamRepository", "Network error in removing like", e)
+            } catch (e: HttpException) {
+                Log.e("GnamRepository", "HTTP error in removing like", e)
+            }
         }
         val currentTimeline = timeline.value.toMutableList()
         currentTimeline.remove(gnam)

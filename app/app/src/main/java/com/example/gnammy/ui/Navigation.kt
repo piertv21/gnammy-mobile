@@ -141,7 +141,7 @@ fun GnammyNavGraph(
                 val gnam = requireNotNull(gnamState.gnams.find {
                     it.id == backStackEntry.arguments?.getString("gnamId")
                 })
-                GnamDetailsScreen(navController, gnam)
+                GnamDetailsScreen(navController, gnam, gnamViewModel, loggedUserId)
             }
         }
         with(GnammyRoute.Goals) {
