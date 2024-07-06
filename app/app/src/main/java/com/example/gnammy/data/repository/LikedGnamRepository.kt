@@ -50,7 +50,6 @@ class LikedGnamRepository(
                 gnamDao.insertAll(listGnams)
 
                 val likedGnamsIds = listGnams.map { it.id }
-                likedGnamDao.deleteAll()
                 likedGnamDao.insertAll(likedGnamsIds.map { LikedGnam(it) })
 
                 Result.Success("Saved gnams synced successfully")
@@ -64,13 +63,9 @@ class LikedGnamRepository(
 
     suspend fun removeGnamFromSaved(gnam: Gnam, loggedUserId: String): Result<String> {
         return try {
-            val response = apiService.unlikeGnam(LikeRequest(gnam.id, loggedUserId))
-
-            Log.e("removeGnamFromSaved", response.body().toString())
-
+            val response = apiService.unlikeGnam(loggedUserId, gnam.id)
             if (response.isSuccessful) {
-                //gnamDao.deleteGnam(gnam.id)
-                //likedGnamDao.deleteLikedGnam(gnam.id)
+                gnamDao.deleteGnam(gnam.id)
                 Result.Success("Gnam removed from saved successfully")
             } else {
                 Result.Error("Error in removing gnam from saved: ${response.message()}")

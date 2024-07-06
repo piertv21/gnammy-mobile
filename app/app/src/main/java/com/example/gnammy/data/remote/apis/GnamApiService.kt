@@ -78,6 +78,6 @@ interface GnamApiService {
     @POST("/like/")
     suspend fun likeGnam(@Body request: LikeRequest): Response<LikeWrapperResponse>
 
-    @DELETE("/like/")
-    suspend fun unlikeGnam(@Body request: LikeRequest): Response<LikeWrapperResponse>
+    @DELETE("/like/{userId}/{gnamId}")
+    suspend fun unlikeGnam(@Path("userId") userId: String, @Path("gnamId") gnamId: String): Response<LikeWrapperResponse>
 }

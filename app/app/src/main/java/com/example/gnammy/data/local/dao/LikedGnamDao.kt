@@ -14,9 +14,6 @@ interface LikedGnamDao {
     @Insert
     suspend fun insertLikedGnam(likedGnam: LikedGnam)
 
-    @Query("DELETE FROM liked_gnams WHERE gnamId = :gnamId")
-    suspend fun deleteLikedGnam(gnamId: String)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(likedGnams: List<LikedGnam>)
 

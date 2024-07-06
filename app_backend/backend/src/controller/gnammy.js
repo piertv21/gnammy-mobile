@@ -325,7 +325,7 @@ const postLike = (req, res) => {
 }
 
 const deleteLike = (req, res) => {
-    const { userId, gnamId } = req.body;
+    const { userId, gnamId } = req.params;
 
     gnammyRepository.deleteLike(userId, gnamId, (err, likes) => {
         if (err) {
@@ -333,7 +333,7 @@ const deleteLike = (req, res) => {
                 .json({ error: `Error during like deletion: ${err}` });
         }
         gnammyRepository.getUserIdFromGnamId(gnamId, async (err, targetUserId) => {
-            if (!err) await gnammyRepository.deleteNotification(sourceUser, targetUser, gnamId, NotificationType.Like);
+            if (!err) await gnammyRepository.deleteNotification(userId, targetUserId, gnamId, NotificationType.Like);
         });
         res.status(httpStatus.OK).json({ likes });
     });
