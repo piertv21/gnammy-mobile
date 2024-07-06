@@ -35,7 +35,7 @@ router.patch('/user/:userId', userMulter.single('image'), validate(gnammyValidat
 router.post('/like/', validate(gnammyValidator.postLike), gnammyController.postLike)
 
 // Delete like
-router.delete('/like/', validate(gnammyValidator.deleteLike), gnammyController.deleteLike)
+router.delete('/like/:userId/:gnamId', validate(gnammyValidator.deleteLike), gnammyController.deleteLike)
 
 // Ritorna booleano se l'utente ha messo like
 router.get('/like/', validate(gnammyValidator.getLike), gnammyController.getLike)

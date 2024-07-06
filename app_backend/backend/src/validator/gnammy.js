@@ -79,7 +79,7 @@ const postLike = {
 }
 
 const deleteLike = {
-    body: Joi.object().keys({
+    params: Joi.object().keys({
         userId: Joi.string().required(),
         gnamId: Joi.string().required(),
     }),
