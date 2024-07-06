@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.gnammy.ui.GnammyRoute
 import com.example.gnammy.ui.composables.Achievement
 import com.example.gnammy.ui.composables.NotificationPill
 import com.example.gnammy.ui.composables.PillState
@@ -96,8 +97,26 @@ fun NotificationScreen(
                 val pillState = rememberPillState()
                 NotificationPill(notification, pillState)
                 LaunchedEffect(key1 = pillState.currentState) {
-                    if (pillState.currentState == PillState.State.Read) {
-                        notificationViewModel.setAsSeen(notification.id)
+                    when (pillState.currentState) {
+                        PillState.State.Cancelled -> notificationViewModel.setAsSeen(notification.id)
+                        PillState.State.Read -> {
+                            notificationViewModel.setAsSeen(notification.id)
+                            if (notification.gnamId == null) {
+                                navHostController.navigate(
+                                    GnammyRoute.Profile.buildRoute(
+                                        notification.sourceId
+                                    )
+                                )
+                            } else {
+                                navHostController.navigate(
+                                    GnammyRoute.GnamDetails.buildRoute(
+                                        notification.gnamId
+                                    )
+                                )
+                            }
+                        }
+
+                        else -> {}
                     }
                 }
             }

@@ -63,8 +63,9 @@ class NotificationRepository(
             val response = apiService.setAsSeen(notificationId)
 
             if (response.isSuccessful) {
-                val notificationResponse = response.body()?.notification
-                Log.i("NotificationRepository", "Notification seen: ${notificationResponse?.id}")
+                val notificationResponse = response.body()?.result
+                notificationDao.delete(notificationId)
+                Log.i("NotificationRepository", "Notification seen: $notificationResponse")
             } else {
                 Log.e(
                     "NotificationRepository",

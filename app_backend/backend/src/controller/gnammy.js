@@ -555,12 +555,12 @@ const getUserGnams = (req, res) => {
 const setNotificationsAsRead = (req, res) => {
     const { notificationId } = req.params;
 
-    gnammyRepository.setNotificationsAsRead(notificationId, (err, notification) => {
+    gnammyRepository.setNotificationsAsRead(notificationId, (err, result) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during the notification update: ${err}` });
         }
-        res.status(httpStatus.OK).json({ notification });
+        res.status(httpStatus.OK).json({ result });
     });
 }
 

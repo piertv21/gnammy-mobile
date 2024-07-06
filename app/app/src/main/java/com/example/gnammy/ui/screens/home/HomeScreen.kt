@@ -20,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +39,9 @@ import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
 import com.example.gnammy.ui.composables.RecipeCardBig
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.utils.isOnline
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalSwipeableCardApi::class)
@@ -46,6 +49,8 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavHostController,
     gnamViewModel: GnamViewModel,
+    notificationViewModel: NotificationViewModel,
+    loggedUserId: String,
     modifier: Modifier = Modifier
 ) {
     val gnamsState by gnamViewModel.timelineState.collectAsStateWithLifecycle()
@@ -54,6 +59,22 @@ fun HomeScreen(
     val offline = remember { mutableStateOf(true) }
     val fetchMore = remember { mutableStateOf(false) }
     val loading = remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    DisposableEffect(Unit) {
+        val job = coroutineScope.launch {
+            while (true) {
+                Log.i("HomeScreen", "fetching notifications")
+                notificationViewModel.fetchNotifications(loggedUserId)
+                delay(2 * 60 * 1000)
+            }
+        }
+
+        onDispose {
+            job.cancel()
+        }
+    }
 
     LaunchedEffect(Unit) {
         if (isOnline(context)) {
@@ -114,7 +135,7 @@ fun HomeScreen(
                                     .fillMaxSize()
                                     .swipableCard(
                                         state = state,
-                                        blockedDirections = listOf(Direction.Down),
+                                        blockedDirections = listOf(Direction.Down, Direction.Up),
                                         onSwiped = {
                                         },
                                         onSwipeCancel = {

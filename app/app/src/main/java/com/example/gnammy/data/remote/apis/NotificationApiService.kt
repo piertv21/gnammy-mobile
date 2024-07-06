@@ -13,8 +13,8 @@ class NotificationResponse {
     var createdAt: String = ""
 }
 
-class NotificationWrapper {
-    var notification: NotificationResponse? = null
+class SetAsSeenResponse {
+    var result: Boolean = false
 }
 
 class NotificationListResponse {
@@ -23,7 +23,7 @@ class NotificationListResponse {
 
 interface NotificationApiService {
     @POST("/notification/{notificationId}")
-    suspend fun setAsSeen(@Path("notificationId") notificationId: String): Response<NotificationWrapper>
+    suspend fun setAsSeen(@Path("notificationId") notificationId: String): Response<SetAsSeenResponse>
 
     @GET("/notification/{userId}")
     suspend fun getNewNotifications(@Path("userId") userId: String): Response<NotificationListResponse>

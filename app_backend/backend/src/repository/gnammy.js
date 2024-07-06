@@ -362,12 +362,13 @@ async function getNewNotifications(userId, callback) {
         const finalNotifications = notifications.map(notification => {
             const sourceName = notification.sourceUser.username;
             const gnamId = notification.gnam?.id ?? '';
+            const gnamTitle = notification.gnam?.title ?? '';
 
             return {
                 id: notification.id,
                 gnamId: gnamId,
                 sourceId: notification.sourceUserId,
-                content: `${sourceName} ${notification.notificationType.templateText} ${gnamId}`,
+                content: `${sourceName} ${notification.notificationType.templateText} ${gnamTitle}`,
                 createdAt: notification.createdAt,
             };
         });
@@ -692,14 +693,14 @@ async function shareGnam(gnamId, callback) {
 
 async function setNotificationsAsRead(notificationId, callback) {
     try {
-        const updatedNotification = await prisma.notification.update({
+        await prisma.notification.update({
             where: { id: notificationId },
             data: {
                 seen: true
             }
         });
 
-        callback(null, updatedNotification);
+        callback(null, true);
     } catch (error) {
         callback(error, null);
     }

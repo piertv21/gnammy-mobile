@@ -1,7 +1,6 @@
 package com.example.gnammy.data.local.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -16,6 +15,6 @@ interface NotificationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(notifications: List<Notification>)
 
-    @Delete
-    suspend fun delete(notification: Notification)
+    @Query("DELETE FROM notifications WHERE id = :notificationId")
+    suspend fun delete(notificationId: String)
 }

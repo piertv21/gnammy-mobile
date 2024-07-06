@@ -3,12 +3,22 @@
 
 package com.example.gnammy.ui.composables
 
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,24 +28,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissDirection
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissState
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.FractionalThreshold
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Icon
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.SwipeToDismiss
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -56,6 +58,7 @@ fun rememberPillState() = remember { PillState() }
 class PillState {
     enum class State {
         Read,
+        Cancelled,
         Unread
     }
 
@@ -69,7 +72,7 @@ fun NotificationPill(notification: Notification, pillState: PillState) {
     val dismissState = rememberDismissState(
         confirmStateChange = {
             if (it == DismissValue.DismissedToStart || it == DismissValue.DismissedToEnd) {
-                pillState.currentState = PillState.State.Read
+                pillState.currentState = PillState.State.Cancelled
                 true
             } else {
                 false
@@ -93,6 +96,10 @@ fun NotificationPill(notification: Notification, pillState: PillState) {
                         .fillMaxWidth()
                         .clip(shape = CircleShape)
                         .background(color = MaterialTheme.colorScheme.primary)
+                        .clickable {
+                            Log.i("NotificationPill", "Notification clicked")
+                            pillState.currentState = PillState.State.Read
+                        }
                 ) {
                     ImageWithPlaceholder(
                         uri = Uri.parse(notification.imageUri),

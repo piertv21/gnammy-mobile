@@ -35,7 +35,6 @@ sealed class GnammyRoute(
     data object Search : GnammyRoute("search", "Search")
     data object Post : GnammyRoute("post", "Post")
     data object Saved : GnammyRoute("saved", "Saved")
-    data object Profile : GnammyRoute("profile", "Profile")
     data object Notification : GnammyRoute("notification", "Notification")
     data object Login : GnammyRoute("login", "Login")
     data object Register : GnammyRoute("register", "Register")
@@ -45,6 +44,14 @@ sealed class GnammyRoute(
         listOf(navArgument("gnamId") { type = NavType.StringType })
     ) {
         fun buildRoute(gnamId: String) = "gnamDetails/$gnamId"
+    }
+
+    data object Profile : GnammyRoute(
+        "profile/{userId}",
+        "Profile",
+        listOf(navArgument("userId") { type = NavType.StringType })
+    ) {
+        fun buildRoute(userId: String) = "profile/$userId"
     }
 
     data object Goals : GnammyRoute("goals", "Goals")
@@ -87,7 +94,13 @@ fun GnammyNavGraph(
     ) {
         with(GnammyRoute.Home) {
             composable(route) {
-                HomeScreen(navController, gnamViewModel, modifier)
+                HomeScreen(
+                    navController,
+                    gnamViewModel,
+                    notificationViewModel,
+                    loggedUserId,
+                    modifier
+                )
             }
         }
         with(GnammyRoute.Search) {
@@ -106,9 +119,9 @@ fun GnammyNavGraph(
             }
         }
         with(GnammyRoute.Profile) {
-            composable(route, arguments) {
+            composable(route, arguments) { backStackEntry ->
                 val user = requireNotNull(usersState.users.find {
-                    it.id == loggedUserId
+                    it.id == (backStackEntry.arguments?.getString("userId") ?: loggedUserId)
                 })
                 ProfileScreen(
                     user,
@@ -122,7 +135,6 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Notification) {
             composable(route) {
-                runBlocking { notificationViewModel.fetchNotifications(userViewModel.getLoggedUserId()) }
                 NotificationScreen(navController, notificationViewModel, userViewModel, modifier)
             }
         }
