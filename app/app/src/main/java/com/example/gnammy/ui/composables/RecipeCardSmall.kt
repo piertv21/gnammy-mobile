@@ -36,8 +36,7 @@ fun RecipeCardSmall(
         .clickable {
             navHostController.navigate(GnammyRoute.GnamDetails.buildRoute(gnam.id))
         }
-    )
-    {
+    ) {
         ImageWithPlaceholder(uri = Uri.parse(gnam.imageUri),
             size = Size.Lg,
             description = "Recipe Image",
@@ -52,8 +51,7 @@ fun RecipeCardSmall(
                 .align(Alignment.BottomCenter)
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(color = MaterialTheme.colorScheme.primary)
-        )
-        {
+        ) {
             Text(
                 text = gnam.title,
                 color = MaterialTheme.colorScheme.background,

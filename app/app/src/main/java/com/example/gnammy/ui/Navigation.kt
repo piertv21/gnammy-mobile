@@ -141,10 +141,7 @@ fun GnammyNavGraph(
                 val gnam = requireNotNull(gnamState.gnams.find {
                     it.id == backStackEntry.arguments?.getString("gnamId")
                 })
-                val user = requireNotNull(usersState.users.find {
-                    it.id == gnam.authorId
-                })
-                GnamDetailsScreen(navController, user, gnam)
+                GnamDetailsScreen(navController, gnam)
             }
         }
         with(GnammyRoute.Goals) {

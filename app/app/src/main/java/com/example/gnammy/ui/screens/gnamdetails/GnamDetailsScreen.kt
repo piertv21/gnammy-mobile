@@ -2,7 +2,6 @@ package com.example.gnammy.ui.screens.gnamdetails
 
 import android.content.Intent
 import android.net.Uri
-import androidx.annotation.FloatRange
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -32,52 +31,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.MeasurePolicy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.gnammy.data.local.entities.Gnam
-import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.Size
-
-/* //TODO Remove this commented code (useless ??)
-@Composable
-fun OverlappingColumn(
-    modifier: Modifier = Modifier,
-    @FloatRange(from = 0.1, to = 1.0) overlapFactor: Float = 0.5f,
-    content: @Composable () -> Unit,
-) {
-    val measurePolicy = overlappingColumnMeasurePolicy(overlapFactor)
-    Layout(
-        measurePolicy = measurePolicy,
-        content = content,
-        modifier = modifier
-    )
-}
-
-fun overlappingColumnMeasurePolicy(overlapFactor: Float) = MeasurePolicy { measurables, constraints ->
-    val placeables = measurables.map { measurable -> measurable.measure(constraints) }
-    val width = placeables.maxOf { it.width }
-    val height = (placeables.subList(1, placeables.size).sumOf { it.height } * overlapFactor + placeables[0].height).toInt()
-    layout(width, height) {
-        var yPos = 0
-        for (placeable in placeables) {
-            placeable.placeRelative(0, yPos, 0f)
-            yPos += (placeable.height * overlapFactor).toInt()
-        }
-    }
-}*/
+import com.example.gnammy.utils.DateFormats
+import com.example.gnammy.utils.millisToDateString
 
 @Composable
 fun GnamDetailsScreen(
     navController: NavHostController,
-    user: User,
     gnam: Gnam
 ) {
     val context = LocalContext.current
@@ -95,8 +63,7 @@ fun GnamDetailsScreen(
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(color = MaterialTheme.colorScheme.primary)
                 .padding(10.dp)
-        )
-        {
+        ) {
             Text(
                 text = gnam.title,
                 color = MaterialTheme.colorScheme.background,
@@ -112,7 +79,7 @@ fun GnamDetailsScreen(
                     .align(Alignment.CenterHorizontally)
             ) {
                 ImageWithPlaceholder(
-                    uri = Uri.parse(user.imageUri),
+                    uri = Uri.parse(gnam.authorImageUri),
                     size = Size.Sm,
                     description = "propic",
                     modifier = Modifier
@@ -124,7 +91,7 @@ fun GnamDetailsScreen(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = user.username,
+                    text = gnam.authorName,
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -133,7 +100,7 @@ fun GnamDetailsScreen(
                         .wrapContentHeight(align = Alignment.CenterVertically)
                 )
                 Text(
-                    text = " - 24/05/2024", //TODO Insert here converted date
+                    text = " - " + millisToDateString(gnam.date, DateFormats.SHOW_FORMAT),
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium.copy(),

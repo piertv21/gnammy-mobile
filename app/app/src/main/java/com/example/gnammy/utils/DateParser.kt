@@ -9,7 +9,6 @@ enum class DateFormats(val pattern: String) {
     SHOW_FORMAT("dd/MM/yyyy")
 }
 
-
 fun dateStringToMillis(dateString: String, format: DateFormats): Long {
     val sdf = SimpleDateFormat(format.pattern, Locale.getDefault())
     if (format == DateFormats.DB_FORMAT) {

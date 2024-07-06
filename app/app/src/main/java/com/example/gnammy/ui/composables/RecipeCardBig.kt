@@ -43,17 +43,14 @@ fun RecipeCardBig(
             .padding(10.dp)
             .fillMaxSize()
             .clip(RoundedCornerShape(20.dp))
-    )
-    {
-        // titleBar
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = RoundedCornerShape(20.dp))
                 .background(color = MaterialTheme.colorScheme.primary)
                 .padding(10.dp)
-        )
-        {
+        ) {
             Text(
                 text = gnam.title,
                 color = MaterialTheme.colorScheme.background,
@@ -99,14 +96,11 @@ fun RecipeCardBig(
                         .wrapContentHeight(align = Alignment.CenterVertically)
                 )
             }
-
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
         Box {
-            // image
-
             ImageWithPlaceholder(
                 uri = Uri.parse(gnam.imageUri),
                 size = Size.Lg,
@@ -117,8 +111,6 @@ fun RecipeCardBig(
                     .fillMaxSize()
                     .padding(0.dp, 0.dp, 0.dp, 100.dp)
             )
-
-            // descriptionBar
             Box(
                 modifier = Modifier
                     .fillMaxHeight(1f / 3f)
@@ -127,8 +119,7 @@ fun RecipeCardBig(
                     .clip(shape = RoundedCornerShape(20.dp))
                     .background(color = MaterialTheme.colorScheme.primary)
                     .padding(10.dp)
-            )
-            {
+            ) {
                 Text(
                     text = gnam.description,
                     color = MaterialTheme.colorScheme.background,

@@ -44,8 +44,6 @@ class LikedGnamRepository(
                             authorName = it.authorName
                         )
                     )
-
-
                 }
                 gnamDao.insertAll(listGnams)
 
