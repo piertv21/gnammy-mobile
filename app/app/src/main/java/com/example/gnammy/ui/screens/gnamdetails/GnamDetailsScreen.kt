@@ -40,13 +40,16 @@ import androidx.navigation.NavHostController
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.Size
+import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.utils.DateFormats
 import com.example.gnammy.utils.millisToDateString
 
 @Composable
 fun GnamDetailsScreen(
     navController: NavHostController,
-    gnam: Gnam
+    gnam: Gnam,
+    gnamViewModel: GnamViewModel,
+    loggedUserId: String
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -166,12 +169,14 @@ fun GnamDetailsScreen(
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
+                .padding(bottom = 16.dp)
         ) {
             Button(
                 modifier = Modifier.padding(end = 8.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                 onClick = {
-                    // TODO Handle unlike action
+                    gnamViewModel.removeGnamFromSaved(gnam, loggedUserId)
+                    navController.navigate("home")
                 }
             ) {
                 Text("Rimuovi dai preferiti")

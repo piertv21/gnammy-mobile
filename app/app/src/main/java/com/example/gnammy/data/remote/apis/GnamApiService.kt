@@ -4,6 +4,8 @@ import com.example.gnammy.utils.ImageResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -27,6 +29,21 @@ class GnamWrapperResponse {
 
 class GnamListWrapperResponse {
     var gnams: List<GnamResponse>? = null
+}
+
+class LikeRequest(
+    val gnamId: String,
+    val userId: String
+)
+
+class LikeResponse {
+    var id: String = ""
+    var gnamId: String = ""
+    var userId: String = ""
+}
+
+class LikeWrapperResponse {
+    var like: LikeResponse? = null
 }
 
 interface GnamApiService {
@@ -57,4 +74,10 @@ interface GnamApiService {
 
     @GET("/savedGnams/{userId}")
     suspend fun getSavedGnams(@Path("userId") userId: String): Response<GnamListWrapperResponse>
+
+    @POST("/like/")
+    suspend fun likeGnam(@Body request: LikeRequest): Response<LikeWrapperResponse>
+
+    @DELETE("/like/")
+    suspend fun unlikeGnam(@Body request: LikeRequest): Response<LikeWrapperResponse>
 }

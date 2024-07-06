@@ -11,7 +11,7 @@ import com.example.gnammy.data.local.entities.LikedGnam
 import com.example.gnammy.data.local.entities.Notification
 import com.example.gnammy.data.local.entities.User
 
-@Database(entities = [User::class, Gnam::class, LikedGnam::class, Notification::class], version = 1)
+@Database(entities = [User::class, Gnam::class, LikedGnam::class, Notification::class], version = 2)
 abstract class GnammyDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun gnamDao(): GnamDao

@@ -21,4 +21,7 @@ interface GnamDao {
 
     @Upsert
     suspend fun upsert(gnam: Gnam)
+
+    @Query("DELETE FROM gnams WHERE id = :gnamId")
+    suspend fun deleteGnam(gnamId: String)
 }

@@ -84,4 +84,10 @@ class GnamViewModel(
             likedGnamRepository.syncSavedGnam(userId)
         }
     }
+
+    fun removeGnamFromSaved(gnam: Gnam, loggedUserId: String) {
+        viewModelScope.launch {
+            likedGnamRepository.removeGnamFromSaved(gnam, loggedUserId)
+        }
+    }
 }
