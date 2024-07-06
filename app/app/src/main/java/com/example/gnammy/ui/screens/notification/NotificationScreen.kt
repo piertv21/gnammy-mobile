@@ -30,6 +30,7 @@ import com.example.gnammy.ui.composables.PillState
 import com.example.gnammy.ui.composables.rememberPillState
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun NotificationScreen(
@@ -100,7 +101,7 @@ fun NotificationScreen(
                     when (pillState.currentState) {
                         PillState.State.Cancelled -> notificationViewModel.setAsSeen(notification.id)
                         PillState.State.Read -> {
-                            notificationViewModel.setAsSeen(notification.id)
+                            runBlocking { notificationViewModel.setAsSeen(notification.id) }
                             if (notification.gnamId == null) {
                                 navHostController.navigate(
                                     GnammyRoute.Profile.buildRoute(

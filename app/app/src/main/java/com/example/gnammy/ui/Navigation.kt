@@ -121,7 +121,7 @@ fun GnammyNavGraph(
         with(GnammyRoute.Profile) {
             composable(route, arguments) { backStackEntry ->
                 val user = requireNotNull(usersState.users.find {
-                    it.id == (backStackEntry.arguments?.getString("userId") ?: loggedUserId)
+                    it.id == backStackEntry.arguments?.getString("userId")
                 })
                 ProfileScreen(
                     user,

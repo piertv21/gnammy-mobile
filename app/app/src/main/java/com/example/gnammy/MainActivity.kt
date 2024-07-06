@@ -97,7 +97,7 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
         Scaffold(
             bottomBar = {
                 if (currentRoute !in setOf(GnammyRoute.Login, GnammyRoute.Register)) {
-                    NavigationBar(navController, currentRoute)
+                    NavigationBar(navController, currentRoute, userViewModel)
                 }
             },
             topBar = {
