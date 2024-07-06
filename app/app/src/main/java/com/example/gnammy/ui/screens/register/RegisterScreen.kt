@@ -146,8 +146,8 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
                         val state = runBlocking {
                             userViewModel.register(
                                 context,
-                                username,
-                                password,
+                                username.trim(),
+                                password.trim(),
                                 propic
                             )
                         }

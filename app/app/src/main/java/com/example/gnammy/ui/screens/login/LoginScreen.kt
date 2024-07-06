@@ -11,7 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -30,6 +35,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -42,6 +49,7 @@ import kotlinx.coroutines.runBlocking
 fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewModel) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -87,6 +95,16 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
                 },
                 label = { Text("Password") },
                 modifier = Modifier.fillMaxWidth(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = null)
+                    }
+                },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
@@ -100,7 +118,7 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
                 onClick = {
                     keyboardController?.hide()
                     if (username.isNotBlank() && password.isNotBlank()) {
-                        val state = runBlocking { userViewModel.login(username, password) }
+                        val state = runBlocking { userViewModel.login(username.trim(), password.trim()) }
                         when (state) {
                             is Result.Success -> {
                                 scope.launch {
@@ -110,15 +128,12 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
                                     popUpTo("Login") { inclusive = true }
                                 }
                             }
-
                             is Result.Error -> {
                                 scope.launch {
                                     snackbarHostState.showSnackbar(state.message)
                                 }
                             }
-
-                            null -> { /* No action */
-                            }
+                            null -> { /* No action */ }
                         }
                     } else {
                         scope.launch {
