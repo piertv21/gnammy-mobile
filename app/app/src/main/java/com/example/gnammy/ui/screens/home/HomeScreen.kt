@@ -144,7 +144,8 @@ fun HomeScreen(
                                             Log.d("Swipeable-Card", "Cancelled swipe")
                                         }
                                     ),
-                                gnam = gnam
+                                gnam = gnam,
+                                navController = navController
                             )
                         }
                         LaunchedEffect(state.swipedDirection) {
