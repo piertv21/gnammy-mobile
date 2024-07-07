@@ -90,4 +90,10 @@ class GnamViewModel(
             likedGnamRepository.removeGnamFromSaved(gnam, loggedUserId)
         }
     }
+
+    fun addCurrentUserGnams(userId: String) {
+        viewModelScope.launch {
+            repository.addCurrentUserGnams(userId)
+        }
+    }
 }

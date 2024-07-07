@@ -1,5 +1,7 @@
 package com.example.gnammy.ui.screens.profile
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,14 +30,19 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,27 +57,99 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
+import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.Size
 import com.example.gnammy.ui.theme.Themes
+import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
+import com.example.gnammy.utils.isOnline
 
 @Composable
 fun ProfileScreen(
-    user: User,
+    userId: String,
     navController: NavHostController,
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel,
     loggedUserId: String,
-    themeViewModel: ThemeViewModel
+    themeViewModel: ThemeViewModel,
+    gnamViewModel: GnamViewModel
+) {
+    val ctx = LocalContext.current
+    val offline = remember { mutableStateOf(true) }
+    val loading = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (isOnline(ctx)) {
+            offline.value = false
+            loading.value = true
+            userViewModel.fetchUser(userId)
+            gnamViewModel.addCurrentUserGnams(userId)
+            loading.value = false
+        } else {
+            offline.value = true
+        }
+    }
+
+    if (loading.value) { // Loading state
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (offline.value) { // Offline state
+        if (userId == loggedUserId) {   // If it's the logged user's profile, show the cached data
+            val usersState by userViewModel.state.collectAsStateWithLifecycle()
+            usersState.users.find { it.id == userId }?.let { user ->
+                profileView(
+                    ctx = ctx,
+                    user = user,
+                    loggedUserId = loggedUserId,
+                    themeViewModel = themeViewModel,
+                    gnamViewModel = gnamViewModel,
+                    navHostController = navController,
+                    userViewModel = userViewModel
+                )
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxSize()) {    // If it's not the logged user's profile, show a message
+                Text("Connect to the internet to load the profile", modifier = Modifier.align(Alignment.Center))
+            }
+        }
+    } else {    // Online state
+        val userState by userViewModel.state.collectAsStateWithLifecycle()
+        userState.users.find { it.id == userId }?.let { user ->
+            profileView(
+                ctx = ctx,
+                user = user,
+                loggedUserId = loggedUserId,
+                themeViewModel = themeViewModel,
+                gnamViewModel = gnamViewModel,
+                navHostController = navController,
+                userViewModel = userViewModel
+            )
+        }
+    }
+}
+
+@Composable
+fun profileView(
+    ctx: Context,
+    user: User,
+    loggedUserId: String,
+    themeViewModel: ThemeViewModel,
+    gnamViewModel: GnamViewModel,
+    navHostController: NavHostController,
+    userViewModel: UserViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
-
-    val ctx = LocalContext.current
+    val gnamsToShow = gnamViewModel.state.collectAsState()
+        .value.gnams.filter {
+            it.authorId == user.id
+        }
 
     fun shareProfile() {
         val sendIntent = Intent().apply {
@@ -159,7 +239,7 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
-                            text = "1000",
+                            text = gnamsToShow.size.toString(),
                             style = MaterialTheme.typography.titleSmall.copy()
                         )
                     }
@@ -203,7 +283,7 @@ fun ProfileScreen(
             }
 
             if (showDialog) {
-                SettingsModal(onDismissRequest = { showDialog = false }, user = user, themeViewModel)
+                SettingsModal(onDismissRequest = { showDialog = false }, user = user, themeViewModel, userViewModel)
             }
         }
 
@@ -213,17 +293,22 @@ fun ProfileScreen(
                 .fillMaxWidth()
                 .height(600.dp)
         ) {
-            items(10) {
-                //RecipeCardSmall(navController, Modifier.padding(5.dp))
+            items(gnamsToShow) { gnam ->
+                RecipeCardSmall(navHostController, Modifier.padding(5.dp), gnam = gnam)
             }
         }
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: ThemeViewModel) {
+fun SettingsModal(
+    onDismissRequest: () -> Unit,
+    user: User,
+    themeViewModel: ThemeViewModel,
+    userViewModel: UserViewModel
+) {
     var username by remember { mutableStateOf(TextFieldValue(user.username)) }
-    var isDarkTheme by remember { mutableStateOf(false) }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
 
     val launcher = rememberLauncherForActivityResult(
@@ -236,52 +321,38 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(bottom = 8.dp, start = 8.dp),
             shape = MaterialTheme.shapes.medium
         ) {
             Box {
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Text(
                         text = "Impostazioni",
-                        style = MaterialTheme.typography.headlineSmall.copy()
+                        style = MaterialTheme.typography.headlineSmall.copy(),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
-                    /*Column(
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = if (isDarkTheme) stringResource(R.string.profile_night_mode) else stringResource(
-                                R.string.profile_light_mode
-                            )
-                        )
-                        Switch(
-                            checked = isDarkTheme,
-                            onCheckedChange = { isDarkTheme = it }
-                        )
-                    }*/
 
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        Button(onClick = { themeViewModel.selectTheme(Themes.Light) }) {
-                            Text("Tema Light")
-                        }
-                        Button(onClick = { themeViewModel.selectTheme(Themes.Dark) }) {
-                            Text("Tema Dark")
-                        }
-                        Button(onClick = { themeViewModel.selectTheme(Themes.Auto) }) {
-                            Text("Tema Automatico")
-                        }
-                        Button(onClick = { themeViewModel.selectTheme(Themes.Dynamic) }) {
-                            Text("Tema Dinamico")
-                        }
-                    }
+                    RadioButtonGroup(
+                        selectedOption = themeViewModel.theme.value,
+                        options = listOf(Themes.Light, Themes.Dark, Themes.Auto, Themes.Dynamic),
+                        onOptionSelected = { themeViewModel.selectTheme(it) },
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
 
+                    Text(
+                        text = "Aggiorna la posizione mostrata:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+                    )
                     Button(
-                        onClick = { /* TODO */ },
+                        onClick = {
+                            //userViewModel.updateUserLocation("New York")
+                                    onDismissRequest()
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
@@ -289,6 +360,11 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         Text(text = stringResource(R.string.profile_update_gps))
                     }
 
+                    Text(
+                        text = "Modifica il tuo username:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+                    )
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
@@ -299,6 +375,11 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         shape = RoundedCornerShape(30.dp)
                     )
 
+                    Text(
+                        text = "Modifica l'immagine del profilo:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+                    )
                     Button(
                         onClick = { launcher.launch("image/*") },
                         modifier = Modifier
@@ -321,7 +402,7 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         // TODO: scegliere un verde specifico da mettere nel tema
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8f)),
                         modifier = Modifier
-                            .fillMaxWidth(0.5f)
+                            .fillMaxWidth(1f)
                     ) {
                         Text(text = stringResource(R.string.profile_save))
                     }
@@ -333,6 +414,7 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
+                            .align(Alignment.CenterHorizontally)
                     ) {
                         Text(text = stringResource(R.string.profile_logout), color = Color.White)
                     }
@@ -347,6 +429,41 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         contentDescription = "Close"
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun RadioButtonGroup(
+    selectedOption: Themes,
+    options: List<Themes>,
+    onOptionSelected: (Themes) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = "Seleziona un tema:",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+        )
+        options.forEach { theme ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                RadioButton(
+                    selected = theme == selectedOption,
+                    onClick = { onOptionSelected(theme) },
+                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                )
+                Text(
+                    text = theme.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
             }
         }
     }

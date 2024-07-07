@@ -1,8 +1,10 @@
 package com.example.gnammy.ui.composables
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.utils.DateFormats
 import com.example.gnammy.utils.millisToDateString
@@ -34,7 +37,8 @@ import com.example.gnammy.utils.millisToDateString
 @Composable
 fun RecipeCardBig(
     gnam: Gnam,
-    modifier: Modifier
+    modifier: Modifier,
+    navController: NavHostController
 ) {
     Column(
         modifier = modifier
@@ -64,6 +68,9 @@ fun RecipeCardBig(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
+                    .clickable {
+                        navController.navigate("profile/${gnam.authorId}")
+                    }
             ) {
                 ImageWithPlaceholder(
                     uri = Uri.parse(gnam.authorImageUri),

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,6 +81,9 @@ fun GnamDetailsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
+                    .clickable {
+                        navController.navigate("profile/${gnam.authorId}")
+                    }
             ) {
                 ImageWithPlaceholder(
                     uri = Uri.parse(gnam.authorImageUri),
