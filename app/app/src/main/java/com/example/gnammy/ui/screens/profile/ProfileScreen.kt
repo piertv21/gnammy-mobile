@@ -1,5 +1,6 @@
 package com.example.gnammy.ui.screens.profile
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +29,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +38,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,27 +54,96 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
+import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.Size
 import com.example.gnammy.ui.theme.Themes
+import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
+import com.example.gnammy.utils.isOnline
 
 @Composable
 fun ProfileScreen(
-    user: User,
+    userId: String,
     navController: NavHostController,
     modifier: Modifier = Modifier,
     userViewModel: UserViewModel,
     loggedUserId: String,
-    themeViewModel: ThemeViewModel
+    themeViewModel: ThemeViewModel,
+    gnamViewModel: GnamViewModel
+) {
+    val ctx = LocalContext.current
+    val offline = remember { mutableStateOf(true) }
+    val loading = remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        if (isOnline(ctx)) {
+            offline.value = false
+            loading.value = true
+            userViewModel.fetchUser(userId)
+            gnamViewModel.addCurrentUserGnams(userId)
+            loading.value = false
+        } else {
+            offline.value = true
+        }
+    }
+
+    if (loading.value) { // Loading state
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (offline.value) { // Offline state
+        if (userId == loggedUserId) {   // If it's the logged user's profile, show the cached data
+            val usersState by userViewModel.state.collectAsStateWithLifecycle()
+            usersState.users.find { it.id == userId }?.let { user ->
+                profileView(
+                    ctx = ctx,
+                    user = user,
+                    loggedUserId = loggedUserId,
+                    themeViewModel = themeViewModel,
+                    gnamViewModel = gnamViewModel,
+                    navHostController = navController
+                )
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxSize()) {    // If it's not the logged user's profile, show a message
+                Text("Connect to the internet to load the profile", modifier = Modifier.align(Alignment.Center))
+            }
+        }
+    } else {    // Online state
+        val userState by userViewModel.state.collectAsStateWithLifecycle()
+        userState.users.find { it.id == userId }?.let { user ->
+            profileView(
+                ctx = ctx,
+                user = user,
+                loggedUserId = loggedUserId,
+                themeViewModel = themeViewModel,
+                gnamViewModel = gnamViewModel,
+                navHostController = navController
+            )
+        }
+    }
+}
+
+@Composable
+fun profileView(
+    ctx: Context,
+    user: User,
+    loggedUserId: String,
+    themeViewModel: ThemeViewModel,
+    gnamViewModel: GnamViewModel,
+    navHostController: NavHostController
 ) {
     var showDialog by remember { mutableStateOf(false) }
-
-    val ctx = LocalContext.current
+    val gnamsToShow = gnamViewModel.state.collectAsState()
+        .value.gnams.filter {
+            it.authorId == user.id
+        }
 
     fun shareProfile() {
         val sendIntent = Intent().apply {
@@ -159,7 +233,7 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
-                            text = "1000",
+                            text = gnamsToShow.size.toString(),
                             style = MaterialTheme.typography.titleSmall.copy()
                         )
                     }
@@ -213,8 +287,8 @@ fun ProfileScreen(
                 .fillMaxWidth()
                 .height(600.dp)
         ) {
-            items(10) {
-                //RecipeCardSmall(navController, Modifier.padding(5.dp))
+            items(gnamsToShow) { gnam ->
+                RecipeCardSmall(navHostController, Modifier.padding(5.dp), gnam = gnam)
             }
         }
     }

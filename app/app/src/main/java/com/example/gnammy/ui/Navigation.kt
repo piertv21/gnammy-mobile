@@ -82,9 +82,7 @@ fun GnammyNavGraph(
     notificationViewModel: NotificationViewModel,
     modifier: Modifier = Modifier
 ) {
-    val usersState by userViewModel.state.collectAsStateWithLifecycle()
     val gnamState by gnamViewModel.state.collectAsStateWithLifecycle()
-
     val loggedUserId = runBlocking { userViewModel.getLoggedUserId() }
 
     NavHost(
@@ -120,17 +118,17 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Profile) {
             composable(route, arguments) { backStackEntry ->
-                val user = requireNotNull(usersState.users.find {
-                    it.id == backStackEntry.arguments?.getString("userId")
-                })
-                ProfileScreen(
-                    user,
-                    navController,
-                    modifier,
-                    userViewModel,
-                    loggedUserId,
-                    themeViewModel
-                )
+                backStackEntry.arguments?.getString("userId")?.let {
+                    ProfileScreen(
+                        it,
+                        navController,
+                        modifier,
+                        userViewModel,
+                        loggedUserId,
+                        themeViewModel,
+                        gnamViewModel
+                    )
+                }
             }
         }
         with(GnammyRoute.Notification) {

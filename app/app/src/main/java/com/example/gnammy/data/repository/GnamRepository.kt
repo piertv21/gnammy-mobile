@@ -197,4 +197,34 @@ class GnamRepository(
         timeline.value = currentTimeline
         Log.i("GnamRepository", "timeline has now ${timeline.value.size} elements")
     }
+
+    suspend fun addCurrentUserGnams(userId: String) {
+        try {
+            val response = apiService.getUserGnams(userId)
+            if (response.isSuccessful) {
+                val gnamRes = response.body()
+                gnamRes?.gnams?.forEach {
+                    gnamDao.upsert(
+                        Gnam(
+                            id = it.id,
+                            authorId = it.authorId,
+                            title = it.title,
+                            description = it.description,
+                            recipe = it.recipe,
+                            date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
+                            imageUri = "${backendSocket}/images/gnam/${it.id}.jpg",
+                            authorImageUri = "${backendSocket}/images/user/${it.authorId}.jpg",
+                            authorName = it.authorName
+                        )
+                    )
+                }
+            } else {
+                Log.e("GnamRepository", "Error in getting user gnams: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("GnamRepository", "Network error in getting user gnams", e)
+        } catch (e: HttpException) {
+            Log.e("GnamRepository", "HTTP error in getting user gnams", e)
+        }
+    }
 }

@@ -80,4 +80,7 @@ interface GnamApiService {
 
     @DELETE("/like/{userId}/{gnamId}")
     suspend fun unlikeGnam(@Path("userId") userId: String, @Path("gnamId") gnamId: String): Response<LikeWrapperResponse>
+
+    @GET("/gnamsOf/{userId}")
+    suspend fun getUserGnams(@Path("userId") userId: String): Response<GnamListWrapperResponse>
 }
