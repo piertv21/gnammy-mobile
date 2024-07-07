@@ -82,6 +82,7 @@ import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.LocationService
 import com.example.gnammy.utils.isOnline
+import kotlinx.coroutines.runBlocking
 import org.koin.compose.koinInject
 
 @Composable
@@ -431,7 +432,8 @@ fun profileView(
                     themeViewModel,
                     userViewModel,
                     requestLocation,
-                    locationService
+                    locationService,
+                    navHostController
                 )
             }
         }
@@ -457,7 +459,8 @@ fun SettingsModal(
     themeViewModel: ThemeViewModel,
     userViewModel: UserViewModel,
     requestLocation: () -> Unit,
-    locationService: LocationService
+    locationService: LocationService,
+    navHostController: NavHostController
 ) {
     var username by remember { mutableStateOf(TextFieldValue(user.username)) }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
@@ -571,7 +574,13 @@ fun SettingsModal(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = { /* Logout action */ },
+                        onClick = {
+                            runBlocking { userViewModel.logout() }
+                            onDismissRequest()
+                            navHostController.navigate("login") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         modifier = Modifier
                             .fillMaxWidth(0.5f)

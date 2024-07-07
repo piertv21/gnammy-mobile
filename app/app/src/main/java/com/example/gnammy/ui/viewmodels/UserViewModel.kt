@@ -8,7 +8,9 @@ import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.repository.UserRepository
 import com.example.gnammy.utils.Coordinates
 import com.example.gnammy.utils.Result
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -24,6 +26,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         started = SharingStarted.WhileSubscribed(),
         initialValue = UsersState(emptyList())
     )
+
+    val _logOut = MutableStateFlow(false)
+    val logOut = _logOut.asStateFlow()
 
     suspend fun getLoggedUserId(): String {
         return repository.loggedUserId.first()
@@ -49,5 +54,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         viewModelScope.launch {
             repository.updateUserLocation(coordinates, getLoggedUserId())
         }
+    }
+
+    suspend fun logout() {
+        repository.clearData()
     }
 }

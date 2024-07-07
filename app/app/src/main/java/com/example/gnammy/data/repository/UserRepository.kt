@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.gnammy.backendSocket
+import com.example.gnammy.data.local.GnammyDatabase
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
@@ -17,13 +18,17 @@ import com.example.gnammy.data.remote.apis.UserCredentials
 import com.example.gnammy.data.remote.apis.UserInfo
 import com.example.gnammy.utils.Coordinates
 import com.example.gnammy.utils.Result
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.koin.java.KoinJavaComponent.inject
 import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
@@ -45,6 +50,16 @@ class UserRepository(
     suspend fun setUser(value: String) = dataStore.edit { it[USER_ID_KEY] = value }
 
     val users: Flow<List<User>> = userDao.getAllUsers()
+
+    suspend fun clearData() {
+        val database: GnammyDatabase by inject(GnammyDatabase::class.java)
+        CoroutineScope(Dispatchers.IO).launch {
+            database.clearAllTables()
+        }
+        dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
 
     suspend fun fetchUser(userId: String) {
         try {
