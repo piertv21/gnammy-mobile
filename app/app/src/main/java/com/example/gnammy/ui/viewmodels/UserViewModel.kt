@@ -56,6 +56,14 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
+    fun updateUserData(
+        context: Context, username: String, profilePictureUri: Uri?
+    ) {
+        viewModelScope.launch {
+            repository.updateUserData(context, username, profilePictureUri, getLoggedUserId())
+        }
+    }
+
     suspend fun logout() {
         repository.clearData()
     }

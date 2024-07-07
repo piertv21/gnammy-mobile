@@ -91,7 +91,5 @@ interface UserApiService {
     ): Response<UserWrapperResponse>
 
     @GET
-    suspend fun getPlaceName(
-        @Url url: String
-    ): Response<OSMPlace>
+    suspend fun getPlaceName(@Url url: String): Response<OSMPlace>
 }

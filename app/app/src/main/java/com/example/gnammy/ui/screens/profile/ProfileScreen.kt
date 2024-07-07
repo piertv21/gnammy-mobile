@@ -42,6 +42,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
@@ -465,6 +466,10 @@ fun SettingsModal(
     var username by remember { mutableStateOf(TextFieldValue(user.username)) }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
     var isRequestingLocation by remember { mutableStateOf(false) }
+    var showSnackbar by remember { mutableStateOf(false) }
+    val ctx = LocalContext.current
+
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -473,13 +478,16 @@ fun SettingsModal(
     }
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp, start = 8.dp),
-            shape = MaterialTheme.shapes.medium
+        Box(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Box {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp, start = 8.dp)
+                    .align(Alignment.Center),
+                shape = MaterialTheme.shapes.medium
+            ) {
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
@@ -499,14 +507,29 @@ fun SettingsModal(
                     )
 
                     Text(
+                        text = "Bottoni like in home:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+                    )
+                    Switch(
+                        checked = true,
+                        onCheckedChange = { /* TODO: Like button action */ },
+                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+                    )
+
+                    Text(
                         text = "Aggiorna la posizione mostrata:",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
                     )
                     Button(
                         onClick = {
-                            requestLocation()
-                            isRequestingLocation = true
+                            if (isOnline(ctx)) {
+                                requestLocation()
+                                isRequestingLocation = true
+                            } else {
+                                showSnackbar = true
+                            }
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -562,11 +585,13 @@ fun SettingsModal(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Button(
-                        onClick = { /* Save action */ },
-                        // TODO: scegliere un verde specifico da mettere nel tema
+                        onClick = {
+                            runBlocking { userViewModel.updateUserData(ctx, username.text, profilePictureUri) }
+                            onDismissRequest()
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8f)),
                         modifier = Modifier
-                            .fillMaxWidth(1f)
+                            .fillMaxWidth()
                     ) {
                         Text(text = stringResource(R.string.profile_save))
                     }
@@ -589,20 +614,33 @@ fun SettingsModal(
                         Text(text = stringResource(R.string.profile_logout), color = Color.White)
                     }
                 }
-
-                IconButton(
-                    onClick = { onDismissRequest() },
-                    modifier = Modifier.align(Alignment.TopEnd)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Close"
-                    )
-                }
             }
+
+            IconButton(
+                onClick = { onDismissRequest() },
+                modifier = Modifier.align(Alignment.TopEnd)
+                    .padding(top = 8.dp, end = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Close,
+                    contentDescription = "Close"
+                )
+            }
+
+            // Snackbar host
+            SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
+        }
+    }
+
+    // Show snackbar if required
+    if (showSnackbar) {
+        LaunchedEffect(snackbarHostState) {
+            snackbarHostState.showSnackbar("Connettiti a internet")
+            showSnackbar = false
         }
     }
 }
+
 
 @Composable
 fun RadioButtonGroup(
@@ -622,7 +660,6 @@ fun RadioButtonGroup(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp)
             ) {
                 RadioButton(
                     selected = theme == selectedOption,
@@ -632,7 +669,7 @@ fun RadioButtonGroup(
                 Text(
                     text = theme.name,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 16.dp)
+                    modifier = Modifier.padding(start = 4.dp)
                 )
             }
         }

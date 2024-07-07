@@ -27,6 +27,7 @@ import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.koin.java.KoinJavaComponent.inject
 import retrofit2.HttpException
@@ -138,7 +139,6 @@ class UserRepository(
                         inputStream.copyTo(outputStream)
                     }
                 }
-
                 val requestFile = RequestBody.create(
                     context.contentResolver.getType(uri)?.toMediaTypeOrNull(),
                     file
@@ -192,6 +192,37 @@ class UserRepository(
             Log.e("UserRepository", "Network error in updating user location", e)
         } catch (e: HttpException) {
             Log.e("UserRepository", "HTTP error in updating user location", e)
+        }
+    }
+
+    suspend fun updateUserData(context: Context, username: String, profilePictureUri: Uri?, userId: String) {
+        try {
+            val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
+
+            val imagePart: MultipartBody.Part = profilePictureUri.let { uri ->
+                val file = File(context.cacheDir, "tempProfilePicture")
+                if (uri != null) {
+                    context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                        file.outputStream().use { outputStream ->
+                            inputStream.copyTo(outputStream)
+                        }
+                    }
+                }
+                val requestFile = file
+                    .asRequestBody(uri?.let { context.contentResolver.getType(it)?.toMediaTypeOrNull() })
+                MultipartBody.Part.createFormData("image", file.name, requestFile)
+            }
+
+            val response = apiService.changeUserInfo(userId, usernamePart, null, null, imagePart)
+            if (response.isSuccessful) {
+                fetchUser(userId)
+            } else {
+                Log.e("UserRepository", "Errore nell'aggiornamento delle informazioni dell'utente: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("UserRepository", "Network error in updating user data", e)
+        } catch (e: HttpException) {
+            Log.e("UserRepository", "HTTP error in updating user data", e)
         }
     }
 }
