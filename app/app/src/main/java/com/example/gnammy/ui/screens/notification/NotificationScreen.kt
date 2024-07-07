@@ -24,10 +24,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.gnammy.ui.GnammyRoute
-import com.example.gnammy.ui.composables.Achievement
 import com.example.gnammy.ui.composables.NotificationPill
 import com.example.gnammy.ui.composables.PillState
+import com.example.gnammy.ui.composables.UserGoal
 import com.example.gnammy.ui.composables.rememberPillState
+import com.example.gnammy.ui.viewmodels.GoalViewModel
+import com.example.gnammy.ui.viewmodels.NotificationState
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.runBlocking
@@ -36,13 +38,16 @@ import kotlinx.coroutines.runBlocking
 fun NotificationScreen(
     navHostController: NavHostController,
     notificationViewModel: NotificationViewModel,
+    goalsViewModel: GoalViewModel,
     userViewModel: UserViewModel,
     modifier: Modifier = Modifier
 ) {
-    val notificationState by notificationViewModel.state.collectAsStateWithLifecycle()
-    runBlocking {
+    val notificationState: NotificationState by notificationViewModel.state.collectAsStateWithLifecycle()
+
+    val goals = runBlocking {
         val loggedUserId = userViewModel.getLoggedUserId()
         notificationViewModel.fetchNotifications(loggedUserId)
+        goalsViewModel.getGoalsPreview(loggedUserId)
     }
 
     Column(
@@ -64,8 +69,8 @@ fun NotificationScreen(
             contentPadding = PaddingValues(10.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            items(5) {
-                Achievement()
+            items(goals, key = { it.id }) { goal ->
+                UserGoal(goal)
             }
             item {
                 Box(modifier = Modifier.fillMaxHeight()) {

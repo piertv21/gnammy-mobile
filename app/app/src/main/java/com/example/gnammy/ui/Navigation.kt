@@ -21,6 +21,7 @@ import com.example.gnammy.ui.screens.register.RegisterScreen
 import com.example.gnammy.ui.screens.saved.SavedScreen
 import com.example.gnammy.ui.screens.search.SearchScreen
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.GoalViewModel
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
@@ -80,6 +81,7 @@ fun GnammyNavGraph(
     userViewModel: UserViewModel,
     gnamViewModel: GnamViewModel,
     notificationViewModel: NotificationViewModel,
+    goalsViewModel: GoalViewModel,
     modifier: Modifier = Modifier
 ) {
     val usersState by userViewModel.state.collectAsStateWithLifecycle()
@@ -136,7 +138,13 @@ fun GnammyNavGraph(
         with(GnammyRoute.Notification) {
             runBlocking { notificationViewModel.fetchNotifications(loggedUserId) }
             composable(route) {
-                NotificationScreen(navController, notificationViewModel, userViewModel, modifier)
+                NotificationScreen(
+                    navController,
+                    notificationViewModel,
+                    goalsViewModel,
+                    userViewModel,
+                    modifier
+                )
             }
         }
         with(GnammyRoute.Login) {
@@ -159,7 +167,7 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Goals) {
             composable(route) {
-                GoalsScreen()
+                GoalsScreen(goalsViewModel, userViewModel)
             }
         }
     }

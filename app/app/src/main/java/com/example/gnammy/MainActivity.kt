@@ -28,6 +28,7 @@ import com.example.gnammy.ui.theme.DynamicTheme
 import com.example.gnammy.ui.theme.LightTheme
 import com.example.gnammy.ui.theme.Themes
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.GoalViewModel
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
@@ -93,6 +94,7 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
 
         val gnamViewModel = koinViewModel<GnamViewModel>()
         val notificationViewModel = koinViewModel<NotificationViewModel>()
+        val goalsViewModel = koinViewModel<GoalViewModel>()
 
         Scaffold(
             bottomBar = {
@@ -111,6 +113,7 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
                 userViewModel,
                 gnamViewModel,
                 notificationViewModel,
+                goalsViewModel,
                 modifier = Modifier.padding(contentPadding)
             )
         }

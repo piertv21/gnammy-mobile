@@ -5,11 +5,13 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.example.gnammy.data.local.GnammyDatabase
 import com.example.gnammy.data.repository.GnamRepository
+import com.example.gnammy.data.repository.GoalRepository
 import com.example.gnammy.data.repository.LikedGnamRepository
 import com.example.gnammy.data.repository.NotificationRepository
 import com.example.gnammy.data.repository.ThemeRepository
 import com.example.gnammy.data.repository.UserRepository
 import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.ui.viewmodels.GoalViewModel
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
@@ -23,9 +25,9 @@ import org.koin.dsl.module
 
 val Context.dataStore by preferencesDataStore("settings")
 
-val backendSocket = "http://172.23.176.1:3000"
+//val backendSocket = "http://172.23.176.1:3000"
 //val backendSocket = "http://192.168.1.175:3000"
-//val backendSocket = "http://192.168.1.130:3000"
+val backendSocket = "http://192.168.1.130:3000"
 
 val appModule = module {
     single { get<Context>().dataStore }
@@ -86,6 +88,13 @@ val appModule = module {
     }
 
     single {
+        GoalRepository(
+            get<GnammyDatabase>().gnamGoalDao(),
+            get<GnammyDatabase>().userGoalDao(),
+        )
+    }
+
+    single {
         ThemeRepository(get())
     }
 
@@ -96,5 +105,7 @@ val appModule = module {
     viewModel { ThemeViewModel(get()) }
 
     viewModel { NotificationViewModel(get()) }
+
+    viewModel { GoalViewModel(get()) }
 
 }

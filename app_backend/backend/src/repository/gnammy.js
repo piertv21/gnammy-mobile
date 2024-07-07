@@ -384,7 +384,10 @@ async function shortListGoals(userId, limit, callback) {
     try {
         const goals = await prisma.goal.findMany({
             where: {
-                userId: userId
+                userId: userId,
+                goalType: {
+                    isFor: 'user'
+                }
             },
             take: limit,
             orderBy: {
@@ -392,13 +395,28 @@ async function shortListGoals(userId, limit, callback) {
                     sort: 'desc',
                     nulls: 'last'
                 }
+            },
+            include: {
+                goalType: {
+                    select: {
+                        templateText: true
+                    }
+                }
             }
         });
-        callback(null, goals);
+
+        const formattedGoals = goals.map(goal => ({
+            id: goal.id,
+            userId: goal.userId,
+            content: goal.goalType.templateText
+        }));
+
+        callback(null, formattedGoals);
     } catch (error) {
         callback(error, null);
     }
 }
+
 
 async function listGoals(userId, callback) {
     try {
@@ -411,9 +429,24 @@ async function listGoals(userId, callback) {
                     sort: 'desc',
                     nulls: 'last'
                 }
+            },
+            include: {
+                goalType: {
+                    select: {
+                        templateText: true
+                    }
+                }
             }
         });
-        callback(null, goals);
+
+        const formattedGoals = goals.map(goal => ({
+            id: goal.id,
+            userId: goal.userId,
+            content: goal.goalType.templateText,
+            gnamId: goal.gnamId
+        }));
+
+        callback(null, formattedGoals);
     } catch (error) {
         callback(error, null);
     }
