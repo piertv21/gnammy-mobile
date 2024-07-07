@@ -40,18 +40,21 @@ fun NotificationScreen(
     modifier: Modifier = Modifier
 ) {
     val notificationState by notificationViewModel.state.collectAsStateWithLifecycle()
+    runBlocking {
+        val loggedUserId = userViewModel.getLoggedUserId()
+        notificationViewModel.fetchNotifications(loggedUserId)
+    }
 
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+        modifier = Modifier
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = "Achievements",
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
         LazyRow(
@@ -83,7 +86,7 @@ fun NotificationScreen(
         Text(
             text = "Notifications",
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
         LazyColumn(
