@@ -47,9 +47,8 @@ fun SavedScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                .padding(top = 24.dp, start = 24.dp, end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2)

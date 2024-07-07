@@ -155,12 +155,9 @@ class UserRepository(
     suspend fun updateUserLocation(coordinates: Coordinates, userId: String) {
         try {
             val url = "https://nominatim.openstreetmap.org/reverse?lat=${coordinates.latitude}&lon=${coordinates.longitude}&format=json&limit=1"
-            val placeName = apiService.getPlaceName(
-                url,
-            )
+            val placeName = apiService.getPlaceName(url)
             if(placeName.isSuccessful) {
                 val location = placeName.body()?.address?.city
-
                 val response = apiService.changeUserInfo(
                     userId,
                     null,
