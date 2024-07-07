@@ -23,9 +23,11 @@ import com.example.gnammy.ui.screens.search.SearchScreen
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.GoalViewModel
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
+import com.example.gnammy.ui.viewmodels.SettingsViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.runBlocking
+import org.koin.androidx.compose.koinViewModel
 
 sealed class GnammyRoute(
     val route: String,
@@ -121,6 +123,8 @@ fun GnammyNavGraph(
         with(GnammyRoute.Profile) {
             composable(route, arguments) { backStackEntry ->
                 backStackEntry.arguments?.getString("userId")?.let {
+                    val settingsVm = koinViewModel<SettingsViewModel>()
+                    val state by settingsVm.state.collectAsStateWithLifecycle()
                     ProfileScreen(
                         it,
                         navController,
@@ -128,7 +132,9 @@ fun GnammyNavGraph(
                         userViewModel,
                         loggedUserId,
                         themeViewModel,
-                        gnamViewModel
+                        gnamViewModel,
+                        settingsVm.actions,
+                        state
                     )
                 }
             }

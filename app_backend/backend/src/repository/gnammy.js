@@ -65,17 +65,30 @@ async function changeUserInfo(userId, username, password, location, callback) {
         let hashedPassword = undefined;
         if (username?.length > 255) return callback('Username too long', null);
         if (password?.length > 255) return callback('Password too long', null);
-        if (password != undefined) hashedPassword = await bcrypt.hash(password, 10);
+        
+        // If new password is not undefined, hash it
+        if (password !== undefined) {
+            hashedPassword = await bcrypt.hash(password, 10);
+        }
+        
+        const data = {};
+        if (username !== undefined) {
+            data.username = username;
+        }
+        if (hashedPassword !== undefined) {
+            data.password = hashedPassword;
+        }
+        if (location !== undefined) {
+            data.location = location;
+        }
+        
         const updatedUser = await prisma.user.update({
             where: {
                 id: userId
             },
-            data: {
-                username: username,
-                password: hashedPassword,
-                location: location
-            }
+            data: data
         });
+
         callback(null, updatedUser);
     } catch (error) {
         callback(error, null);

@@ -14,9 +14,12 @@ import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
 import com.example.gnammy.data.remote.apis.UserApiService
 import com.example.gnammy.data.remote.apis.UserCredentials
+import com.example.gnammy.data.remote.apis.UserInfo
+import com.example.gnammy.utils.Coordinates
 import com.example.gnammy.utils.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -146,6 +149,37 @@ class UserRepository(
             Result.Error("Network error in register")
         } catch (e: HttpException) {
             Result.Error("HTTP error in register")
+        }
+    }
+
+    suspend fun updateUserLocation(coordinates: Coordinates, userId: String) {
+        try {
+            val url = "https://nominatim.openstreetmap.org/reverse?lat=${coordinates.latitude}&lon=${coordinates.longitude}&format=json&limit=1"
+            val placeName = apiService.getPlaceName(
+                url,
+            )
+            if(placeName.isSuccessful) {
+                val location = placeName.body()?.address?.city
+
+                val response = apiService.changeUserInfo(
+                    userId,
+                    null,
+                    null,
+                    location?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) },
+                    null
+                )
+                if (response.isSuccessful) {
+                    fetchUser(userId)
+                } else {
+                    Log.e("UserRepository", "Errore nell'aggiornamento delle informazioni dell'utente: ${response.message()}")
+                }
+            } else {
+                Log.e("UserRepository", "Error in getting place name: ${placeName.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("UserRepository", "Network error in updating user location", e)
+        } catch (e: HttpException) {
+            Log.e("UserRepository", "HTTP error in updating user location", e)
         }
     }
 }

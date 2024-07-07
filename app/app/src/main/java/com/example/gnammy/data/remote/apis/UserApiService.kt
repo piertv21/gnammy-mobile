@@ -12,6 +12,8 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
+import retrofit2.http.Url
 
 class UserResponse {
     var id: String = ""
@@ -35,6 +37,20 @@ class followingResponse {
 data class UserCredentials (
     val username: String,
     val password: String
+)
+
+data class UserInfo (
+    val username: String?,
+    val password: String?,
+    val location: String?
+)
+
+data class OSMAddress(
+    val city: String?
+)
+
+data class OSMPlace (
+    val address: OSMAddress?
 )
 
 interface UserApiService {
@@ -64,6 +80,18 @@ interface UserApiService {
     @GET("/image/user/{userId}")
     suspend fun getUserImage(@Path("userId") userId: String): Response<ImageResponse>
 
+    @Multipart
     @PATCH("/user/{userId}")
-    suspend fun changeUserInfo(@Path("userId") userId: String, @Body user: User, @Part image: MultipartBody.Part?): Response<UserWrapperResponse>
+    suspend fun changeUserInfo(
+        @Path("userId") userId: String,
+        @Part("username") username: RequestBody?,
+        @Part("password") password: RequestBody?,
+        @Part("location") location: RequestBody?,
+        @Part image: MultipartBody.Part?
+    ): Response<UserWrapperResponse>
+
+    @GET
+    suspend fun getPlaceName(
+        @Url url: String
+    ): Response<OSMPlace>
 }
