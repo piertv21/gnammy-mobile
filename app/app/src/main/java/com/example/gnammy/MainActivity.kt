@@ -31,12 +31,18 @@ import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
+import com.example.gnammy.utils.LocationService
 import kotlinx.coroutines.runBlocking
+import org.koin.android.ext.android.get
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
+    private lateinit var locationService: LocationService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        locationService = get<LocationService>()
 
         setContent {
             val themeViewModel: ThemeViewModel = koinViewModel<ThemeViewModel>()
@@ -53,12 +59,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
-        //locationService.pauseLocationRequest()
+        locationService.pauseLocationRequest()
     }
 
     override fun onResume() {
         super.onResume()
-        //locationService.resumeLocationRequest()
+        locationService.resumeLocationRequest()
     }
 }
 

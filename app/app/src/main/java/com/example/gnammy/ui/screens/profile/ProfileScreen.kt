@@ -1,5 +1,6 @@
 package com.example.gnammy.ui.screens.profile
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -34,6 +35,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -107,7 +110,8 @@ fun ProfileScreen(
                     loggedUserId = loggedUserId,
                     themeViewModel = themeViewModel,
                     gnamViewModel = gnamViewModel,
-                    navHostController = navController
+                    navHostController = navController,
+                    userViewModel = userViewModel
                 )
             }
         } else {
@@ -124,7 +128,8 @@ fun ProfileScreen(
                 loggedUserId = loggedUserId,
                 themeViewModel = themeViewModel,
                 gnamViewModel = gnamViewModel,
-                navHostController = navController
+                navHostController = navController,
+                userViewModel = userViewModel
             )
         }
     }
@@ -137,7 +142,8 @@ fun profileView(
     loggedUserId: String,
     themeViewModel: ThemeViewModel,
     gnamViewModel: GnamViewModel,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    userViewModel: UserViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val gnamsToShow = gnamViewModel.state.collectAsState()
@@ -277,7 +283,7 @@ fun profileView(
             }
 
             if (showDialog) {
-                SettingsModal(onDismissRequest = { showDialog = false }, user = user, themeViewModel)
+                SettingsModal(onDismissRequest = { showDialog = false }, user = user, themeViewModel, userViewModel)
             }
         }
 
@@ -294,10 +300,15 @@ fun profileView(
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: ThemeViewModel) {
+fun SettingsModal(
+    onDismissRequest: () -> Unit,
+    user: User,
+    themeViewModel: ThemeViewModel,
+    userViewModel: UserViewModel
+) {
     var username by remember { mutableStateOf(TextFieldValue(user.username)) }
-    var isDarkTheme by remember { mutableStateOf(false) }
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
 
     val launcher = rememberLauncherForActivityResult(
@@ -310,52 +321,38 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(bottom = 8.dp, start = 8.dp),
             shape = MaterialTheme.shapes.medium
         ) {
             Box {
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Text(
                         text = "Impostazioni",
-                        style = MaterialTheme.typography.headlineSmall.copy()
+                        style = MaterialTheme.typography.headlineSmall.copy(),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
-                    /*Column(
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = if (isDarkTheme) stringResource(R.string.profile_night_mode) else stringResource(
-                                R.string.profile_light_mode
-                            )
-                        )
-                        Switch(
-                            checked = isDarkTheme,
-                            onCheckedChange = { isDarkTheme = it }
-                        )
-                    }*/
 
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        Button(onClick = { themeViewModel.selectTheme(Themes.Light) }) {
-                            Text("Tema Light")
-                        }
-                        Button(onClick = { themeViewModel.selectTheme(Themes.Dark) }) {
-                            Text("Tema Dark")
-                        }
-                        Button(onClick = { themeViewModel.selectTheme(Themes.Auto) }) {
-                            Text("Tema Automatico")
-                        }
-                        Button(onClick = { themeViewModel.selectTheme(Themes.Dynamic) }) {
-                            Text("Tema Dinamico")
-                        }
-                    }
+                    RadioButtonGroup(
+                        selectedOption = themeViewModel.theme.value,
+                        options = listOf(Themes.Light, Themes.Dark, Themes.Auto, Themes.Dynamic),
+                        onOptionSelected = { themeViewModel.selectTheme(it) },
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
 
+                    Text(
+                        text = "Aggiorna la posizione mostrata:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+                    )
                     Button(
-                        onClick = { /* TODO */ },
+                        onClick = {
+                            //userViewModel.updateUserLocation("New York")
+                                    onDismissRequest()
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
@@ -363,6 +360,11 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         Text(text = stringResource(R.string.profile_update_gps))
                     }
 
+                    Text(
+                        text = "Modifica il tuo username:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+                    )
                     OutlinedTextField(
                         value = username,
                         onValueChange = { username = it },
@@ -373,6 +375,11 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         shape = RoundedCornerShape(30.dp)
                     )
 
+                    Text(
+                        text = "Modifica l'immagine del profilo:",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+                    )
                     Button(
                         onClick = { launcher.launch("image/*") },
                         modifier = Modifier
@@ -395,7 +402,7 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         // TODO: scegliere un verde specifico da mettere nel tema
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8f)),
                         modifier = Modifier
-                            .fillMaxWidth(0.5f)
+                            .fillMaxWidth(1f)
                     ) {
                         Text(text = stringResource(R.string.profile_save))
                     }
@@ -407,6 +414,7 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
+                            .align(Alignment.CenterHorizontally)
                     ) {
                         Text(text = stringResource(R.string.profile_logout), color = Color.White)
                     }
@@ -421,6 +429,41 @@ fun SettingsModal(onDismissRequest: () -> Unit, user: User, themeViewModel: Them
                         contentDescription = "Close"
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun RadioButtonGroup(
+    selectedOption: Themes,
+    options: List<Themes>,
+    onOptionSelected: (Themes) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = "Seleziona un tema:",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
+        )
+        options.forEach { theme ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                RadioButton(
+                    selected = theme == selectedOption,
+                    onClick = { onOptionSelected(theme) },
+                    colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colorScheme.primary)
+                )
+                Text(
+                    text = theme.name,
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
             }
         }
     }

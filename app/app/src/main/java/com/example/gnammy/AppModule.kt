@@ -89,6 +89,8 @@ val appModule = module {
         ThemeRepository(get())
     }
 
+    single { LocationService(get()) }
+
     viewModel { UserViewModel(get()) }
 
     viewModel { GnamViewModel(get(), get()) }
