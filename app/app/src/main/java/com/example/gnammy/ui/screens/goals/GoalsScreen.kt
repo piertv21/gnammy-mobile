@@ -2,6 +2,7 @@ package com.example.gnammy.ui.screens.goals
 
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.gnammy.ui.composables.GnamGoal
@@ -39,15 +41,15 @@ fun GoalsScreen(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
     ) {
         item {
             Text(
                 text = "Utente",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp)
+                    .padding(top = 4.dp)
             )
         }
 
@@ -55,10 +57,16 @@ fun GoalsScreen(
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(8.dp)
             ) {
                 userGoalsState.goals.forEach { goal ->
-                    UserGoal(goal)
+                    UserGoal(
+                        goal,
+                        Modifier
+                            .fillMaxWidth(1 / 2f)
+                            .aspectRatio(2f)
+                            .padding(4.dp)
+                    )
                 }
             }
         }
@@ -67,9 +75,10 @@ fun GoalsScreen(
             Text(
                 text = "Ricette",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, bottom = 8.dp)
+
             )
         }
 
@@ -77,7 +86,7 @@ fun GoalsScreen(
             FlowRow(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(8.dp),
             ) {
                 gnamGoalsState.goals.forEach { goal ->
                     GnamGoal(goal)

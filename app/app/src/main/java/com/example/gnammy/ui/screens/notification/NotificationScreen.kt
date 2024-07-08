@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -70,7 +71,12 @@ fun NotificationScreen(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(goals, key = { it.id }) { goal ->
-                UserGoal(goal)
+                UserGoal(
+                    goal,
+                    Modifier
+                        .fillMaxWidth(1 / 2f)
+                        .aspectRatio(2f)
+                )
             }
             item {
                 Box(modifier = Modifier.fillMaxHeight()) {
