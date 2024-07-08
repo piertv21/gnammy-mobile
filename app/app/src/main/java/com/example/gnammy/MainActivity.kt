@@ -84,7 +84,7 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
         } else {
             GnammyRoute.Home
         }
-        if (loggedUserId.isNotEmpty()) {
+        if (loggedUserId != "NOT SET") {
             userViewModel.fetchUser(loggedUserId)
         }
 
