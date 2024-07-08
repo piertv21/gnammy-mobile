@@ -1,22 +1,16 @@
 package com.example.gnammy.ui.viewmodels
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
-import com.example.gnammy.data.repository.SettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 data class SettingsState (
-    val username : String = "",
-
     val showLocationDisabledAlert: Boolean = false,
     val showLocationPermissionDeniedAlert: Boolean = false,
     val showLocationPermissionPermanentlyDeniedSnackbar: Boolean = false,
     val showNoInternetConnectivitySnackbar: Boolean = false
-) {
-    val canSubmit get() = username.isNotBlank()
-}
+)
 
 interface SettingsActions {
     fun setShowLocationDisabledAlert(show: Boolean)
@@ -25,9 +19,7 @@ interface SettingsActions {
     fun setShowNoInternetConnectivitySnackbar(show: Boolean)
 }
 
-class SettingsViewModel (
-    private val repository: SettingsRepository
-) : ViewModel() {
+class SettingsViewModel () : ViewModel() {
     private val _state = MutableStateFlow(SettingsState())
     val state = _state.asStateFlow()
 

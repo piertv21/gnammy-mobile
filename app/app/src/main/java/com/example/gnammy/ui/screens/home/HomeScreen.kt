@@ -38,6 +38,7 @@ import com.alexstyl.swipeablecard.swipableCard
 import com.example.gnammy.ui.composables.RecipeCardBig
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
+import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.isOnline
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,7 +50,7 @@ fun HomeScreen(
     gnamViewModel: GnamViewModel,
     notificationViewModel: NotificationViewModel,
     loggedUserId: String,
-    modifier: Modifier = Modifier
+    userViewModel: UserViewModel
 ) {
     val gnamsState by gnamViewModel.timelineState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -94,7 +95,7 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp, 8.dp, 8.dp)
+                        .padding(16.dp)
                         .weight(0.85f)
                 ) {
                     states.forEach { (gnam, state) ->
@@ -127,55 +128,58 @@ fun HomeScreen(
                     }
                 }
 
-                Row(
-                    modifier = Modifier
-                        .weight(0.15f)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                val last = states.reversed()
-                                    .firstOrNull {
-                                        it.second.offset.value == Offset(0f, 0f)
-                                    }?.second
-                                last?.swipe(Direction.Left)
-                            }
-                        },
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Close,
-                            contentDescription = "Dislike",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(35.dp)
-                        )
-                    }
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                val last = states.reversed()
-                                    .firstOrNull {
-                                        it.second.offset.value == Offset(0f, 0f)
-                                    }?.second
 
-                                last?.swipe(Direction.Right)
-                            }
-                        },
+                if(userViewModel.homeBtnEnabled.value) {
+                    Row(
                         modifier = Modifier
-                            .size(80.dp)
-                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                            .weight(0.15f)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
-                            contentDescription = "Like",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(35.dp)
-                        )
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    val last = states.reversed()
+                                        .firstOrNull {
+                                            it.second.offset.value == Offset(0f, 0f)
+                                        }?.second
+                                    last?.swipe(Direction.Left)
+                                }
+                            },
+                            modifier = Modifier
+                                .size(80.dp)
+                                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Close,
+                                contentDescription = "Dislike",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(35.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                scope.launch {
+                                    val last = states.reversed()
+                                        .firstOrNull {
+                                            it.second.offset.value == Offset(0f, 0f)
+                                        }?.second
+
+                                    last?.swipe(Direction.Right)
+                                }
+                            },
+                            modifier = Modifier
+                                .size(80.dp)
+                                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                contentDescription = "Like",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(35.dp)
+                            )
+                        }
                     }
                 }
             }

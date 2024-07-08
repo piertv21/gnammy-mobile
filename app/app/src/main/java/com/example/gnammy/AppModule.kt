@@ -98,16 +98,12 @@ val appModule = module {
     }
 
     single {
-        SettingsRepository(get())
-    }
-
-    single {
         ThemeRepository(get())
     }
 
     single { LocationService(get()) }
 
-    viewModel { SettingsViewModel(get()) }
+    viewModel { SettingsViewModel() }
 
     viewModel { UserViewModel(get()) }
 
@@ -118,5 +114,4 @@ val appModule = module {
     viewModel { NotificationViewModel(get()) }
 
     viewModel { GoalViewModel(get()) }
-
 }

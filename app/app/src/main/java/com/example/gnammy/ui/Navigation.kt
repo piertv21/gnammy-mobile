@@ -104,7 +104,7 @@ fun GnammyNavGraph(
                     gnamViewModel,
                     notificationViewModel,
                     loggedUserId,
-                    modifier
+                    userViewModel
                 )
             }
         }

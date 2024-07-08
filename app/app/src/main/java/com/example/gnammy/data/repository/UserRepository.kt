@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.gnammy.backendSocket
@@ -44,11 +45,21 @@ class UserRepository(
 
     companion object {
         private val USER_ID_KEY = stringPreferencesKey("user_id_key")
+        private val HOME_BTN_ENABLED_KEY = booleanPreferencesKey("home_btn_enabled_key")
     }
 
     val loggedUserId = dataStore.data.map { it[USER_ID_KEY] ?: "NOT SET" }
 
     suspend fun setUser(value: String) = dataStore.edit { it[USER_ID_KEY] = value }
+
+    val homeBtnEnabled = dataStore.data.map { it[HOME_BTN_ENABLED_KEY] ?: true }
+
+    suspend fun toggleHomeBtnEnabled() {
+        dataStore.edit { preferences ->
+            val currentValue = preferences[HOME_BTN_ENABLED_KEY] ?: true
+            preferences[HOME_BTN_ENABLED_KEY] = !currentValue
+        }
+    }
 
     val users: Flow<List<User>> = userDao.getAllUsers()
 

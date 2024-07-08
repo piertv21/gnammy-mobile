@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
@@ -55,6 +54,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -467,6 +467,7 @@ fun SettingsModal(
     var profilePictureUri by remember { mutableStateOf<Uri?>(null) }
     var isRequestingLocation by remember { mutableStateOf(false) }
     var showSnackbar by remember { mutableStateOf(false) }
+    var homeBtnEnabled by remember { mutableStateOf(userViewModel.homeBtnEnabled.value) }
     val ctx = LocalContext.current
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -512,9 +513,12 @@ fun SettingsModal(
                         modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
                     )
                     Switch(
-                        checked = true,
-                        onCheckedChange = { /* TODO: Like button action */ },
-                        modifier = Modifier.padding(start = 8.dp, bottom = 8.dp)
+                        checked = homeBtnEnabled,
+                        onCheckedChange = { isChecked ->
+                            userViewModel.toggleHomeBtn()
+                            homeBtnEnabled = isChecked
+                        },
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(

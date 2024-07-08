@@ -2,14 +2,18 @@ package com.example.gnammy.ui.viewmodels
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.repository.UserRepository
+import com.example.gnammy.ui.theme.Themes
 import com.example.gnammy.utils.Coordinates
 import com.example.gnammy.utils.Result
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -29,14 +33,25 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
 
     var loggedUserId: String = "NOT SET"
 
-    val _logOut = MutableStateFlow(false)
-    val logOut = _logOut.asStateFlow()
+    val homeBtnEnabled = mutableStateOf(false)
+
+    init {
+        viewModelScope.launch {
+            homeBtnEnabled.value = repository.homeBtnEnabled.first()
+        }
+    }
+
+    fun toggleHomeBtn() {
+        viewModelScope.launch {
+            repository.toggleHomeBtnEnabled()
+            homeBtnEnabled.value = repository.homeBtnEnabled.first()
+        }
+    }
 
     suspend fun getLoggedUserId(): String {
         loggedUserId = repository.loggedUserId.first()
         return loggedUserId
     }
-
 
     fun fetchUser(userId: String) {
         viewModelScope.launch {
