@@ -83,6 +83,10 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
+    suspend fun followUser(userId: String): Result<String> {
+        return repository.followUser(userId, getLoggedUserId())
+    }
+
     suspend fun logout() {
         repository.clearData()
     }

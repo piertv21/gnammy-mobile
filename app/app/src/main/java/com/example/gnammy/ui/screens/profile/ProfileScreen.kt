@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
@@ -335,7 +336,10 @@ fun profileView(
             ) {
                 Text(
                     text = user.username,
-                    style = MaterialTheme.typography.headlineMedium.copy()
+                    style = user.username.length.let {
+                        if (it > 10) MaterialTheme.typography.headlineSmall.copy()
+                        else MaterialTheme.typography.headlineMedium.copy()
+                    }
                 )
 
                 Row(
@@ -398,13 +402,19 @@ fun profileView(
                 .padding(bottom = 16.dp)
         ) {
             if (user.id != loggedUserId) { // Hide follow button if it's the user's own profile
+                var followBtnText = R.string.profile_follow
                 Button(
                     modifier = Modifier
                         .weight(0.4f)
                         .padding(end = 8.dp),
-                    onClick = { /* Follow action */ }
+                    onClick = {
+                        val res = runBlocking { userViewModel.followUser(user.id) }
+
+                        Log.e("Follow", res.toString())
+                        followBtnText = if (res.toString() == "Success(data=true)") R.string.profile_being_followed else R.string.profile_follow
+                    }
                 ) {
-                    Text(text = stringResource(R.string.profile_follow))
+                    Text(text = stringResource(followBtnText))
                 }
             }
             Button(
@@ -508,7 +518,7 @@ fun SettingsModal(
                     )
 
                     Text(
-                        text = "Bottoni like in home:",
+                        text = "Bottoni circolari in home:",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
                     )

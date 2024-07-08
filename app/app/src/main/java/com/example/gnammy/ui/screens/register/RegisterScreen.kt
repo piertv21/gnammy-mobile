@@ -219,6 +219,7 @@ private fun validateInput(
         username.isBlank() || password.isBlank() -> "Compila tutti i campi"
         profilePictureUri == null -> "Seleziona una foto profilo"
         password != confirmPassword -> "Le password non corrispondono"
+        username.length > 15 -> "Username troppo lungo"
         else -> ""
     }
 }

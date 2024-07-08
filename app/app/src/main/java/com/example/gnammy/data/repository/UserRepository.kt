@@ -14,6 +14,7 @@ import com.example.gnammy.data.local.GnammyDatabase
 import com.example.gnammy.data.local.dao.UserDao
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.remote.RetrofitClient
+import com.example.gnammy.data.remote.apis.ToggleFollowRequest
 import com.example.gnammy.data.remote.apis.UserApiService
 import com.example.gnammy.data.remote.apis.UserCredentials
 import com.example.gnammy.data.remote.apis.UserInfo
@@ -234,6 +235,21 @@ class UserRepository(
             Log.e("UserRepository", "Network error in updating user data", e)
         } catch (e: HttpException) {
             Log.e("UserRepository", "HTTP error in updating user data", e)
+        }
+    }
+
+    suspend fun followUser(userId: String, currentUserId: String): Result<String> {
+        return try {
+            val response = apiService.toggleFollowUser(ToggleFollowRequest(userId, currentUserId))
+            if (response.isSuccessful) {
+                Result.Success(response.body()?.result?.followed.toString())
+            } else {
+                Result.Error("Errore nel seguire l'utente: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Result.Error("Network error in following user")
+        } catch (e: HttpException) {
+            Result.Error("HTTP error in following user")
         }
     }
 }

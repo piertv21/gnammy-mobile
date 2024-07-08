@@ -1,6 +1,5 @@
 package com.example.gnammy.data.remote.apis
 
-import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.utils.ImageResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -12,7 +11,6 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
-import retrofit2.http.Query
 import retrofit2.http.Url
 
 class UserResponse {
@@ -26,11 +24,11 @@ class UserWrapperResponse {
     var user: UserResponse? = null
 }
 
-class followersResponse {
+class FollowersResponse {
     var followers: List<UserResponse>? = null
 }
 
-class followingResponse {
+class FollowingResponse {
     var following: List<UserResponse>? = null
 }
 
@@ -53,6 +51,19 @@ data class OSMPlace (
     val address: OSMAddress?
 )
 
+data class ToggleFollowRequest(
+    val sourceUserId: String,
+    val targetUserId: String
+)
+
+data class ToggleFollowResponse(
+    val result: FollowResult
+)
+
+data class FollowResult(
+    val followed: Boolean
+)
+
 interface UserApiService {
     @Multipart
     @POST("/user/")
@@ -72,10 +83,15 @@ interface UserApiService {
     suspend fun getUser(@Path("userId") userId: String): Response<UserWrapperResponse>
 
     @GET("/follower/{userId}/")
-    suspend fun getFollowers(@Path("userId") userId: String): Response<followersResponse>
+    suspend fun getFollowers(@Path("userId") userId: String): Response<FollowersResponse>
 
     @GET("/following/{userId}/")
-    suspend fun getFollowing(@Path("userId") userId: String): Response<followingResponse>
+    suspend fun getFollowing(@Path("userId") userId: String): Response<FollowingResponse>
+
+    @POST("/follower/")
+    suspend fun toggleFollowUser(
+        @Body request: ToggleFollowRequest
+    ): Response<ToggleFollowResponse>
 
     @GET("/image/user/{userId}")
     suspend fun getUserImage(@Path("userId") userId: String): Response<ImageResponse>
