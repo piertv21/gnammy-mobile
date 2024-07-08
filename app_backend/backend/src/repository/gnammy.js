@@ -2,6 +2,30 @@ const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 
+/*clyddkkty00007io2hbhqax8m,user,Hai pubblicato 100 gnam
+clyddkm5l00017io2kwrs9mwe,user,Hai pubblicato 10 gnam
+clyddkm6c00027io2p247m94x,user,I tuoi gnam sono stati salvati 100 volte
+clyddkm6o00077io2qjz8zjqp,gnam,Questa ricetta è stata condivisa 100 volte
+clyddkm6e00037io2knsfbp0p,user,Hai salvato 10 gnam
+clyddkm6o00067io2ts3sdnep,gnam,Questa ricetta è stata salvata 10 volte
+clyddkm6n00057io2zhin4n8e,user,I tuoi gnam sono stati salvati 10 volte
+clyddkm6m00047io2ir5mx5xm,user,I tuoi gnam sono stati salvati 1000 volte
+clyddkm7200097io2poqzya2f,gnam,Questa ricetta è stata condivisa 1 volta
+clyddkm6t00087io2mf337jcr,user,Hai salvato il tuo primo gnam
+clyddkm78000a7io275q9cu5k,user,Hai pubblicato il tuo primo gnam
+clyddkm7r000c7io28qvpndhy,user,Hai raggiunto 1 follower
+clyddkm7n000b7io230wqbfwt,gnam,Questa ricetta è stata salvata 1 volta
+clyddkm84000d7io29hf8th1h,user,Hai salvato 100 gnam
+clyddkm85000e7io2sa9m136d,user,Hai raggiunto 10 follower
+clyddkm8b000f7io2s3wfxqhv,gnam,Questa ricetta è stata salvata 100 volte
+clyddkm8j000g7io21jcmyagv,user,Hai raggiunto 100 follower
+clyddkm9b000i7io2a4p6zrdv,gnam,Questa ricetta è stata condivisa 10 volte
+
+clyddkm8n000h7io2adl11npw,ha messo like al tuo gnam,Like
+clyddkm9n000j7io27gft0ex2,ha iniziato a seguirti,Follow
+
+*/
+
 async function login(username, password, callback) {
     try {
         const user = await prisma.user.findFirst({
@@ -28,7 +52,8 @@ async function addUser(username, password, location, callback) {
             data: {
                 username: username,
                 password: hashedPassword,
-                location: location
+                location: location,
+                imageUri: "not set"
             }
         });
         callback(null, createdUser);
@@ -60,17 +85,34 @@ async function getUser(userId, callback) {
     }
 }
 
+async function updateUserImage(userId, newFilename, callback) {
+    try {
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                imageUri: newFilename
+            }
+        });
+
+        callback(null, updatedUser);
+    } catch (error) {
+        callback(error, null);
+    }
+}
+
 async function changeUserInfo(userId, username, password, location, callback) {
     try {
         let hashedPassword = undefined;
         if (username?.length > 255) return callback('Username too long', null);
         if (password?.length > 255) return callback('Password too long', null);
-        
+
         // If new password is not undefined, hash it
         if (password !== undefined) {
             hashedPassword = await bcrypt.hash(password, 10);
         }
-        
+
         const data = {};
         if (username !== undefined) {
             data.username = username;
@@ -81,7 +123,7 @@ async function changeUserInfo(userId, username, password, location, callback) {
         if (location !== undefined) {
             data.location = location;
         }
-        
+
         const updatedUser = await prisma.user.update({
             where: {
                 id: userId
@@ -94,6 +136,7 @@ async function changeUserInfo(userId, username, password, location, callback) {
         callback(error, null);
     }
 }
+
 
 async function addGnam(authorId, title, short_description, full_recipe, callback) {
     try {
@@ -176,7 +219,8 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) 
                 },
                 author: {
                     select: {
-                        username: true
+                        username: true,
+                        imageUri: true
                     }
                 }
             },
@@ -197,7 +241,8 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) 
             recipe: gnam.recipe,
             shareCount: gnam.shareCount,
             createdAt: gnam.createdAt,
-            authorName: gnam.author.username
+            authorName: gnam.author.username,
+            authorImageUri: gnam.author.imageUri
         }));
         callback(null, gnamsWithAuthorName);
     } catch (error) {
@@ -215,7 +260,8 @@ async function getGnam(gnamId, callback) {
             include: {
                 author: {
                     select: {
-                        username: true
+                        username: true,
+                        imageUri: true
                     }
                 }
             }
@@ -228,7 +274,8 @@ async function getGnam(gnamId, callback) {
             recipe: gnam.recipe,
             shareCount: gnam.shareCount,
             createdAt: gnam.createdAt,
-            authorName: gnam.author.username
+            authorName: gnam.author.username,
+            authorImageUri: gnam.author.imageUri
         };
         callback(null, gnamWithAuthorName);
     } catch (error) {
@@ -242,7 +289,8 @@ async function listGnams(callback) {
             include: {
                 author: {
                     select: {
-                        username: true
+                        username: true,
+                        imageUri: true
                     }
                 }
             },
@@ -258,7 +306,8 @@ async function listGnams(callback) {
             recipe: gnam.recipe,
             shareCount: gnam.shareCount,
             createdAt: gnam.createdAt,
-            authorName: gnam.author.username
+            authorName: gnam.author.username,
+            authorImageUri: gnam.author.imageUri
         }));
         callback(null, gnamsWithAuthorName);
     } catch (error) {
@@ -383,6 +432,7 @@ async function getNewNotifications(userId, callback) {
                 sourceId: notification.sourceUserId,
                 content: `${sourceName} ${notification.notificationType.templateText} ${gnamTitle}`,
                 createdAt: notification.createdAt,
+                sourceImageUri: notification.sourceUser.imageUri
             };
         });
 
@@ -699,7 +749,8 @@ async function getUserGnams(userId, callback) {
             include: {
                 author: {
                     select: {
-                        username: true
+                        username: true,
+                        imageUri: true
                     }
                 }
             }
@@ -712,7 +763,8 @@ async function getUserGnams(userId, callback) {
             recipe: gnam.recipe,
             shareCount: gnam.shareCount,
             createdAt: gnam.createdAt,
-            authorName: gnam.author.username
+            authorName: gnam.author.username,
+            authorImageUri: gnam.author.imageUri
         }));
         callback(null, gnamsWithAuthorName);
     } catch (error) {
@@ -782,7 +834,8 @@ async function getSavedGnams(userId, callback) {
             include: {
                 author: {
                     select: {
-                        username: true
+                        username: true,
+                        imageUri: true
                     }
                 }
             }
@@ -795,7 +848,8 @@ async function getSavedGnams(userId, callback) {
             recipe: gnam.recipe,
             shareCount: gnam.shareCount,
             createdAt: gnam.createdAt,
-            authorName: gnam.author.username
+            authorName: gnam.author.username,
+            authorImageUri: gnam.author.imageUri
         }));
         callback(null, gnamsWithAuthorName);
     } catch (error) {
@@ -819,7 +873,8 @@ async function getGnamTimeline(userId, offset, callback) {
             include: {
                 author: {
                     select: {
-                        username: true
+                        username: true,
+                        imageUri: true
                     }
                 }
             }
@@ -833,9 +888,10 @@ async function getGnamTimeline(userId, offset, callback) {
             recipe: gnam.recipe,
             shareCount: gnam.shareCount,
             createdAt: gnam.createdAt,
-            authorName: gnam.author.username
+            authorName: gnam.author.username,
+            authorImageUri: gnam.author.imageUri
         }));
-
+        console.log(gnamsWithAuthorName)
         callback(null, gnamsWithAuthorName);
     } catch (error) {
         callback(error, null);
@@ -882,5 +938,6 @@ module.exports = {
     setNotificationsAsRead,
     getListOfUsersThatSavedGnam,
     getSavedGnams,
-    getGnamTimeline
+    getGnamTimeline,
+    updateUserImage
 };

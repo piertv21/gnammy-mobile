@@ -9,6 +9,7 @@ class NotificationResponse {
     var id: String = ""
     var gnamId: String = ""
     var sourceId: String = ""
+    var sourceImageUri = ""
     var content: String = ""
     var createdAt: String = ""
 }

@@ -17,7 +17,6 @@ import com.example.gnammy.data.remote.RetrofitClient
 import com.example.gnammy.data.remote.apis.ToggleFollowRequest
 import com.example.gnammy.data.remote.apis.UserApiService
 import com.example.gnammy.data.remote.apis.UserCredentials
-import com.example.gnammy.data.remote.apis.UserInfo
 import com.example.gnammy.utils.Coordinates
 import com.example.gnammy.utils.Result
 import kotlinx.coroutines.CoroutineScope
@@ -25,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -96,7 +94,7 @@ class UserRepository(
                     userRes.user?.let {
                         val user = User(
                             it.id, it.username, it.location,
-                            "$backendSocket/images/user/${it.id}.jpg", followers, following
+                            "$backendSocket/images/user/${it.imageUri}", followers, following
                         )
                         userDao.upsert(user)
                     }
@@ -181,9 +179,10 @@ class UserRepository(
 
     suspend fun updateUserLocation(coordinates: Coordinates, userId: String) {
         try {
-            val url = "https://nominatim.openstreetmap.org/reverse?lat=${coordinates.latitude}&lon=${coordinates.longitude}&format=json&limit=1"
+            val url =
+                "https://nominatim.openstreetmap.org/reverse?lat=${coordinates.latitude}&lon=${coordinates.longitude}&format=json&limit=1"
             val placeName = apiService.getPlaceName(url)
-            if(placeName.isSuccessful) {
+            if (placeName.isSuccessful) {
                 val location = placeName.body()?.address?.city
                 val response = apiService.changeUserInfo(
                     userId,
@@ -195,7 +194,10 @@ class UserRepository(
                 if (response.isSuccessful) {
                     fetchUser(userId)
                 } else {
-                    Log.e("UserRepository", "Errore nell'aggiornamento delle informazioni dell'utente: ${response.message()}")
+                    Log.e(
+                        "UserRepository",
+                        "Errore nell'aggiornamento delle informazioni dell'utente: ${response.message()}"
+                    )
                 }
             } else {
                 Log.e("UserRepository", "Error in getting place name: ${placeName.message()}")
@@ -207,7 +209,12 @@ class UserRepository(
         }
     }
 
-    suspend fun updateUserData(context: Context, username: String, profilePictureUri: Uri?, userId: String) {
+    suspend fun updateUserData(
+        context: Context,
+        username: String,
+        profilePictureUri: Uri?,
+        userId: String
+    ) {
         try {
             val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
 
@@ -221,7 +228,9 @@ class UserRepository(
                     }
                 }
                 val requestFile = file
-                    .asRequestBody(uri?.let { context.contentResolver.getType(it)?.toMediaTypeOrNull() })
+                    .asRequestBody(uri?.let {
+                        context.contentResolver.getType(it)?.toMediaTypeOrNull()
+                    })
                 MultipartBody.Part.createFormData("image", file.name, requestFile)
             }
 
@@ -229,7 +238,10 @@ class UserRepository(
             if (response.isSuccessful) {
                 fetchUser(userId)
             } else {
-                Log.e("UserRepository", "Errore nell'aggiornamento delle informazioni dell'utente: ${response.message()}")
+                Log.e(
+                    "UserRepository",
+                    "Errore nell'aggiornamento delle informazioni dell'utente: ${response.message()}"
+                )
             }
         } catch (e: IOException) {
             Log.e("UserRepository", "Network error in updating user data", e)

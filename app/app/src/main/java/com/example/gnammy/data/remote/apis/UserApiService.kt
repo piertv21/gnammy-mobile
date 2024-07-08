@@ -18,6 +18,7 @@ class UserResponse {
     var username: String = ""
     var password: String = ""
     var location: String? = null
+    val imageUri: String = ""
 }
 
 class UserWrapperResponse {
@@ -32,22 +33,23 @@ class FollowingResponse {
     var following: List<UserResponse>? = null
 }
 
-data class UserCredentials (
+data class UserCredentials(
     val username: String,
     val password: String
 )
 
-data class UserInfo (
+data class UserInfo(
     val username: String?,
     val password: String?,
-    val location: String?
+    val location: String?,
+    val imageUri: String
 )
 
 data class OSMAddress(
     val city: String?
 )
 
-data class OSMPlace (
+data class OSMPlace(
     val address: OSMAddress?
 )
 

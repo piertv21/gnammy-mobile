@@ -80,13 +80,13 @@ const addUser = (req, res) => {
         }
 
         if (req.file) {
-            const tempPath = path.join('images/user', req.file.filename);
-            const newFilename = `${user.id}.jpg`;
+            const newFilename = `${user.id}-${Date.now()}.jpg`;
             const newPath = path.join('images/user', newFilename);
+            const tempPath = req.file.path;
 
             sharp(tempPath)
                 .toFormat('jpeg')
-                .toFile(newPath, (err, info) => {
+                .toFile(newPath, async (err, info) => {
                     if (err) {
                         console.error('Error during the conversion and rename of the file:', err);
                         return res.status(500).json({ error: 'Error during the user insertion' });
@@ -99,15 +99,33 @@ const addUser = (req, res) => {
                             return res.status(500).json({ error: 'Error during the user insertion' });
                         }
                     });
-                });
-        }
 
-        Object.values(GoalType.userGoals).forEach(async goalType => {
-            await gnammyRepository.createGoal(user.id, goalType);
-        });
-        res.status(httpStatus.OK).json({ user });
+                    await gnammyRepository.updateUserImage(user.id, newFilename, (err, updatedUser) => {
+                        if (err) {
+                            console.error('Error updating user image:', err);
+                            return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                                .json({ error: `Error updating user image: ${err}` });
+                        }
+
+                        // Creazione dei goal dopo che l'immagine è stata aggiornata
+                        Object.values(GoalType.userGoals).forEach(async goalType => {
+                            await gnammyRepository.createGoal(updatedUser.id, goalType);
+                        });
+
+                        res.status(httpStatus.OK).json({ user: updatedUser });
+                    });
+                });
+        } else {
+            // Creazione dei goal se non c'è un'immagine da aggiornare
+            Object.values(GoalType.userGoals).forEach(async goalType => {
+                await gnammyRepository.createGoal(user.id, goalType);
+            });
+
+            res.status(httpStatus.OK).json({ user });
+        }
     });
-}
+};
+
 
 const listUsers = (req, res) => {
     gnammyRepository.listUsers((err, users) => {
@@ -142,30 +160,42 @@ const changeUserInfo = async (req, res) => {
         }
 
         if (req.file) {
-            const oldFilename = `${userId}.jpg`;
-            const oldFilePath = path.join('images/user', oldFilename);
-
-            if (fs.existsSync(oldFilePath)) {
-                fs.unlinkSync(oldFilePath);
-            }
-
-            const tempPath = req.file.path;
-            const newFilename = `${userId}.jpg`;
+            const newFilename = `${userId}-${Date.now()}.jpg`;
             const newPath = path.join('images/user', newFilename);
+            const tempPath = req.file.path;
 
             await sharp(tempPath)
                 .toFormat('jpeg')
                 .toFile(newPath);
 
             fs.unlinkSync(tempPath);
+
+            gnammyRepository.updateUserImage(userId, newFilename, (err, updatedUser) => {
+                if (err) {
+                    console.error('Error updating user image:', err);
+                    return res.status(httpStatus.INTERNAL_SERVER_ERROR)
+                        .json({ error: `Error updating user image: ${err}` });
+                }
+
+                // Cancella l'immagine precedente
+                if (user.imagerUri) {
+                    const oldFilePath = path.join('images/user', user.imagerUri);
+                    if (fs.existsSync(oldFilePath)) {
+                        fs.unlink(oldFilePath, (unlinkErr) => {
+                            if (unlinkErr) {
+                                console.error('Error during the removal of the previous image:', unlinkErr);
+                            }
+                        });
+                    }
+                }
+
+                res.status(httpStatus.OK).json({ user: updatedUser });
+            });
+        } else {
+            res.status(httpStatus.OK).json({ user });
         }
-
-
-        res.status(httpStatus.OK).json({ user });
     });
 };
-
-
 
 const addGnam = (req, res) => {
     const { authorId, title, short_description, full_recipe } = req.body;

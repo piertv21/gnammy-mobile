@@ -21,6 +21,7 @@ class GnamResponse {
     var shareCount: Int = 0
     var createdAt: String = ""
     var authorName: String = ""
+    var authorImageUri: String = ""
 }
 
 class GnamWrapperResponse {
@@ -79,7 +80,10 @@ interface GnamApiService {
     suspend fun likeGnam(@Body request: LikeRequest): Response<LikeWrapperResponse>
 
     @DELETE("/like/{userId}/{gnamId}")
-    suspend fun unlikeGnam(@Path("userId") userId: String, @Path("gnamId") gnamId: String): Response<LikeWrapperResponse>
+    suspend fun unlikeGnam(
+        @Path("userId") userId: String,
+        @Path("gnamId") gnamId: String
+    ): Response<LikeWrapperResponse>
 
     @GET("/gnamsOf/{userId}")
     suspend fun getUserGnams(@Path("userId") userId: String): Response<GnamListWrapperResponse>

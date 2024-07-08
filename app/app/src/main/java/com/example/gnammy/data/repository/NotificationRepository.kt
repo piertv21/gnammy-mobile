@@ -19,7 +19,7 @@ class NotificationRepository(
 ) {
     private val apiService: NotificationApiService =
         RetrofitClient.instance.create(NotificationApiService::class.java)
-    
+
     val notifications: Flow<List<Notification>> = notificationDao.getAllNotification()
 
     suspend fun fetchNotifications(userId: String) {
@@ -34,7 +34,7 @@ class NotificationRepository(
                         val imageUri = if (it.gnamId.isNotEmpty()) {
                             "$backendSocket/images/gnam/${it.gnamId}.jpg"
                         } else {
-                            "$backendSocket/images/user/${it.sourceId}.jpg"
+                            "$backendSocket/images/user/${it.sourceImageUri}"
                         }
                         val notification = Notification(
                             id = it.id,
