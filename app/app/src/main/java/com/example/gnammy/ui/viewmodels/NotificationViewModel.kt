@@ -7,6 +7,7 @@ import com.example.gnammy.data.repository.NotificationRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 
 data class NotificationState(val notifications: List<Notification> = emptyList())
@@ -19,8 +20,10 @@ class NotificationViewModel(private val repository: NotificationRepository) : Vi
         initialValue = NotificationState(emptyList())
     )
 
-    suspend fun fetchNotifications(userId: String) {
-        repository.fetchNotifications(userId)
+    fun fetchNotifications(userId: String) {
+        viewModelScope.launch {
+            repository.fetchNotifications(userId)
+        }
     }
 
     suspend fun setAsSeen(notificationId: String) {

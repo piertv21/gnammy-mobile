@@ -87,7 +87,10 @@ fun GnammyNavGraph(
     modifier: Modifier = Modifier
 ) {
     val gnamState by gnamViewModel.state.collectAsStateWithLifecycle()
-    val loggedUserId = runBlocking { userViewModel.getLoggedUserId() }
+    if (userViewModel.loggedUserId == "NOT SET") {
+        runBlocking { userViewModel.getLoggedUserId() }
+    }
+    val loggedUserId = userViewModel.loggedUserId
 
     NavHost(
         navController = navController,
@@ -140,8 +143,11 @@ fun GnammyNavGraph(
             }
         }
         with(GnammyRoute.Notification) {
-            runBlocking { notificationViewModel.fetchNotifications(loggedUserId) }
             composable(route) {
+                if (loggedUserId != "NOT_SET") {
+                    notificationViewModel.fetchNotifications(loggedUserId)
+                    goalsViewModel.getGoalsPreview(loggedUserId)
+                }
                 NotificationScreen(
                     navController,
                     notificationViewModel,
@@ -171,6 +177,7 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Goals) {
             composable(route) {
+                goalsViewModel.fetchGoalsNonBlocking(loggedUserId)
                 GoalsScreen(goalsViewModel, userViewModel)
             }
         }

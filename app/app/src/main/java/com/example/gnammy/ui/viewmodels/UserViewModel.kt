@@ -27,12 +27,16 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         initialValue = UsersState(emptyList())
     )
 
+    var loggedUserId: String = "NOT SET"
+
     val _logOut = MutableStateFlow(false)
     val logOut = _logOut.asStateFlow()
 
     suspend fun getLoggedUserId(): String {
-        return repository.loggedUserId.first()
+        loggedUserId = repository.loggedUserId.first()
+        return loggedUserId
     }
+
 
     fun fetchUser(userId: String) {
         viewModelScope.launch {

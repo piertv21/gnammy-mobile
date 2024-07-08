@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -44,11 +47,15 @@ fun NotificationScreen(
     modifier: Modifier = Modifier
 ) {
     val notificationState: NotificationState by notificationViewModel.state.collectAsStateWithLifecycle()
+    val loadingGoals = remember { mutableStateOf(true) }
+    val loadingNotifications = remember { mutableStateOf(true) }
 
-    val goals = runBlocking {
-        val loggedUserId = userViewModel.getLoggedUserId()
-        notificationViewModel.fetchNotifications(loggedUserId)
-        goalsViewModel.getGoalsPreview(loggedUserId)
+    if (goalsViewModel.goalsPreview.isNotEmpty()) {
+        loadingGoals.value = false
+    }
+
+    if (notificationState.notifications.isNotEmpty()) {
+        loadingNotifications.value = false
     }
 
     Column(
@@ -63,32 +70,44 @@ fun NotificationScreen(
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.2f),
-            contentPadding = PaddingValues(10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            items(goals, key = { it.id }) { goal ->
-                UserGoal(
-                    goal,
-                    Modifier
-                        .fillMaxWidth(1 / 2f)
-                        .aspectRatio(2f)
-                )
+        if (goalsViewModel.goalsPreview.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.2f),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
-            item {
-                Box(modifier = Modifier.fillMaxHeight()) {
-                    TextButton(
-                        onClick = { navHostController.navigate("goals") },
-                        modifier = Modifier.align(Alignment.Center)
-                    ) {
-                        Text(
-                            "See all",
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+        } else {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.2f),
+                contentPadding = PaddingValues(10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+
+                items(goalsViewModel.goalsPreview, key = { it.id }) { goal ->
+                    UserGoal(
+                        goal,
+                        Modifier
+                            .fillMaxWidth(1 / 2f)
+                            .aspectRatio(2f)
+                    )
+                }
+                item {
+                    Box(modifier = Modifier.fillMaxHeight()) {
+                        TextButton(
+                            onClick = { navHostController.navigate("goals") },
+                            modifier = Modifier.align(Alignment.Center)
+                        ) {
+                            Text(
+                                "See all",
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }
@@ -100,38 +119,52 @@ fun NotificationScreen(
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp)
-                .weight(0.8f),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(10.dp)
-        ) {
-            items(notificationState.notifications, key = { it.id }) { notification ->
-                val pillState = rememberPillState()
-                NotificationPill(notification, pillState)
-                LaunchedEffect(key1 = pillState.currentState) {
-                    when (pillState.currentState) {
-                        PillState.State.Cancelled -> notificationViewModel.setAsSeen(notification.id)
-                        PillState.State.Read -> {
-                            runBlocking { notificationViewModel.setAsSeen(notification.id) }
-                            if (notification.gnamId == null) {
-                                navHostController.navigate(
-                                    GnammyRoute.Profile.buildRoute(
-                                        notification.sourceId
-                                    )
-                                )
-                            } else {
-                                navHostController.navigate(
-                                    GnammyRoute.GnamDetails.buildRoute(
-                                        notification.gnamId
-                                    )
-                                )
-                            }
-                        }
+        if (notificationState.notifications.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.8f),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp)
+                    .weight(0.8f),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(10.dp)
+            ) {
+                items(notificationState.notifications, key = { it.id }) { notification ->
+                    val pillState = rememberPillState()
+                    NotificationPill(notification, pillState)
+                    LaunchedEffect(key1 = pillState.currentState) {
+                        when (pillState.currentState) {
+                            PillState.State.Cancelled -> notificationViewModel.setAsSeen(
+                                notification.id
+                            )
 
-                        else -> {}
+                            PillState.State.Read -> {
+                                runBlocking { notificationViewModel.setAsSeen(notification.id) }
+                                if (notification.gnamId == null) {
+                                    navHostController.navigate(
+                                        GnammyRoute.Profile.buildRoute(
+                                            notification.sourceId
+                                        )
+                                    )
+                                } else {
+                                    navHostController.navigate(
+                                        GnammyRoute.GnamDetails.buildRoute(
+                                            notification.gnamId
+                                        )
+                                    )
+                                }
+                            }
+
+                            else -> {}
+                        }
                     }
                 }
             }

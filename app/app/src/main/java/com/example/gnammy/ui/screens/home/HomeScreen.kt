@@ -23,8 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,16 +54,12 @@ fun HomeScreen(
     val gnamsState by gnamViewModel.timelineState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val offline = remember { mutableStateOf(true) }
-    val fetchMore = remember { mutableStateOf(false) }
-    val loading = remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
 
     DisposableEffect(Unit) {
         val job = coroutineScope.launch {
             while (true) {
-                Log.i("HomeScreen", "fetching notifications")
                 if (notificationViewModel.state.value.notifications.isEmpty()) {
                     notificationViewModel.fetchNotifications(loggedUserId)
                 }
@@ -78,44 +72,17 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (isOnline(context)) {
-            offline.value = false
-            fetchMore.value = true
-        } else {
-            offline.value = true
-        }
-    }
-    LaunchedEffect(isOnline(context)) {
-        if (isOnline(context)) {
-            offline.value = false
-        } else {
-            offline.value = true
-        }
-    }
-    LaunchedEffect(gnamsState.gnams.size) {
-        if (gnamsState.gnams.size < 5) {
-            fetchMore.value = true
-            if (gnamsState.gnams.isEmpty()) {
-                loading.value = true
-            }
-        } else {
-            loading.value = false
-            fetchMore.value = false
-        }
-    }
-    if (offline.value) {
+    if (!isOnline(context)) {
         Box(modifier = Modifier.fillMaxSize()) {
             Text("No internet connection", modifier = Modifier.align(Alignment.Center))
         }
     } else {
-        if (fetchMore.value) {
+        if (gnamsState.gnams.size < 5) {
             gnamViewModel.fetchGnamTimeline()
-            fetchMore.value = false
-        }
-        if (loading.value) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+            if (gnamsState.gnams.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             }
         } else {
             val states = gnamsState.gnams.reversed()

@@ -8,6 +8,7 @@ import com.example.gnammy.data.repository.GoalRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 
 data class UserGoalsState(val goals: List<UserGoal> = emptyList())
@@ -27,11 +28,21 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
         initialValue = UserGoalsState(emptyList())
     )
 
+    var goalsPreview = listOf<UserGoal>()
+
     suspend fun fetchGoals(userId: String) {
         repository.fetchGoals(userId)
     }
 
-    suspend fun getGoalsPreview(userId: String): List<UserGoal> {
-        return repository.getGoalsPreview(userId)
+    fun fetchGoalsNonBlocking(userId: String) {
+        viewModelScope.launch {
+            repository.fetchGoals(userId)
+        }
+    }
+
+    fun getGoalsPreview(userId: String) {
+        viewModelScope.launch {
+            goalsPreview = run { repository.getGoalsPreview(userId) }
+        }
     }
 }

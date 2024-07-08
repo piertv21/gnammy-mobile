@@ -1,5 +1,6 @@
 package com.example.gnammy.ui.screens.goals
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.aspectRatio
@@ -7,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -22,7 +25,6 @@ import com.example.gnammy.ui.viewmodels.GnamGoalsState
 import com.example.gnammy.ui.viewmodels.GoalViewModel
 import com.example.gnammy.ui.viewmodels.UserGoalsState
 import com.example.gnammy.ui.viewmodels.UserViewModel
-import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -33,10 +35,6 @@ fun GoalsScreen(
     val userGoalsState: UserGoalsState by goalsViewModel.userGoalsState.collectAsStateWithLifecycle()
     val gnamGoalsState: GnamGoalsState by goalsViewModel.gnamGoalsState.collectAsStateWithLifecycle()
 
-    runBlocking {
-        val loggedUserId = userViewModel.getLoggedUserId()
-        goalsViewModel.fetchGoals(loggedUserId)
-    }
 
     LazyColumn(
         modifier = Modifier
@@ -54,19 +52,30 @@ fun GoalsScreen(
         }
 
         item {
-            FlowRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                userGoalsState.goals.forEach { goal ->
-                    UserGoal(
-                        goal,
-                        Modifier
-                            .fillMaxWidth(1 / 2f)
-                            .aspectRatio(2f)
-                            .padding(4.dp)
-                    )
+            if (userGoalsState.goals.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    userGoalsState.goals.forEach { goal ->
+                        UserGoal(
+                            goal,
+                            Modifier
+                                .fillMaxWidth(1 / 2f)
+                                .aspectRatio(2f)
+                                .padding(4.dp)
+                        )
+                    }
                 }
             }
         }
@@ -83,13 +92,24 @@ fun GoalsScreen(
         }
 
         item {
-            FlowRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-            ) {
-                gnamGoalsState.goals.forEach { goal ->
-                    GnamGoal(goal)
+            if (userGoalsState.goals.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                FlowRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                ) {
+                    gnamGoalsState.goals.forEach { goal ->
+                        GnamGoal(goal)
+                    }
                 }
             }
         }
