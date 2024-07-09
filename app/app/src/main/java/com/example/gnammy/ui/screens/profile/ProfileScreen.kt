@@ -249,7 +249,8 @@ fun ProfileScreen(
                     navHostController = navController,
                     userViewModel = userViewModel,
                     ::requestLocation,
-                    locationService
+                    locationService,
+                    offline.value
                 )
             }
         } else {
@@ -259,8 +260,6 @@ fun ProfileScreen(
         }
     } else {    // Online state
         val userState by userViewModel.state.collectAsStateWithLifecycle()
-
-
 
         userState.users.find { it.id == userId }?.let { user ->
             profileView(
@@ -272,7 +271,8 @@ fun ProfileScreen(
                 navHostController = navController,
                 userViewModel = userViewModel,
                 ::requestLocation,
-                locationService
+                locationService,
+                offline.value
             )
         }
     }
@@ -288,13 +288,19 @@ fun profileView(
     navHostController: NavHostController,
     userViewModel: UserViewModel,
     requestLocation: () -> Unit,
-    locationService: LocationService
+    locationService: LocationService,
+    offline: Boolean
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val gnamsToShow = gnamViewModel.state.collectAsState()
         .value.gnams.filter {
             it.authorId == user.id
         }
+    val isUserFollowing by userViewModel.currentFollowStatus.collectAsState()
+
+    if(!offline) {
+        userViewModel.checkFollowStatus(user.id)
+    }
 
     fun shareProfile() {
         val sendIntent = Intent().apply {
@@ -402,19 +408,24 @@ fun profileView(
                 .padding(bottom = 16.dp)
         ) {
             if (user.id != loggedUserId) { // Hide follow button if it's the user's own profile
-                var followBtnText = R.string.profile_follow
                 Button(
                     modifier = Modifier
                         .weight(0.4f)
                         .padding(end = 8.dp),
                     onClick = {
-                        val res = runBlocking { userViewModel.followUser(user.id) }
-
-                        Log.e("Follow", res.toString())
-                        followBtnText = if (res.toString() == "Success(data=true)") R.string.profile_being_followed else R.string.profile_follow
+                        runBlocking {
+                            userViewModel.toggleFollowUser(user.id)
+                            userViewModel.fetchUser(user.id)
+                        }
                     }
                 ) {
-                    Text(text = stringResource(followBtnText))
+                    Text(
+                        text = if (isUserFollowing.toString() == "true") {
+                            stringResource(R.string.profile_being_followed)
+                        } else {
+                            stringResource(R.string.profile_follow)
+                        }
+                    )
                 }
             }
             Button(
