@@ -59,6 +59,38 @@ class GnamRepository(
         return dataStore.data.map { it[USER_ID_KEY] ?: "" }.first()
     }
 
+    suspend fun getGnamData(gnamId: String): Gnam? {
+        return try {
+            val gnamResponse = apiService.getGnam(gnamId)
+            if (gnamResponse.isSuccessful) {
+                val gnamRes = gnamResponse.body()
+                if (gnamRes != null) {
+                    gnamRes.gnam?.let {
+                        val gnam = Gnam(
+                            id = it.id,
+                            authorId = it.authorId,
+                            title = it.title,
+                            description = it.description,
+                            recipe = it.recipe,
+                            date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
+                            imageUri = "${backendSocket}/images/gnam/${it.id}.jpg",
+                            authorImageUri = "${backendSocket}/images/user/${it.authorImageUri}",
+                            authorName = it.authorName
+                        )
+                        return gnam
+                    }
+                }
+                return null
+            } else {
+                return null
+            }
+        } catch (e: IOException) {
+            return null
+        } catch (e: HttpException) {
+            return null
+        }
+    }
+
     suspend fun fetchGnam(gnamId: String) {
         try {
             val gnamResponse = apiService.getGnam(gnamId)

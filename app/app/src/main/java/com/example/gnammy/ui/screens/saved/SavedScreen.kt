@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -44,22 +46,29 @@ fun SavedScreen(
     val likedGnams by gnamViewModel.likedGnamsState.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 24.dp, start = 24.dp, end = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2)
+
+        if(likedGnams.gnams.isNotEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 24.dp, start = 24.dp, end = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                items(likedGnams.gnams) { likedGnam ->
-                    RecipeCardSmall(
-                        navController,
-                        Modifier.padding(5.dp),
-                        gnam = likedGnam
-                    )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2)
+                ) {
+                    items(likedGnams.gnams) { likedGnam ->
+                        RecipeCardSmall(
+                            navController,
+                            Modifier.padding(5.dp),
+                            gnam = likedGnam
+                        )
+                    }
                 }
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text("Nessuno gnam salvato.", modifier = Modifier.align(Alignment.Center))
             }
         }
 
