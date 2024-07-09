@@ -218,20 +218,21 @@ class UserRepository(
         try {
             val usernamePart = username.toRequestBody("text/plain".toMediaTypeOrNull())
 
-            val imagePart: MultipartBody.Part = profilePictureUri.let { uri ->
-                val file = File(context.cacheDir, "tempProfilePicture")
-                if (uri != null) {
+            var imagePart: MultipartBody.Part? = null
+            if(profilePictureUri != null) {
+                imagePart = profilePictureUri.let { uri ->
+                    val file = File(context.cacheDir, "tempProfilePicture")
                     context.contentResolver.openInputStream(uri)?.use { inputStream ->
                         file.outputStream().use { outputStream ->
                             inputStream.copyTo(outputStream)
                         }
                     }
+                    val requestFile = file
+                        .asRequestBody(uri.let {
+                            context.contentResolver.getType(it)?.toMediaTypeOrNull()
+                        })
+                    MultipartBody.Part.createFormData("image", file.name, requestFile)
                 }
-                val requestFile = file
-                    .asRequestBody(uri?.let {
-                        context.contentResolver.getType(it)?.toMediaTypeOrNull()
-                    })
-                MultipartBody.Part.createFormData("image", file.name, requestFile)
             }
 
             val response = apiService.changeUserInfo(userId, usernamePart, null, null, imagePart)

@@ -557,6 +557,7 @@ fun SettingsModal(
                             if (locationService.coordinates != null) {
                                 userViewModel.updateUserLocation(locationService.coordinates!!)
                                 onDismissRequest()
+                                isRequestingLocation = false
                             }
                         }
                     }
