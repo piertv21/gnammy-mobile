@@ -88,6 +88,7 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     }
 
     suspend fun logout() {
+        loggedUserId = "NOT SET"
         repository.clearData()
     }
 }
