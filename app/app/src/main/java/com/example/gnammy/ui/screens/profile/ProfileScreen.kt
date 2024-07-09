@@ -514,7 +514,7 @@ fun SettingsModal(
                         selectedOption = themeViewModel.theme.value,
                         options = listOf(Themes.Light, Themes.Dark, Themes.Auto, Themes.Dynamic),
                         onOptionSelected = { themeViewModel.selectTheme(it) },
-                        modifier = Modifier.padding(vertical = 16.dp)
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
 
                     Text(
@@ -597,8 +597,6 @@ fun SettingsModal(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(4.dp))
-
                     Button(
                         onClick = {
                             runBlocking { userViewModel.updateUserData(ctx, username.text, profilePictureUri) }
@@ -611,7 +609,7 @@ fun SettingsModal(
                         Text(text = stringResource(R.string.profile_save))
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Button(
                         onClick = {

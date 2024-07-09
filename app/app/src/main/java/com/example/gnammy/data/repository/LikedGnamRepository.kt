@@ -42,7 +42,7 @@ class LikedGnamRepository(
                             recipe = it.recipe,
                             date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
                             imageUri = "$backendSocket/images/gnam/${it.id}.jpg",
-                            authorImageUri = "$backendSocket/images/user/${it.authorId}.jpg",
+                            authorImageUri = "${backendSocket}/images/user/${it.authorImageUri}",
                             authorName = it.authorName
                         )
                     )
