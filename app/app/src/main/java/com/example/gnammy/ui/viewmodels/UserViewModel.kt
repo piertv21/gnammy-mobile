@@ -7,10 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.data.repository.UserRepository
-import com.example.gnammy.ui.theme.Themes
 import com.example.gnammy.utils.Coordinates
 import com.example.gnammy.utils.Result
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +32,9 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
     var loggedUserId: String = "NOT SET"
 
     val homeBtnEnabled = mutableStateOf(false)
+
+    private val _currentFollowStatus = MutableStateFlow<String>("")
+    val currentFollowStatus: StateFlow<String> = _currentFollowStatus.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -83,8 +84,16 @@ class UserViewModel(private val repository: UserRepository) : ViewModel() {
         }
     }
 
-    suspend fun followUser(userId: String): Result<String> {
-        return repository.followUser(userId, getLoggedUserId())
+    fun checkFollowStatus(userId: String) {
+        viewModelScope.launch {
+            val result = repository.isUserFollowing(userId, getLoggedUserId())
+            if (result is Result.Success) _currentFollowStatus.value = result.data
+        }
+    }
+
+    suspend fun toggleFollowUser(userId: String) {
+        val result = repository.followUser(userId, getLoggedUserId())
+        if (result is Result.Success) _currentFollowStatus.value = result.data
     }
 
     suspend fun logout() {

@@ -183,12 +183,12 @@ class UserRepository(
                 "https://nominatim.openstreetmap.org/reverse?lat=${coordinates.latitude}&lon=${coordinates.longitude}&format=json&limit=1"
             val placeName = apiService.getPlaceName(url)
             if (placeName.isSuccessful) {
-                val location = placeName.body()?.address?.city
+                val location = placeName.body()?.address?.city + ", " + placeName.body()?.address?.country
                 val response = apiService.changeUserInfo(
                     userId,
                     null,
                     null,
-                    location?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) },
+                    location.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) },
                     null
                 )
                 if (response.isSuccessful) {
@@ -253,7 +253,7 @@ class UserRepository(
 
     suspend fun followUser(userId: String, currentUserId: String): Result<String> {
         return try {
-            val response = apiService.toggleFollowUser(ToggleFollowRequest(userId, currentUserId))
+            val response = apiService.toggleFollowUser(ToggleFollowRequest(currentUserId, userId))
             if (response.isSuccessful) {
                 Result.Success(response.body()?.result?.followed.toString())
             } else {
@@ -263,6 +263,21 @@ class UserRepository(
             Result.Error("Network error in following user")
         } catch (e: HttpException) {
             Result.Error("HTTP error in following user")
+        }
+    }
+
+    suspend fun isUserFollowing(userId: String, currentUserId: String): Result<String> {
+        return try {
+            val response = apiService.isUserFollowing(currentUserId, userId)
+            if (response.isSuccessful) {
+                Result.Success(response.body()?.result.toString())
+            } else {
+                Result.Error("Errore nel verificare se l'utente è seguito: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Result.Error("Network error in checking if user is following")
+        } catch (e: HttpException) {
+            Result.Error("HTTP error in checking if user is following")
         }
     }
 }

@@ -67,7 +67,7 @@ router.get('/follower/:userId', validate(gnammyValidator.listFollower), gnammyCo
 router.get('/following/:userId', validate(gnammyValidator.listFollowing), gnammyController.listFollowing)
 
 // Gets if users follow another user
-router.get('/follower/', validate(gnammyValidator.doUserFollowUser), gnammyController.doUserFollowUser)
+router.get('/follower/:sourceUserId/:targetUserId', validate(gnammyValidator.doUserFollowUser), gnammyController.doUserFollowUser)
 
 // Request notifications
 router.get('/notification/:userId', validate(gnammyValidator.getNewNotifications), gnammyController.getNewNotifications)

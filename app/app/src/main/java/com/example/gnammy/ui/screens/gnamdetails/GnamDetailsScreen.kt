@@ -1,5 +1,7 @@
 package com.example.gnammy.ui.screens.gnamdetails
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -25,35 +27,107 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.Size
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.utils.DateFormats
+import com.example.gnammy.utils.isOnline
 import com.example.gnammy.utils.millisToDateString
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun GnamDetailsScreen(
     navController: NavHostController,
-    gnam: Gnam,
+    gnamId: String,
     gnamViewModel: GnamViewModel,
     loggedUserId: String
 ) {
-    val context = LocalContext.current
+    val ctx = LocalContext.current
+    val offline = remember { mutableStateOf(true) }
+    val loading = remember { mutableStateOf(false) }
+    val fetchedGnam by gnamViewModel.gnamToBeFetched.collectAsStateWithLifecycle(null)
+
+    LaunchedEffect(Unit) {
+        if (isOnline(ctx)) {
+            offline.value = false
+            loading.value = true
+            gnamViewModel.getGnamData(gnamId)
+            loading.value = false
+        } else {
+            offline.value = true
+        }
+    }
+
+    if (loading.value && fetchedGnam == null) { // Loading
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else if (offline.value) { // Offline
+        val localgnam = gnamViewModel.likedGnamsState.value.gnams.find { it.id == gnamId }
+        if (localgnam != null) {
+            gnamDetailsView(
+                navController,
+                localgnam,
+                gnamViewModel,
+                loggedUserId,
+                ctx,
+                !offline.value
+            )
+        } else {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text("Connettiti ad internet per visualizzare lo gnam.", modifier = Modifier.align(Alignment.Center))
+            }
+        }
+    } else if(!offline.value) { // Online
+        gnamDetailsView(
+            navController,
+            fetchedGnam!!,
+            gnamViewModel,
+            loggedUserId,
+            ctx,
+            !offline.value
+        )
+    }
+}
+
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+fun gnamDetailsView(
+    navController: NavHostController,
+    gnam: Gnam,
+    gnamViewModel: GnamViewModel,
+    loggedUserId: String,
+    context: Context,
+    online: Boolean
+) {
     val scrollState = rememberScrollState()
+    val isGnamSaved by gnamViewModel.isCurrentGnamSaved.collectAsState()
+    if(gnam.authorId != loggedUserId && online) { // If online and is not the author
+        gnamViewModel.isCurrentGnamSaved(gnam.id)
+    }
 
     Column(
         modifier = Modifier
@@ -172,18 +246,34 @@ fun GnamDetailsScreen(
 
         Row(
             horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            Button(
-                modifier = Modifier.padding(end = 8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                onClick = {
-                    gnamViewModel.removeGnamFromSaved(gnam, loggedUserId)
-                    navController.navigate("home")
+            if(gnam.authorId != loggedUserId && online) { // If online and is not the author
+                Button(
+                    modifier = Modifier.padding(end = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if(!isGnamSaved) Color.Green else Color.Red,
+                    ),
+                    onClick = {
+                        if (!isGnamSaved) {
+                            gnamViewModel.likeGnam(gnam)
+                        } else {
+                            gnamViewModel.removeGnamFromSaved(gnam, loggedUserId)
+                        }
+                        navController.navigate("saved")
+                    }
+                ) {
+                    Text(
+                        stringResource(
+                            if(!isGnamSaved)
+                                R.string.saved_add_to_saved
+                            else
+                                R.string.saved_remove_from_saved
+                        )
+                    )
                 }
-            ) {
-                Text("Rimuovi dai preferiti")
             }
             Button(
                 onClick = {

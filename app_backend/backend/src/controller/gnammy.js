@@ -492,14 +492,14 @@ const listFollowing = (req, res) => {
 }
 
 const doUserFollowUser = (req, res) => {
-    const { sourceUser, targetUser } = req.body;
+    const { sourceUserId, targetUserId } = req.params;
 
-    gnammyRepository.doUserFollowUser(sourceUser, targetUser, (err, doUserFollowUser) => {
+    gnammyRepository.doUserFollowUser(sourceUserId, targetUserId, (err, doUserFollowUser) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during the gnam update: ${err}` });
         }
-        res.status(httpStatus.OK).json({ doUserFollowUser });
+        res.status(httpStatus.OK).json({ result: doUserFollowUser });
     });
 }
 

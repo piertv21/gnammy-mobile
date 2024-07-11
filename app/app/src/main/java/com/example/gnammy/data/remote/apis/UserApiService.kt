@@ -46,7 +46,8 @@ data class UserInfo(
 )
 
 data class OSMAddress(
-    val city: String?
+    val city: String?,
+    val country: String?
 )
 
 data class OSMPlace(
@@ -64,6 +65,10 @@ data class ToggleFollowResponse(
 
 data class FollowResult(
     val followed: Boolean
+)
+
+data class DoUserFollowResponse (
+    val result: Boolean
 )
 
 interface UserApiService {
@@ -94,6 +99,12 @@ interface UserApiService {
     suspend fun toggleFollowUser(
         @Body request: ToggleFollowRequest
     ): Response<ToggleFollowResponse>
+
+    @GET("/follower/{sourceUserId}/{targetUserId}/")
+    suspend fun isUserFollowing(
+        @Path("sourceUserId") sourceUserId: String,
+        @Path("targetUserId") targetUserId: String
+    ): Response<DoUserFollowResponse>
 
     @GET("/image/user/{userId}")
     suspend fun getUserImage(@Path("userId") userId: String): Response<ImageResponse>

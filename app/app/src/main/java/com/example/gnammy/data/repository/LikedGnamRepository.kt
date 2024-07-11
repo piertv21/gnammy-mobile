@@ -42,7 +42,7 @@ class LikedGnamRepository(
                             recipe = it.recipe,
                             date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
                             imageUri = "$backendSocket/images/gnam/${it.id}.jpg",
-                            authorImageUri = "$backendSocket/images/user/${it.authorId}.jpg",
+                            authorImageUri = "${backendSocket}/images/user/${it.authorImageUri}",
                             authorName = it.authorName
                         )
                     )
@@ -66,6 +66,7 @@ class LikedGnamRepository(
             val response = apiService.unlikeGnam(loggedUserId, gnam.id)
             if (response.isSuccessful) {
                 gnamDao.deleteGnam(gnam.id)
+                // NB: Gnam will be automatically deleted also from likedGnam dao table
                 Result.Success("Gnam removed from saved successfully")
             } else {
                 Result.Error("Error in removing gnam from saved: ${response.message()}")

@@ -3,6 +3,7 @@ package com.example.gnammy.utils
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -29,12 +30,21 @@ class DataStoreHelper(private val context: Context, private val dataStoreName: S
         }
     }
 
+    suspend fun putBooleanValue(key: String, value: Boolean) {
+        val dataStoreKey = booleanPreferencesKey(key)
+        context.dataStore.edit { preferences ->
+            preferences[dataStoreKey] = value
+        }
+    }
+
     suspend fun removeValue(key: String) {
         val stringKey = stringPreferencesKey(key)
         val intKey = intPreferencesKey(key)
+        val booleanKey = booleanPreferencesKey(key)
         context.dataStore.edit { preferences ->
             preferences.remove(stringKey)
             preferences.remove(intKey)
+            preferences.remove(booleanKey)
         }
     }
 
@@ -55,6 +65,21 @@ class DataStoreHelper(private val context: Context, private val dataStoreName: S
 
     fun getIntValue(key: String): Flow<Int?> {
         val dataStoreKey = intPreferencesKey(key)
+        return context.dataStore.data
+            .catch { exception ->
+                if (exception is IOException) {
+                    emit(emptyPreferences())
+                } else {
+                    throw exception
+                }
+            }
+            .map { preferences ->
+                preferences[dataStoreKey]
+            }
+    }
+
+    fun getBooleanValue(key: String): Flow<Boolean?> {
+        val dataStoreKey = booleanPreferencesKey(key)
         return context.dataStore.data
             .catch { exception ->
                 if (exception is IOException) {

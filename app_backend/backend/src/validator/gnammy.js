@@ -129,7 +129,7 @@ const listFollowing = {
 }
 
 const doUserFollowUser = {
-    body: Joi.object().keys({
+    params: Joi.object().keys({
         sourceUserId: Joi.string().required(),
         targetUserId: Joi.string().required(),
     }),

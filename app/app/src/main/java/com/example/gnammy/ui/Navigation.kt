@@ -169,10 +169,14 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.GnamDetails) {
             composable(route, arguments) { backStackEntry ->
-                val gnam = requireNotNull(gnamState.gnams.find {
-                    it.id == backStackEntry.arguments?.getString("gnamId")
-                })
-                GnamDetailsScreen(navController, gnam, gnamViewModel, loggedUserId)
+                backStackEntry.arguments?.getString("gnamId")?.let {
+                    GnamDetailsScreen(
+                        navController,
+                        it,
+                        gnamViewModel,
+                        loggedUserId
+                    )
+                }
             }
         }
         with(GnammyRoute.Goals) {
