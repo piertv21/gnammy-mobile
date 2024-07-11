@@ -43,6 +43,7 @@ class GnamRepository(
 
     val gnams: Flow<List<Gnam>> = gnamDao.getAllGnams()
     val timeline: MutableStateFlow<List<Gnam>> = MutableStateFlow(emptyList())
+    val searchResults: MutableStateFlow<List<Gnam>> = MutableStateFlow(emptyList())
 
     companion object {
         private val TIMELINE_OFFSET_KEY = intPreferencesKey("timeline_offset_key")
@@ -267,6 +268,44 @@ class GnamRepository(
             Log.e("GnamRepository", "Network error in getting user gnams", e)
         } catch (e: HttpException) {
             Log.e("GnamRepository", "HTTP error in getting user gnams", e)
+        }
+    }
+
+    suspend fun fetchSearchResults(
+        userId: String,
+        keywords: String,
+        dateTo: String,
+        dateFrom: String,
+        numberOfLikes: Int
+    ) {
+        try {
+            val response = apiService.searchGnams(userId, keywords, dateTo, dateFrom, numberOfLikes)
+            if (response.isSuccessful) {
+                val gnamRes = response.body()
+                val listGnams: MutableList<Gnam> = mutableListOf()
+                gnamRes?.gnams?.forEach() {
+                    listGnams.add(
+                        Gnam(
+                            id = it.id,
+                            authorId = it.authorId,
+                            title = it.title,
+                            description = it.description,
+                            recipe = it.recipe,
+                            date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
+                            imageUri = "${backendSocket}/images/gnam/${it.id}.jpg",
+                            authorImageUri = "${backendSocket}/images/user/${it.authorImageUri}",
+                            authorName = it.authorName
+                        )
+                    )
+                }
+                searchResults.value = listGnams
+            } else {
+                Log.e("GnamRepository", "Error in getting search results: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("GnamRepository", "Network error in getting search results", e)
+        } catch (e: HttpException) {
+            Log.e("GnamRepository", "HTTP error in getting search results", e)
         }
     }
 }

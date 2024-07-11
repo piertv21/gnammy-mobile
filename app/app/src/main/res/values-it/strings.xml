@@ -32,4 +32,5 @@
     <string name="profile_being_followed">Seguito</string>
     <string name="saved_add_to_saved">Aggiungi ai preferiti</string>
     <string name="saved_remove_from_saved">Rimuovi dai preferiti</string>
+    <string name="date_picker_default_content">Date</string>
 </resources>

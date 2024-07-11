@@ -95,10 +95,10 @@ const getLike = {
 const searchGnams = {
     query: Joi.object().keys({
         userId: Joi.string().required(),
-        keywords: Joi.string().optional(),
-        dateFrom: Joi.date().optional(),
-        dateTo: Joi.date().optional(),
-        numberOfLikes: Joi.number().optional(),
+        keywords: Joi.string().optional().allow(''),
+        dateFrom: Joi.date().optional().allow(''),
+        dateTo: Joi.date().optional().allow(''),
+        numberOfLikes: Joi.number().optional().allow(''),
     }),
 };
 

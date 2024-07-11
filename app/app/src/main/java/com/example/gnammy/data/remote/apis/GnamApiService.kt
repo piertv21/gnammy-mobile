@@ -87,4 +87,13 @@ interface GnamApiService {
 
     @GET("/gnamsOf/{userId}")
     suspend fun getUserGnams(@Path("userId") userId: String): Response<GnamListWrapperResponse>
+
+    @GET("/search?userId={userId}&keywords={keywords}&dateTo={dateTo}&dateFrom={dateFrom}&numberOfLikes={numberOfLikes}")
+    suspend fun searchGnams(
+        @Path("userId") userId: String,
+        @Path("keywords") keywords: String,
+        @Path("dateTo") dateTo: String,
+        @Path("dateFrom") dateFrom: String,
+        @Path("numberOfLikes") numberOfLikes: Int
+    ): Response<GnamListWrapperResponse>
 }

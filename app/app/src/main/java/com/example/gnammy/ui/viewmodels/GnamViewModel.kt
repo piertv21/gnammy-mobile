@@ -2,7 +2,6 @@ package com.example.gnammy.ui.viewmodels
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.Gnam
@@ -62,6 +61,18 @@ class GnamViewModel(
     fun fetchGnamTimeline() {
         viewModelScope.launch {
             repository.fetchGnamTimeline()
+        }
+    }
+
+    fun fetchSearchResults(
+        userId: String,
+        keywords: String,
+        dateTo: String,
+        dateFrom: String,
+        numberOfLikes: Int
+    ) {
+        viewModelScope.launch {
+            repository.fetchSearchResults(userId, keywords, dateTo, dateFrom, numberOfLikes)
         }
     }
 

@@ -31,4 +31,5 @@
     <string name="profile_being_followed">Followed</string>
     <string name="saved_add_to_saved">Add to favorites</string>
     <string name="saved_remove_from_saved">Remove from favorites</string>
+    <string name="date_picker_default_content">Date</string>
 </resources>

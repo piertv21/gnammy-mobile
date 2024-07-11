@@ -184,8 +184,8 @@ async function didUserLike(userId, gnamId, callback) {
 
 async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, userId, callback) {
     keywords = keywords || '';
-    dateFrom = dateFrom || new Date(0);
-    dateTo = dateTo || new Date();
+    dateFrom = dateFrom ? new Date(dateFrom) : new Date(0);
+    dateTo = dateTo ? new Date(dateTo) : new Date();
     numberOfLikes = numberOfLikes || 0;
 
     try {
@@ -212,8 +212,8 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, userId, ca
                     }
                 ],
                 createdAt: {
-                    lte: new Date(dateFrom),
-                    gte: new Date(dateTo)
+                    gte: dateFrom,
+                    lte: dateTo
                 }
             },
             include: {
@@ -247,11 +247,13 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, userId, ca
             authorName: gnam.author.username,
             authorImageUri: gnam.author.imageUri
         }));
+
         callback(null, gnamsWithAuthorName);
     } catch (error) {
         callback(error, null);
     }
 }
+
 
 
 async function getGnam(gnamId, callback) {

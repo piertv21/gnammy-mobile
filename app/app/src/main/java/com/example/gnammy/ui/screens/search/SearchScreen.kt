@@ -43,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,8 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.gnammy.R
 import com.example.gnammy.ui.composables.Picker
-import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.rememberPickerState
+import com.example.gnammy.ui.viewmodels.GnamViewModel
+import com.example.gnammy.utils.DateFormats
+import com.example.gnammy.utils.millisToDateString
 import java.util.Locale
 
 enum class ExpandedChip {
@@ -70,19 +73,19 @@ enum class DatePickerType(val descriptor: String) {
 }
 
 @Composable
-fun SearchScreen(navController: NavHostController) {
+fun SearchScreen(
+    navController: NavHostController,
+    gnamViewModel: GnamViewModel,
+    loggedUserId: String
+) {
     var searchText by remember { mutableStateOf("") }
-
     val datePickerType = remember { mutableStateOf(DatePickerType.FROM) }
-
     val expandedChip = remember { mutableStateOf(ExpandedChip.NONE) }
-
     val likesChipEnabled = remember { mutableStateOf(false) }
     val dateChipEnabled = remember { mutableStateOf(false) }
-
     val likesContent = remember { mutableStateOf("") }
-    val dateContent = remember { mutableStateOf("") }
-
+    val dateFrom: MutableState<Long> = remember { mutableLongStateOf(0) }
+    val dateTo: MutableState<Long> = remember { mutableLongStateOf(0) }
     val chipsRowScrollState = rememberScrollState()
     val chipsModifier = Modifier.defaultMinSize(minWidth = 120.dp)
 
@@ -104,9 +107,10 @@ fun SearchScreen(navController: NavHostController) {
             shape = RoundedCornerShape(30.dp)
         )
 
-        Row (modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(chipsRowScrollState),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(chipsRowScrollState),
         ) {
             InputChip(
                 onClick = {
@@ -115,7 +119,44 @@ fun SearchScreen(navController: NavHostController) {
                         expandedChip.value = ExpandedChip.DATE
                     }
                 },
-                label = { Text(dateContent.value) },
+                label = {
+                    when (datePickerType.value) {
+                        DatePickerType.FROM -> {
+                            Text(
+                                SimpleDateFormat(
+                                    "dd/MM/yy",
+                                    Locale.getDefault()
+                                ).format(dateFrom.value)
+                            )
+                        }
+
+                        DatePickerType.TO -> {
+                            Text(
+                                SimpleDateFormat(
+                                    "dd/MM/yy",
+                                    Locale.getDefault()
+                                ).format(dateTo.value)
+                            )
+                        }
+
+                        DatePickerType.RANGE -> {
+                            Text(
+                                SimpleDateFormat(
+                                    "dd/MM/yy",
+                                    Locale.getDefault()
+                                ).format(dateFrom.value) + " - " +
+                                        SimpleDateFormat(
+                                            "dd/MM/yy",
+                                            Locale.getDefault()
+                                        ).format(dateTo.value)
+                            )
+                        }
+
+                        else -> {
+                            Text(R.string.date_picker_default_content.toString())
+                        }
+                    }
+                },
                 selected = dateChipEnabled.value,
                 avatar = {
                     Icon(
@@ -145,7 +186,7 @@ fun SearchScreen(navController: NavHostController) {
 
             InputChip(
                 onClick = {
-                    if(!likesChipEnabled.value) {
+                    if (!likesChipEnabled.value) {
                         likesChipEnabled.value = true
                         expandedChip.value = ExpandedChip.LIKES
                     }
@@ -183,27 +224,35 @@ fun SearchScreen(navController: NavHostController) {
             ExpandedChip.LIKES -> {
                 LikesPickerFilter(likesContent)
                 Button(
-                    onClick = { expandedChip.value = ExpandedChip.NONE},
+                    onClick = { expandedChip.value = ExpandedChip.NONE },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("DONE")
                 }
             }
+
             ExpandedChip.DATE -> {
-                DatePickerFilter(datePickerType, dateContent)
+                DatePickerFilter(datePickerType, dateFrom, dateTo)
                 Button(
-                    onClick = { expandedChip.value = ExpandedChip.NONE},
+                    onClick = { expandedChip.value = ExpandedChip.NONE },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("DONE")
                 }
             }
+
             ExpandedChip.NONE -> {}
         }
 
         Button(
             onClick = {
-                // TODO Handle search action
+                gnamViewModel.fetchSearchResults(
+                    loggedUserId,
+                    searchText,
+                    millisToDateString(dateTo.value, DateFormats.DB_FORMAT),
+                    millisToDateString(dateFrom.value, DateFormats.DB_FORMAT),
+                    likesContent.value.toInt()
+                )
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -228,17 +277,15 @@ fun SearchScreen(navController: NavHostController) {
 @Composable
 fun DatePickerFilter(
     datePickerType: MutableState<DatePickerType>,
-    dateContent: MutableState<String>
+    dateFrom: MutableState<Long>,
+    dateTo: MutableState<Long>
 ) {
     val dateRangePickerState = rememberDateRangePickerState()
     val datePickerState = rememberDatePickerState()
-    val selectedDate = remember { mutableStateOf("") }
-    val selectedDateStart = remember { mutableStateOf("") }
-    val selectedDateEnd = remember { mutableStateOf("") }
 
     HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
 
-    Row (
+    Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
         modifier = Modifier
@@ -264,7 +311,7 @@ fun DatePickerFilter(
     HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
 
     if (datePickerType.value == DatePickerType.RANGE) {
-        DateRangePicker (
+        DateRangePicker(
             state = dateRangePickerState,
             modifier = Modifier
                 .fillMaxWidth()
@@ -289,10 +336,10 @@ fun DatePickerFilter(
 
     LaunchedEffect(datePickerState.selectedDateMillis) {
         datePickerState.selectedDateMillis?.let {
-            selectedDate.value = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(it)
+            // TODO SPOSTA selectedDate.value = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(it)
             when (datePickerType.value) {
-                DatePickerType.FROM -> dateContent.value = "Publicato dopo il ${selectedDate.value}"
-                DatePickerType.TO -> dateContent.value = "Publicato prima del ${selectedDate.value}"
+                DatePickerType.FROM -> dateFrom.value = it
+                DatePickerType.TO -> dateTo.value = it
                 else -> {}
             }
 
@@ -301,12 +348,10 @@ fun DatePickerFilter(
 
     LaunchedEffect(dateRangePickerState.selectedEndDateMillis) {
         dateRangePickerState.selectedStartDateMillis?.let {
-            selectedDateStart.value = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(it)
-            dateContent.value = "${selectedDateStart.value} -> "
+            dateFrom.value = it
         }
         dateRangePickerState.selectedEndDateMillis?.let {
-            selectedDateEnd.value = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(it)
-            dateContent.value = "${selectedDateStart.value} ->  ${selectedDateEnd.value}"
+            dateTo.value = it
         }
     }
 }
@@ -317,8 +362,8 @@ fun LikesPickerFilter(
 ) {
     val likesPickerState = rememberPickerState()
 
-    Row (modifier = Modifier.fillMaxWidth()) {
-        Picker (
+    Row(modifier = Modifier.fillMaxWidth()) {
+        Picker(
             items = listOf("10", "25", "50", "100"),
             state = likesPickerState,
             modifier = Modifier.fillMaxWidth(),
