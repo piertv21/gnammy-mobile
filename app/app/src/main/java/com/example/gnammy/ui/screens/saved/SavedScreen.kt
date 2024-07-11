@@ -1,6 +1,5 @@
 package com.example.gnammy.ui.screens.saved
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -47,7 +45,7 @@ fun SavedScreen(
 
     Box(modifier = Modifier.fillMaxSize()) {
 
-        if(likedGnams.gnams.isNotEmpty()) {
+        if (likedGnams.gnams.isNotEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -59,9 +57,9 @@ fun SavedScreen(
                 ) {
                     items(likedGnams.gnams) { likedGnam ->
                         RecipeCardSmall(
+                            gnam = likedGnam,
                             navController,
-                            Modifier.padding(5.dp),
-                            gnam = likedGnam
+                            Modifier.padding(5.dp)
                         )
                     }
                 }

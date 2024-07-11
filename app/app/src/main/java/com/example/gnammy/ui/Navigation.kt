@@ -110,7 +110,7 @@ fun GnammyNavGraph(
         }
         with(GnammyRoute.Search) {
             composable(route) {
-                SearchScreen(navController)
+                SearchScreen(navController, gnamViewModel, loggedUserId)
             }
         }
         with(GnammyRoute.Post) {

@@ -32,5 +32,12 @@
     <string name="profile_being_followed">Seguito</string>
     <string name="saved_add_to_saved">Aggiungi ai preferiti</string>
     <string name="saved_remove_from_saved">Rimuovi dai preferiti</string>
-    <string name="date_picker_default_content">Date</string>
+    <string name="date_picker_default_content">Data</string>
+    <string name="date_to">a</string>
+    <string name="date_from">da</string>
+    <string name="date_not_selected">data</string>
+    <string name="input_chip_confirm">Ok</string>
+    <string name="date_before">prima</string>
+    <string name="date_after">dopo</string>
+    <string name="date_range">Intervallo</string>
 </resources>

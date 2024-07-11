@@ -1,12 +1,9 @@
 package com.example.gnammy.ui.screens.search
 
 import android.icu.text.SimpleDateFormat
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,12 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
@@ -50,10 +46,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.gnammy.R
 import com.example.gnammy.ui.composables.Picker
+import com.example.gnammy.ui.composables.RecipeCardSmall
 import com.example.gnammy.ui.composables.rememberPickerState
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.utils.DateFormats
@@ -66,10 +65,19 @@ enum class ExpandedChip {
     NONE
 }
 
-enum class DatePickerType(val descriptor: String) {
-    FROM("Dopo"),
-    TO("Prima"),
-    RANGE("Intervallo")
+enum class DatePickerType(val descriptorResId: Int) {
+    FROM(R.string.date_before),
+    TO(R.string.date_after),
+    RANGE(R.string.date_range),
+    NOT_SELECTED(0) // Use 0 or a specific resource ID for 'not selected' if needed
+}
+
+fun capitalize(string: String): String {
+    return string.replaceFirstChar {
+        if (it.isLowerCase()) it.titlecase(
+            Locale.getDefault()
+        ) else it.toString()
+    }
 }
 
 @Composable
@@ -78,15 +86,16 @@ fun SearchScreen(
     gnamViewModel: GnamViewModel,
     loggedUserId: String
 ) {
+    val searchResult by gnamViewModel.searchResultsState.collectAsStateWithLifecycle()
     var searchText by remember { mutableStateOf("") }
-    val datePickerType = remember { mutableStateOf(DatePickerType.FROM) }
+    val datePickerType = remember { mutableStateOf(DatePickerType.NOT_SELECTED) }
     val expandedChip = remember { mutableStateOf(ExpandedChip.NONE) }
     val likesChipEnabled = remember { mutableStateOf(false) }
     val dateChipEnabled = remember { mutableStateOf(false) }
-    val likesContent = remember { mutableStateOf("") }
+    val defaultLikesContent = stringResource(R.string.search_likes)
+    val likesContent = remember { mutableStateOf(capitalize(defaultLikesContent)) }
     val dateFrom: MutableState<Long> = remember { mutableLongStateOf(0) }
     val dateTo: MutableState<Long> = remember { mutableLongStateOf(0) }
-    val chipsRowScrollState = rememberScrollState()
     val chipsModifier = Modifier.defaultMinSize(minWidth = 120.dp)
 
     Column(
@@ -95,7 +104,6 @@ fun SearchScreen(
             .padding(top = 16.dp, start = 16.dp, end = 16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
@@ -108,52 +116,71 @@ fun SearchScreen(
         )
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(chipsRowScrollState),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             InputChip(
                 onClick = {
                     if (!dateChipEnabled.value) {
                         dateChipEnabled.value = true
                         expandedChip.value = ExpandedChip.DATE
+                    } else {
+                        dateChipEnabled.value = false
+                        expandedChip.value = ExpandedChip.NONE
+                        dateTo.value = 0
+                        dateFrom.value = 0
+                        datePickerType.value = DatePickerType.NOT_SELECTED
                     }
                 },
                 label = {
                     when (datePickerType.value) {
                         DatePickerType.FROM -> {
                             Text(
-                                SimpleDateFormat(
-                                    "dd/MM/yy",
-                                    Locale.getDefault()
-                                ).format(dateFrom.value)
+                                capitalize(stringResource(R.string.date_from)) + " " + SimpleDateFormat(
+                                    "dd/MM/yy", Locale.getDefault()
+                                ).format(dateFrom.value),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 20.dp),
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         DatePickerType.TO -> {
                             Text(
-                                SimpleDateFormat(
-                                    "dd/MM/yy",
-                                    Locale.getDefault()
-                                ).format(dateTo.value)
+                                capitalize(stringResource(R.string.date_to)) + " " + SimpleDateFormat(
+                                    "dd/MM/yy", Locale.getDefault()
+                                ).format(dateTo.value),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 20.dp),
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         DatePickerType.RANGE -> {
                             Text(
-                                SimpleDateFormat(
-                                    "dd/MM/yy",
-                                    Locale.getDefault()
-                                ).format(dateFrom.value) + " - " +
-                                        SimpleDateFormat(
-                                            "dd/MM/yy",
-                                            Locale.getDefault()
-                                        ).format(dateTo.value)
+                                capitalize(stringResource(R.string.date_from)) + " " + SimpleDateFormat(
+                                    "dd/MM/yy", Locale.getDefault()
+                                ).format(dateFrom.value) + "\n" + capitalize(stringResource(R.string.date_to)) + " " +
+                                        SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(
+                                            dateTo.value
+                                        ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 20.dp),
+                                textAlign = TextAlign.Center
                             )
                         }
 
                         else -> {
-                            Text(R.string.date_picker_default_content.toString())
+                            Text(
+                                capitalize(stringResource(R.string.date_not_selected)),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(end = 20.dp),
+                                textAlign = TextAlign.Center
+                            )
                         }
                     }
                 },
@@ -167,31 +194,30 @@ fun SearchScreen(
                             .padding(2.dp)
                     )
                 },
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "Localized description",
-                        Modifier
-                            .size(InputChipDefaults.AvatarSize)
-                            .clickable(onClick = {
-                                dateChipEnabled.value = false
-                            })
-                    )
-                },
-                modifier = chipsModifier,
+                modifier = chipsModifier.fillMaxWidth(1 / 2f),
                 shape = RoundedCornerShape(20.dp)
             )
-
-            Spacer(modifier = Modifier.padding(4.dp))
 
             InputChip(
                 onClick = {
                     if (!likesChipEnabled.value) {
                         likesChipEnabled.value = true
                         expandedChip.value = ExpandedChip.LIKES
+                    } else {
+                        likesContent.value = capitalize(defaultLikesContent)
+                        likesChipEnabled.value = false
+                        expandedChip.value = ExpandedChip.NONE
                     }
                 },
-                label = { Text(likesContent.value) },
+                label = {
+                    Text(
+                        likesContent.value,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 20.dp),
+                        textAlign = TextAlign.Center
+                    )
+                },
                 selected = likesChipEnabled.value,
                 avatar = {
                     Icon(
@@ -202,61 +228,61 @@ fun SearchScreen(
                             .padding(2.dp)
                     )
                 },
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "Localized description",
-                        Modifier
-                            .size(InputChipDefaults.AvatarSize)
-                            .clickable(onClick = {
-                                likesChipEnabled.value = false
-                            })
-                    )
-                },
-                modifier = chipsModifier,
+                modifier = chipsModifier.fillMaxWidth(),
                 shape = RoundedCornerShape(20.dp)
             )
-
-            Spacer(modifier = Modifier.padding(4.dp))
         }
 
         when (expandedChip.value) {
             ExpandedChip.LIKES -> {
                 LikesPickerFilter(likesContent)
                 Button(
-                    onClick = { expandedChip.value = ExpandedChip.NONE },
+                    onClick = {
+                        expandedChip.value = ExpandedChip.NONE
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("DONE")
+                    Text(stringResource(R.string.input_chip_confirm))
                 }
             }
 
             ExpandedChip.DATE -> {
                 DatePickerFilter(datePickerType, dateFrom, dateTo)
                 Button(
-                    onClick = { expandedChip.value = ExpandedChip.NONE },
+                    onClick = {
+                        expandedChip.value = ExpandedChip.NONE
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("DONE")
+                    Text(stringResource(R.string.input_chip_confirm))
                 }
             }
 
             ExpandedChip.NONE -> {}
         }
-
-        Button(
-            onClick = {
-                gnamViewModel.fetchSearchResults(
-                    loggedUserId,
-                    searchText,
-                    millisToDateString(dateTo.value, DateFormats.DB_FORMAT),
-                    millisToDateString(dateFrom.value, DateFormats.DB_FORMAT),
-                    likesContent.value.toInt()
-                )
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.search_search))
+        if (expandedChip.value == ExpandedChip.NONE) {
+            Button(
+                onClick = {
+                    val dateFromValue = if (dateFrom.value == 0L) "" else millisToDateString(
+                        dateFrom.value,
+                        DateFormats.DB_FORMAT
+                    )
+                    val dateToValue = if (dateTo.value == 0L) "" else millisToDateString(
+                        dateTo.value,
+                        DateFormats.DB_FORMAT
+                    )
+                    gnamViewModel.fetchSearchResults(
+                        loggedUserId,
+                        searchText,
+                        dateToValue,
+                        dateFromValue,
+                        likesContent.value.toIntOrNull()
+                    )
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.search_search))
+            }
         }
 
         LazyVerticalGrid(
@@ -265,13 +291,16 @@ fun SearchScreen(
                 .padding(top = 8.dp),
             columns = GridCells.Fixed(2)
         ) {
-            items(10) {
-                //RecipeCardSmall(navController, Modifier.padding(5.dp))
+            items(searchResult.gnams, key = { it.id }) { gnam ->
+                RecipeCardSmall(
+                    gnam = gnam,
+                    navController,
+                    Modifier.padding(5.dp)
+                )
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -292,7 +321,7 @@ fun DatePickerFilter(
             .selectableGroup()
             .fillMaxWidth()
     ) {
-        val options = DatePickerType.entries.toList()
+        val options = DatePickerType.entries.filter { it != DatePickerType.NOT_SELECTED }.toList()
         SingleChoiceSegmentedButtonRow {
             options.forEachIndexed { index, type ->
                 SegmentedButton(
@@ -302,15 +331,13 @@ fun DatePickerFilter(
                     },
                     selected = datePickerType.value == type
                 ) {
-                    Text(type.descriptor)
+                    Text(capitalize(stringResource(type.descriptorResId)))
                 }
             }
         }
     }
-
-    HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
-
     if (datePickerType.value == DatePickerType.RANGE) {
+        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
         DateRangePicker(
             state = dateRangePickerState,
             modifier = Modifier
@@ -320,7 +347,8 @@ fun DatePickerFilter(
             headline = null,
             showModeToggle = false
         )
-    } else {
+    } else if (datePickerType.value != DatePickerType.NOT_SELECTED) {
+        HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.secondary)
         DatePicker(
             state = datePickerState,
             modifier = Modifier
@@ -336,7 +364,6 @@ fun DatePickerFilter(
 
     LaunchedEffect(datePickerState.selectedDateMillis) {
         datePickerState.selectedDateMillis?.let {
-            // TODO SPOSTA selectedDate.value = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(it)
             when (datePickerType.value) {
                 DatePickerType.FROM -> dateFrom.value = it
                 DatePickerType.TO -> dateTo.value = it

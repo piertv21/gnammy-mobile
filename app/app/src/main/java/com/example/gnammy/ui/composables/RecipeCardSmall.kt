@@ -25,9 +25,9 @@ import com.example.gnammy.ui.GnammyRoute
 
 @Composable
 fun RecipeCardSmall(
+    gnam: Gnam,
     navHostController: NavHostController,
-    modifier: Modifier,
-    gnam: Gnam
+    modifier: Modifier
 ) {
     Box(modifier = modifier
         .aspectRatio(1f)
@@ -37,13 +37,15 @@ fun RecipeCardSmall(
             navHostController.navigate(GnammyRoute.GnamDetails.buildRoute(gnam.id))
         }
     ) {
-        ImageWithPlaceholder(uri = Uri.parse(gnam.imageUri),
+        ImageWithPlaceholder(
+            uri = Uri.parse(gnam.imageUri),
             size = Size.Lg,
             description = "Recipe Image",
             Modifier
                 .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .clip(shape = RoundedCornerShape(20.dp))
-                .fillMaxSize())
+                .fillMaxSize()
+        )
         Box(
             modifier = Modifier
                 .fillMaxHeight(1f / 3f)

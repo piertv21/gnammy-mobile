@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
@@ -55,7 +54,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -255,7 +253,10 @@ fun ProfileScreen(
             }
         } else {
             Box(modifier = Modifier.fillMaxSize()) {    // If it's not the logged user's profile, show a message
-                Text("Connect to the internet to load the profile", modifier = Modifier.align(Alignment.Center))
+                Text(
+                    "Connect to the internet to load the profile",
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
     } else {    // Online state
@@ -298,7 +299,7 @@ fun profileView(
         }
     val isUserFollowing by userViewModel.currentFollowStatus.collectAsState()
 
-    if(!offline) {
+    if (!offline) {
         userViewModel.checkFollowStatus(user.id)
     }
 
@@ -467,7 +468,7 @@ fun profileView(
                 .height(600.dp)
         ) {
             items(gnamsToShow) { gnam ->
-                RecipeCardSmall(navHostController, Modifier.padding(5.dp), gnam = gnam)
+                RecipeCardSmall(gnam = gnam, navHostController, Modifier.padding(5.dp))
             }
         }
     }
@@ -610,7 +611,13 @@ fun SettingsModal(
 
                     Button(
                         onClick = {
-                            runBlocking { userViewModel.updateUserData(ctx, username.text, profilePictureUri) }
+                            runBlocking {
+                                userViewModel.updateUserData(
+                                    ctx,
+                                    username.text,
+                                    profilePictureUri
+                                )
+                            }
                             onDismissRequest()
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8f)),
@@ -642,7 +649,8 @@ fun SettingsModal(
 
             IconButton(
                 onClick = { onDismissRequest() },
-                modifier = Modifier.align(Alignment.TopEnd)
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
                     .padding(top = 8.dp, end = 8.dp)
             ) {
                 Icon(
@@ -652,7 +660,10 @@ fun SettingsModal(
             }
 
             // Snackbar host
-            SnackbarHost(hostState = snackbarHostState, modifier = Modifier.align(Alignment.BottomCenter))
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 

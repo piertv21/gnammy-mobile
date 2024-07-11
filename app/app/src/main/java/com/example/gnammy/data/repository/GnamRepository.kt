@@ -276,10 +276,11 @@ class GnamRepository(
         keywords: String,
         dateTo: String,
         dateFrom: String,
-        numberOfLikes: Int
+        numberOfLikes: Int?
     ) {
         try {
-            val response = apiService.searchGnams(userId, keywords, dateTo, dateFrom, numberOfLikes)
+            val response =
+                apiService.searchGnams(userId, keywords, dateTo, dateFrom, numberOfLikes ?: 0)
             if (response.isSuccessful) {
                 val gnamRes = response.body()
                 val listGnams: MutableList<Gnam> = mutableListOf()

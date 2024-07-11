@@ -11,6 +11,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 class GnamResponse {
     var id: String = ""
@@ -88,12 +89,13 @@ interface GnamApiService {
     @GET("/gnamsOf/{userId}")
     suspend fun getUserGnams(@Path("userId") userId: String): Response<GnamListWrapperResponse>
 
-    @GET("/search?userId={userId}&keywords={keywords}&dateTo={dateTo}&dateFrom={dateFrom}&numberOfLikes={numberOfLikes}")
+    @GET("/search")
     suspend fun searchGnams(
-        @Path("userId") userId: String,
-        @Path("keywords") keywords: String,
-        @Path("dateTo") dateTo: String,
-        @Path("dateFrom") dateFrom: String,
-        @Path("numberOfLikes") numberOfLikes: Int
+        @Query("userId") userId: String,
+        @Query("keywords") keywords: String,
+        @Query("dateTo") dateTo: String,
+        @Query("dateFrom") dateFrom: String,
+        @Query("numberOfLikes") numberOfLikes: Int
     ): Response<GnamListWrapperResponse>
+
 }

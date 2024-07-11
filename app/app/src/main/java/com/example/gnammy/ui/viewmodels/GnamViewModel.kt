@@ -42,6 +42,12 @@ class GnamViewModel(
         initialValue = GnamsState(emptyList())
     )
 
+    val searchResultsState = repository.searchResults.map { GnamsState(gnams = it) }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = GnamsState(emptyList())
+    )
+
     private val _gnamToBeFetched = MutableStateFlow<Gnam?>(null)
     val gnamToBeFetched: StateFlow<Gnam?> = _gnamToBeFetched.asStateFlow()
 
@@ -66,10 +72,10 @@ class GnamViewModel(
 
     fun fetchSearchResults(
         userId: String,
-        keywords: String,
-        dateTo: String,
-        dateFrom: String,
-        numberOfLikes: Int
+        keywords: String = "",
+        dateTo: String = "",
+        dateFrom: String = "",
+        numberOfLikes: Int?
     ) {
         viewModelScope.launch {
             repository.fetchSearchResults(userId, keywords, dateTo, dateFrom, numberOfLikes)

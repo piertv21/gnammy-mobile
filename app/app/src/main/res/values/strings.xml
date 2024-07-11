@@ -32,4 +32,11 @@
     <string name="saved_add_to_saved">Add to favorites</string>
     <string name="saved_remove_from_saved">Remove from favorites</string>
     <string name="date_picker_default_content">Date</string>
+    <string name="date_to">to</string>
+    <string name="date_from">from</string>
+    <string name="date_not_selected">date</string>
+    <string name="input_chip_confirm">Ok</string>
+    <string name="date_before">before</string>
+    <string name="date_after">after</string>
+    <string name="date_range">range</string>
 </resources>
