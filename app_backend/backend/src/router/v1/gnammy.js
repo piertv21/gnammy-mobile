@@ -55,7 +55,7 @@ router.get('/savedGnams/:userId', validate(gnammyValidator.getSavedGnams), gnamm
 router.get('/gnam/timeline/:userId/:offset', validate(gnammyValidator.getGnamTimeline), gnammyController.getGnamTimeline)
 
 // Search gnams
-router.get('/search/', validate(gnammyValidator.searchGnams), gnammyController.searchGnams)
+router.get('/search', validate(gnammyValidator.searchGnams), gnammyController.searchGnams)
 
 // Toggle follow user
 router.post('/follower/', validate(gnammyValidator.toggleFollowUser), gnammyController.toggleFollowUser)

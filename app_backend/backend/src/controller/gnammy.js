@@ -382,8 +382,8 @@ const getLike = (req, res) => {
 }
 
 const searchGnams = (req, res) => {
-    const { keywords, dateFrom, dateTo, numberOfLikes } = req.body;
-    gnammyRepository.searchGnams(keywords, dateFrom, dateTo, numberOfLikes, (err, gnams) => {
+    const { userId, keywords, dateFrom, dateTo, numberOfLikes } = req.query;
+    gnammyRepository.searchGnams(keywords, dateFrom, dateTo, numberOfLikes, userId, (err, gnams) => {
         if (err) {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during the gnams search: ${err}` });

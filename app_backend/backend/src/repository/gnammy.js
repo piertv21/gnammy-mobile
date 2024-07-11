@@ -182,7 +182,7 @@ async function didUserLike(userId, gnamId, callback) {
     }
 }
 
-async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) {
+async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, userId, callback) {
     keywords = keywords || '';
     dateFrom = dateFrom || new Date(0);
     dateTo = dateTo || new Date();
@@ -191,6 +191,9 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) 
     try {
         const gnams = await prisma.gnam.findMany({
             where: {
+                authorId: {
+                    not: userId
+                },
                 OR: [
                     {
                         title: {
@@ -209,8 +212,8 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, callback) 
                     }
                 ],
                 createdAt: {
-                    gte: new Date(dateFrom),
-                    lte: new Date(dateTo)
+                    lte: new Date(dateFrom),
+                    gte: new Date(dateTo)
                 }
             },
             include: {
