@@ -183,12 +183,12 @@ class UserRepository(
                 "https://nominatim.openstreetmap.org/reverse?lat=${coordinates.latitude}&lon=${coordinates.longitude}&format=json&limit=1"
             val placeName = apiService.getPlaceName(url)
             if (placeName.isSuccessful) {
-                val location = placeName.body()?.address?.city
+                val location = placeName.body()?.address?.city + ", " + placeName.body()?.address?.country
                 val response = apiService.changeUserInfo(
                     userId,
                     null,
                     null,
-                    location?.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) },
+                    location.let { RequestBody.create("text/plain".toMediaTypeOrNull(), it) },
                     null
                 )
                 if (response.isSuccessful) {

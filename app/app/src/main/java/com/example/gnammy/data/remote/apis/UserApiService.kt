@@ -46,7 +46,8 @@ data class UserInfo(
 )
 
 data class OSMAddress(
-    val city: String?
+    val city: String?,
+    val country: String?
 )
 
 data class OSMPlace(
