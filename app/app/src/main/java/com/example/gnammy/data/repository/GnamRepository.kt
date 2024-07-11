@@ -208,16 +208,26 @@ class GnamRepository(
         }
     }
 
+    suspend fun likeGnam(gnam: Gnam) {
+        try {
+            val response = apiService.likeGnam(LikeRequest(gnam.id, getCurrentUserId()))
+            if (response.isSuccessful) {
+                gnamDao.upsert(gnam)
+                likedGnamDao.insertLikedGnam(LikedGnam(gnam.id))
+            } else {
+                Log.e("GnamRepository", "Error in liking gnam: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("GnamRepository", "Network error in liking gnam", e)
+        } catch (e: HttpException) {
+            Log.e("GnamRepository", "HTTP error in liking gnam", e)
+        }
+    }
+
     suspend fun removeFromTimeline(gnam: Gnam, liked: Boolean) {
         if (liked) {
             try {
-                val response = apiService.likeGnam(LikeRequest(gnam.id, getCurrentUserId()))
-                if (response.isSuccessful) {
-                    gnamDao.upsert(gnam)
-                    likedGnamDao.insertLikedGnam(LikedGnam(gnam.id))
-                } else {
-                    Log.e("GnamRepository", "Error in removing like: ${response.message()}")
-                }
+                likeGnam(gnam)
             } catch (e: IOException) {
                 Log.e("GnamRepository", "Network error in removing like", e)
             } catch (e: HttpException) {

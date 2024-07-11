@@ -29,4 +29,6 @@
     <string name="profile_logout">Logout</string>
     <string name="profile_location_unknown">Location unknown</string>
     <string name="profile_being_followed">Followed</string>
+    <string name="saved_add_to_saved">Add to favorites</string>
+    <string name="saved_remove_from_saved">Remove from favorites</string>
 </resources>

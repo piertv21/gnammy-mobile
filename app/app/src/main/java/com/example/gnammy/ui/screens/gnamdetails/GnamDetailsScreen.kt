@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,21 +32,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.Size
@@ -112,6 +113,7 @@ fun GnamDetailsScreen(
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun gnamDetailsView(
     navController: NavHostController,
@@ -122,6 +124,10 @@ fun gnamDetailsView(
     online: Boolean
 ) {
     val scrollState = rememberScrollState()
+    val isGnamSaved by gnamViewModel.isCurrentGnamSaved.collectAsState()
+    if(gnam.authorId != loggedUserId && online) { // If online and is not the author
+        gnamViewModel.isCurrentGnamSaved(gnam.id)
+    }
 
     Column(
         modifier = Modifier
@@ -244,16 +250,29 @@ fun gnamDetailsView(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            if(gnam.authorId != loggedUserId && online) {
+            if(gnam.authorId != loggedUserId && online) { // If online and is not the author
                 Button(
                     modifier = Modifier.padding(end = 8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if(!isGnamSaved) Color.Green else Color.Red,
+                    ),
                     onClick = {
-                        gnamViewModel.removeGnamFromSaved(gnam, loggedUserId)
-                        navController.navigate("home")
+                        if (!isGnamSaved) {
+                            gnamViewModel.likeGnam(gnam)
+                        } else {
+                            gnamViewModel.removeGnamFromSaved(gnam, loggedUserId)
+                        }
+                        navController.navigate("saved")
                     }
                 ) {
-                    Text("Rimuovi dai preferiti")
+                    Text(
+                        stringResource(
+                            if(!isGnamSaved)
+                                R.string.saved_add_to_saved
+                            else
+                                R.string.saved_remove_from_saved
+                        )
+                    )
                 }
             }
             Button(

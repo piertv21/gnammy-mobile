@@ -2,6 +2,7 @@ package com.example.gnammy.ui.viewmodels
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.Gnam
@@ -45,6 +46,13 @@ class GnamViewModel(
     private val _gnamToBeFetched = MutableStateFlow<Gnam?>(null)
     val gnamToBeFetched: StateFlow<Gnam?> = _gnamToBeFetched.asStateFlow()
 
+    private val _isCurrentGnamSaved = MutableStateFlow(false)
+    val isCurrentGnamSaved: StateFlow<Boolean> = _isCurrentGnamSaved.asStateFlow()
+
+    fun isCurrentGnamSaved(gnamId: String) {
+        _isCurrentGnamSaved.value = likedGnamsState.value.gnams.any { it.id == gnamId }
+    }
+
     fun fetchGnam(gnamId: String) {
         viewModelScope.launch {
             repository.fetchGnam(gnamId)
@@ -54,6 +62,12 @@ class GnamViewModel(
     fun fetchGnamTimeline() {
         viewModelScope.launch {
             repository.fetchGnamTimeline()
+        }
+    }
+
+    fun likeGnam(gnam: Gnam) {
+        viewModelScope.launch {
+            repository.likeGnam(gnam)
         }
     }
 
