@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -116,7 +117,11 @@ fun ProfileScreen(
     val locationService = koinInject<LocationService>()
 
     val locationPermission = rememberPermission(
-        Manifest.permission.ACCESS_COARSE_LOCATION
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+            Manifest.permission.ACCESS_FINE_LOCATION
+        } else {
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        }
     ) { status ->
         when (status) {
             PermissionStatus.Granted ->
