@@ -1,6 +1,5 @@
 package com.example.gnammy.data.repository
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -36,7 +35,6 @@ import java.io.IOException
 
 class UserRepository(
     private val userDao: UserDao,
-    private val contentResolver: ContentResolver,
     private val dataStore: DataStore<Preferences>
 ) {
     private val apiService: UserApiService =
@@ -183,7 +181,16 @@ class UserRepository(
                 "https://nominatim.openstreetmap.org/reverse?lat=${coordinates.latitude}&lon=${coordinates.longitude}&format=json&limit=1"
             val placeName = apiService.getPlaceName(url)
             if (placeName.isSuccessful) {
-                val location = placeName.body()?.address?.city + ", " + placeName.body()?.address?.country
+                val city = placeName.body()?.address?.city
+                val town = placeName.body()?.address?.town
+                val country = placeName.body()?.address?.country
+                val location = if (city != null) {
+                    "$city, $country"
+                } else if (town != null) {
+                    "$town, $country"
+                } else {
+                    "Unknown location"
+                }
                 val response = apiService.changeUserInfo(
                     userId,
                     null,

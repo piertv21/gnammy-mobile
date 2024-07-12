@@ -75,7 +75,7 @@ fun HomeScreen(
 
     if (!isOnline(context)) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Text("No internet connection", modifier = Modifier.align(Alignment.Center))
+            Text("Nessuna connessione ad internet.", modifier = Modifier.align(Alignment.Center))
         }
     } else {
         if (gnamsState.gnams.size < 5) {

@@ -24,17 +24,14 @@ import com.example.gnammy.ui.composables.UserGoal
 import com.example.gnammy.ui.viewmodels.GnamGoalsState
 import com.example.gnammy.ui.viewmodels.GoalViewModel
 import com.example.gnammy.ui.viewmodels.UserGoalsState
-import com.example.gnammy.ui.viewmodels.UserViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GoalsScreen(
-    goalsViewModel: GoalViewModel,
-    userViewModel: UserViewModel
+    goalsViewModel: GoalViewModel
 ) {
     val userGoalsState: UserGoalsState by goalsViewModel.userGoalsState.collectAsStateWithLifecycle()
     val gnamGoalsState: GnamGoalsState by goalsViewModel.gnamGoalsState.collectAsStateWithLifecycle()
-
 
     LazyColumn(
         modifier = Modifier
@@ -50,7 +47,6 @@ fun GoalsScreen(
                     .padding(top = 4.dp)
             )
         }
-
         item {
             if (userGoalsState.goals.isEmpty()) {
                 Box(

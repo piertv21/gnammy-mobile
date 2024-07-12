@@ -47,7 +47,8 @@ data class UserInfo(
 
 data class OSMAddress(
     val city: String?,
-    val country: String?
+    val town: String?,
+    val country: String
 )
 
 data class OSMPlace(
@@ -83,9 +84,6 @@ interface UserApiService {
     @POST("/login/")
     suspend fun login(@Body request: UserCredentials): Response<UserWrapperResponse>
 
-    @GET("/user/")
-    suspend fun listUsers(): Response<List<UserWrapperResponse>>
-
     @GET("/user/{userId}")
     suspend fun getUser(@Path("userId") userId: String): Response<UserWrapperResponse>
 
@@ -105,9 +103,6 @@ interface UserApiService {
         @Path("sourceUserId") sourceUserId: String,
         @Path("targetUserId") targetUserId: String
     ): Response<DoUserFollowResponse>
-
-    @GET("/image/user/{userId}")
-    suspend fun getUserImage(@Path("userId") userId: String): Response<ImageResponse>
 
     @Multipart
     @PATCH("/user/{userId}")

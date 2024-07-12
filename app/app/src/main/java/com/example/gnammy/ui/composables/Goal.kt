@@ -73,7 +73,6 @@ fun GnamGoal(goal: GnamGoal) {
         ) {
             ImageWithPlaceholder(
                 uri = Uri.parse(goal.imageUri),
-                size = Size.Sm,
                 description = "propic",
                 modifier =
                 Modifier

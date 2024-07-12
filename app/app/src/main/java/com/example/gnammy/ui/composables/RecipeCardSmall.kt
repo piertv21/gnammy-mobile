@@ -39,7 +39,6 @@ fun RecipeCardSmall(
     ) {
         ImageWithPlaceholder(
             uri = Uri.parse(gnam.imageUri),
-            size = Size.Lg,
             description = "Recipe Image",
             Modifier
                 .background(color = MaterialTheme.colorScheme.primaryContainer)

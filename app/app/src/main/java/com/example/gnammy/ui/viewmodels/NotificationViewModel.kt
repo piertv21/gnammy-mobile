@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-
 data class NotificationState(val notifications: List<Notification> = emptyList())
 
 class NotificationViewModel(private val repository: NotificationRepository) : ViewModel() {

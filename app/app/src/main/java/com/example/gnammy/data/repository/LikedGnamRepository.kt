@@ -17,8 +17,7 @@ import kotlinx.coroutines.flow.Flow
 
 class LikedGnamRepository(
     private val gnamDao: GnamDao,
-    private val likedGnamDao: LikedGnamDao,
-    private val contentResolver: ContentResolver
+    private val likedGnamDao: LikedGnamDao
 ) {
     private val apiService: GnamApiService =
         RetrofitClient.instance.create(GnamApiService::class.java)

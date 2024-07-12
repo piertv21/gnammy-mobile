@@ -67,13 +67,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.camera.utils.PermissionStatus
-import com.example.camera.utils.rememberPermission
+import com.example.gnammy.utils.PermissionStatus
+import com.example.gnammy.utils.rememberPermission
 import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
 import com.example.gnammy.ui.composables.RecipeCardSmall
-import com.example.gnammy.ui.composables.Size
 import com.example.gnammy.ui.theme.Themes
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.SettingsActions
@@ -89,7 +88,6 @@ import org.koin.compose.koinInject
 fun ProfileScreen(
     userId: String,
     navController: NavHostController,
-    modifier: Modifier = Modifier,
     userViewModel: UserViewModel,
     loggedUserId: String,
     themeViewModel: ThemeViewModel,
@@ -254,7 +252,7 @@ fun ProfileScreen(
         } else {
             Box(modifier = Modifier.fillMaxSize()) {    // If it's not the logged user's profile, show a message
                 Text(
-                    "Connect to the internet to load the profile",
+                    "Connettiti ad internet per visualizzare il profilo.",
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
@@ -326,7 +324,6 @@ fun profileView(
         ) {
             ImageWithPlaceholder(
                 uri = Uri.parse(user.imageUri),
-                size = Size.Sm,
                 description = "propic",
                 modifier = Modifier
                     .border(2.dp, MaterialTheme.colorScheme.primaryContainer, CircleShape)
@@ -620,7 +617,7 @@ fun SettingsModal(
                             }
                             onDismissRequest()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Green.copy(alpha = 0.8f)),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
@@ -637,7 +634,7 @@ fun SettingsModal(
                                 popUpTo("login") { inclusive = true }
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
                             .align(Alignment.CenterHorizontally)

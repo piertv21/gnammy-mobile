@@ -109,7 +109,9 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
                 }
             },
             topBar = {
-                TopBar(navController, currentRoute, notificationViewModel)
+                if (currentRoute !in setOf(GnammyRoute.Login, GnammyRoute.Register)) {
+                    TopBar(navController, currentRoute, notificationViewModel)
+                }
             }
         ) { contentPadding ->
             GnammyNavGraph(

@@ -35,7 +35,6 @@ import java.io.IOException
 class GnamRepository(
     private val gnamDao: GnamDao,
     private val likedGnamDao: LikedGnamDao,
-    private val contentResolver: ContentResolver,
     private val dataStore: DataStore<Preferences>
 ) {
     private val apiService: GnamApiService =
@@ -57,7 +56,7 @@ class GnamRepository(
 
 
     private suspend fun getCurrentUserId(): String {
-        return dataStore.data.map { it[USER_ID_KEY] ?: "" }.first()
+        return dataStore.data.map { it[USER_ID_KEY] ?: "NOT SET" }.first()
     }
 
     suspend fun getGnamData(gnamId: String): Gnam? {
@@ -203,7 +202,7 @@ class GnamRepository(
                 Result.Error("Error in publishGnam: ${response.message()}")
             }
         } catch (e: IOException) {
-            Result.Error("Network error in publishGnam")
+            Result.Error("Errore: Rete assente")
         } catch (e: HttpException) {
             Result.Error("HTTP error in publishGnam")
         }
@@ -307,6 +306,21 @@ class GnamRepository(
             Log.e("GnamRepository", "Network error in getting search results", e)
         } catch (e: HttpException) {
             Log.e("GnamRepository", "HTTP error in getting search results", e)
+        }
+    }
+
+    suspend fun shareGnam(gnam: Gnam) {
+        try {
+            val response = apiService.shareGnam(gnam.id)
+            if (response.isSuccessful) {
+                Log.i("GnamRepository", "Gnam shared successfully")
+            } else {
+                Log.e("GnamRepository", "Error in sharing gnam: ${response.message()}")
+            }
+        } catch (e: IOException) {
+            Log.e("GnamRepository", "Network error in sharing gnam", e)
+        } catch (e: HttpException) {
+            Log.e("GnamRepository", "HTTP error in sharing gnam", e)
         }
     }
 }

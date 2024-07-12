@@ -68,9 +68,6 @@ interface GnamApiService {
     @GET("/gnam/{gnamId}")
     suspend fun getGnam(@Path("gnamId") gnamId: String): Response<GnamWrapperResponse>
 
-    @GET("/image/gnam/{gnamId}")
-    suspend fun getGnamImage(@Path("gnamId") gnamId: String): Response<ImageResponse>
-
     @POST("/share/{gnamId}")
     suspend fun shareGnam(@Path("gnamId") gnamId: String): Response<GnamWrapperResponse>
 

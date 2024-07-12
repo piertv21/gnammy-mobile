@@ -39,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,11 +50,11 @@ import androidx.navigation.NavHostController
 import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
-import com.example.gnammy.ui.composables.Size
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.utils.DateFormats
 import com.example.gnammy.utils.isOnline
 import com.example.gnammy.utils.millisToDateString
+import kotlinx.coroutines.runBlocking
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -161,7 +160,6 @@ fun gnamDetailsView(
             ) {
                 ImageWithPlaceholder(
                     uri = Uri.parse(gnam.authorImageUri),
-                    size = Size.Sm,
                     description = "propic",
                     modifier = Modifier
                         .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
@@ -196,7 +194,6 @@ fun gnamDetailsView(
 
         ImageWithPlaceholder(
             uri = Uri.parse(gnam.imageUri),
-            size = Size.Lg,
             description = "Recipe Image",
             modifier = Modifier
                 .fillMaxSize()
@@ -254,7 +251,7 @@ fun gnamDetailsView(
                 Button(
                     modifier = Modifier.padding(end = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(!isGnamSaved) Color.Green else Color.Red,
+                        containerColor = if(!isGnamSaved) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error,
                     ),
                     onClick = {
                         if (!isGnamSaved) {
@@ -277,15 +274,16 @@ fun gnamDetailsView(
             }
             Button(
                 onClick = {
+                    runBlocking { gnamViewModel.shareGnam(gnam) }
                     val intent = Intent().apply {
                         action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, gnam.recipe)
+                        putExtra(Intent.EXTRA_TEXT, "Ehi! Prova questa ricetta che ho trovato su Gnammy:\n" + gnam.recipe)
                         type = "text/plain"
                     }
                     context.startActivity(Intent.createChooser(intent, "Save Recipe to Notes"))
                 }
             ) {
-                Text("Salva nelle note")
+                Text("Condividi")
             }
         }
     }

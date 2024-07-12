@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-
 data class UserGoalsState(val goals: List<UserGoal> = emptyList())
 data class GnamGoalsState(val goals: List<GnamGoal> = emptyList())
 
@@ -29,10 +28,6 @@ class GoalViewModel(private val repository: GoalRepository) : ViewModel() {
     )
 
     var goalsPreview = listOf<UserGoal>()
-
-    suspend fun fetchGoals(userId: String) {
-        repository.fetchGoals(userId)
-    }
 
     fun fetchGoalsNonBlocking(userId: String) {
         viewModelScope.launch {

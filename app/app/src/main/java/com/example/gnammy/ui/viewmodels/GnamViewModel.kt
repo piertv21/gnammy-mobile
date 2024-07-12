@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-
 data class GnamsState(val gnams: List<Gnam> = emptyList())
 
 class GnamViewModel(
@@ -56,12 +55,6 @@ class GnamViewModel(
 
     fun isCurrentGnamSaved(gnamId: String) {
         _isCurrentGnamSaved.value = likedGnamsState.value.gnams.any { it.id == gnamId }
-    }
-
-    fun fetchGnam(gnamId: String) {
-        viewModelScope.launch {
-            repository.fetchGnam(gnamId)
-        }
     }
 
     fun fetchGnamTimeline() {
@@ -132,5 +125,9 @@ class GnamViewModel(
 
     suspend fun getGnamData(gnamId: String) {
         _gnamToBeFetched.value = repository.getGnamData(gnamId)
+    }
+
+    suspend fun shareGnam(gnam: Gnam) {
+        repository.shareGnam(gnam)
     }
 }

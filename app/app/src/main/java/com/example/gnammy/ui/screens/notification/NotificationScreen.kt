@@ -35,16 +35,13 @@ import com.example.gnammy.ui.composables.rememberPillState
 import com.example.gnammy.ui.viewmodels.GoalViewModel
 import com.example.gnammy.ui.viewmodels.NotificationState
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
-import com.example.gnammy.ui.viewmodels.UserViewModel
 import kotlinx.coroutines.runBlocking
 
 @Composable
 fun NotificationScreen(
     navHostController: NavHostController,
     notificationViewModel: NotificationViewModel,
-    goalsViewModel: GoalViewModel,
-    userViewModel: UserViewModel,
-    modifier: Modifier = Modifier
+    goalsViewModel: GoalViewModel
 ) {
     val notificationState: NotificationState by notificationViewModel.state.collectAsStateWithLifecycle()
     val loadingGoals = remember { mutableStateOf(true) }

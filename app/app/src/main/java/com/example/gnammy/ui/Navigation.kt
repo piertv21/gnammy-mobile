@@ -86,7 +86,6 @@ fun GnammyNavGraph(
     goalsViewModel: GoalViewModel,
     modifier: Modifier = Modifier
 ) {
-    val gnamState by gnamViewModel.state.collectAsStateWithLifecycle()
     if (userViewModel.loggedUserId == "NOT SET") {
         runBlocking { userViewModel.getLoggedUserId() }
     }
@@ -131,7 +130,6 @@ fun GnammyNavGraph(
                     ProfileScreen(
                         it,
                         navController,
-                        modifier,
                         userViewModel,
                         loggedUserId,
                         themeViewModel,
@@ -151,9 +149,7 @@ fun GnammyNavGraph(
                 NotificationScreen(
                     navController,
                     notificationViewModel,
-                    goalsViewModel,
-                    userViewModel,
-                    modifier
+                    goalsViewModel
                 )
             }
         }
@@ -182,7 +178,7 @@ fun GnammyNavGraph(
         with(GnammyRoute.Goals) {
             composable(route) {
                 goalsViewModel.fetchGoalsNonBlocking(loggedUserId)
-                GoalsScreen(goalsViewModel, userViewModel)
+                GoalsScreen(goalsViewModel)
             }
         }
     }

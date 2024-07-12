@@ -1,16 +1,4 @@
-@file:OptIn(ExperimentalMaterialApi::class)
-@file:Suppress("DEPRECATION")
-
 package com.example.gnammy.ui.composables
-
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
-//noinspection UsingMaterialAndMaterial3Libraries
 import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
@@ -28,16 +16,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissDirection
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissState
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.FractionalThreshold
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Icon
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.SwipeToDismiss
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -65,6 +61,7 @@ class PillState {
     var currentState by mutableStateOf(State.Unread)
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NotificationPill(notification: Notification, pillState: PillState) {
     var show by remember { mutableStateOf(true) }
@@ -104,7 +101,6 @@ fun NotificationPill(notification: Notification, pillState: PillState) {
                 ) {
                     ImageWithPlaceholder(
                         uri = Uri.parse(notification.imageUri),
-                        size = Size.Sm,
                         description = "propic",
                         modifier = Modifier
                             .padding(5.dp)

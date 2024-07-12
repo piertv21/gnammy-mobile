@@ -1,4 +1,4 @@
-package com.example.camera.utils
+package com.example.gnammy.utils
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult

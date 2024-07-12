@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-
 data class UsersState(val users: List<User> = emptyList())
 
 class UserViewModel(private val repository: UserRepository) : ViewModel() {

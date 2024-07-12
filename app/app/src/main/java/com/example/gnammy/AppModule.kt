@@ -39,9 +39,8 @@ val appModule = module {
             GnammyDatabase::class.java,
             "gnammy-db"
         )
-            // TODO Sconsigliato per progetti seri! Lo usiamo solo qui per semplicità
-            .fallbackToDestructiveMigration()
-            .build()
+        .fallbackToDestructiveMigration()
+        .build()
     }
 
     single {
@@ -59,7 +58,6 @@ val appModule = module {
     single {
         UserRepository(
             get<GnammyDatabase>().userDao(),
-            get<Context>().applicationContext.contentResolver, // TODO questo serve per salvare le immagini in storage, capiremo se serve o meno.
             get()
         )
     }
@@ -68,7 +66,6 @@ val appModule = module {
         GnamRepository(
             get<GnammyDatabase>().gnamDao(),
             get<GnammyDatabase>().likedGnamDao(),
-            get<Context>().applicationContext.contentResolver, // TODO questo serve per salvare le immagini in storage, capiremo se serve o meno.
             get()
         )
     }
@@ -77,7 +74,6 @@ val appModule = module {
         LikedGnamRepository(
             get<GnammyDatabase>().gnamDao(),
             get<GnammyDatabase>().likedGnamDao(),
-            get<Context>().applicationContext.contentResolver // TODO questo serve per salvare le immagini in storage, capiremo se serve o meno.
         )
     }
 

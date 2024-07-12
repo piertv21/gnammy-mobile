@@ -1,7 +1,6 @@
 package com.example.gnammy.ui.composables
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -74,7 +73,6 @@ fun RecipeCardBig(
             ) {
                 ImageWithPlaceholder(
                     uri = Uri.parse(gnam.authorImageUri),
-                    size = Size.Sm,
                     description = "propic",
                     modifier = Modifier
                         .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
@@ -110,7 +108,6 @@ fun RecipeCardBig(
         Box {
             ImageWithPlaceholder(
                 uri = Uri.parse(gnam.imageUri),
-                size = Size.Lg,
                 description = "Recipe Image",
                 Modifier
                     .background(color = MaterialTheme.colorScheme.primaryContainer)
