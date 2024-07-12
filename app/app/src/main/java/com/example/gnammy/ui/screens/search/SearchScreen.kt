@@ -2,6 +2,7 @@ package com.example.gnammy.ui.screens.search
 
 import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,6 +47,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -97,6 +100,8 @@ fun SearchScreen(
     val dateFrom: MutableState<Long> = remember { mutableLongStateOf(0) }
     val dateTo: MutableState<Long> = remember { mutableLongStateOf(0) }
     val chipsModifier = Modifier.defaultMinSize(minWidth = 120.dp)
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val loading = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -263,6 +268,9 @@ fun SearchScreen(
         if (expandedChip.value == ExpandedChip.NONE) {
             Button(
                 onClick = {
+                    keyboardController?.hide()
+                    loading.value = true
+
                     val dateFromValue = if (dateFrom.value == 0L) "" else millisToDateString(
                         dateFrom.value,
                         DateFormats.DB_FORMAT
@@ -285,18 +293,32 @@ fun SearchScreen(
             }
         }
 
-        LazyVerticalGrid(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 8.dp),
-            columns = GridCells.Fixed(2)
-        ) {
-            items(searchResult.gnams, key = { it.id }) { gnam ->
-                RecipeCardSmall(
-                    gnam = gnam,
-                    navController,
-                    Modifier.padding(5.dp)
-                )
+        if (loading.value) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+
+            LaunchedEffect(searchResult) {
+                loading.value = false
+            }
+        } else if (searchResult.gnams.isEmpty() && searchText.isNotEmpty()) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text("Nessuno gnam trovato.", modifier = Modifier.align(Alignment.Center))
+            }
+        } else {
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp),
+                columns = GridCells.Fixed(2)
+            ) {
+                items(searchResult.gnams, key = { it.id }) { gnam ->
+                    RecipeCardSmall(
+                        gnam = gnam,
+                        navController,
+                        Modifier.padding(5.dp)
+                    )
+                }
             }
         }
     }
