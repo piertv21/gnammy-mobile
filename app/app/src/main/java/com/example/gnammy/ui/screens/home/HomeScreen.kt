@@ -137,6 +137,7 @@ fun HomeScreen(
                     Row(
                         modifier = Modifier
                             .weight(0.15f)
+                            .padding(bottom = 16.dp)
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                         verticalAlignment = Alignment.CenterVertically
