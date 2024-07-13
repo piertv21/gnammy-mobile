@@ -69,10 +69,10 @@ enum class ExpandedChip {
 }
 
 enum class DatePickerType(val descriptorResId: Int) {
-    FROM(R.string.date_before),
-    TO(R.string.date_after),
+    FROM(R.string.date_after),
+    TO(R.string.date_before),
     RANGE(R.string.date_range),
-    NOT_SELECTED(0) // Use 0 or a specific resource ID for 'not selected' if needed
+    NOT_SELECTED(0)
 }
 
 fun capitalize(string: String): String {
@@ -90,6 +90,7 @@ fun SearchScreen(
     loggedUserId: String
 ) {
     val searchResult by gnamViewModel.searchResultsState.collectAsStateWithLifecycle()
+    val isSearchingState by remember { gnamViewModel.isSearchingState }
     var searchText by remember { mutableStateOf("") }
     val datePickerType = remember { mutableStateOf(DatePickerType.NOT_SELECTED) }
     val expandedChip = remember { mutableStateOf(ExpandedChip.NONE) }
@@ -293,7 +294,7 @@ fun SearchScreen(
             }
         }
 
-        if (loading.value) {
+        if (isSearchingState) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -301,7 +302,7 @@ fun SearchScreen(
             LaunchedEffect(searchResult) {
                 loading.value = false
             }
-        } else if (searchResult.gnams.isEmpty() && searchText.isNotEmpty()) {
+        } else if (searchResult.gnams.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text("Nessuno gnam trovato.", modifier = Modifier.align(Alignment.Center))
             }

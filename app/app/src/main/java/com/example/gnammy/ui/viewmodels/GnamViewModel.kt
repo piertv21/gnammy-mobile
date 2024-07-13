@@ -2,6 +2,7 @@ package com.example.gnammy.ui.viewmodels
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gnammy.data.local.entities.Gnam
@@ -47,6 +48,8 @@ class GnamViewModel(
         initialValue = GnamsState(emptyList())
     )
 
+    val isSearchingState = mutableStateOf(false)
+
     private val _gnamToBeFetched = MutableStateFlow<Gnam?>(null)
     val gnamToBeFetched: StateFlow<Gnam?> = _gnamToBeFetched.asStateFlow()
 
@@ -71,7 +74,9 @@ class GnamViewModel(
         numberOfLikes: Int?
     ) {
         viewModelScope.launch {
+            isSearchingState.value = true
             repository.fetchSearchResults(userId, keywords, dateTo, dateFrom, numberOfLikes)
+            isSearchingState.value = false
         }
     }
 
