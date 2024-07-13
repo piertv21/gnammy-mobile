@@ -197,17 +197,20 @@ async function searchGnams(keywords, dateFrom, dateTo, numberOfLikes, userId, ca
                 OR: [
                     {
                         title: {
-                            contains: keywords
+                            contains: keywords,
+                            mode: 'insensitive'
                         }
                     },
                     {
                         description: {
-                            contains: keywords
+                            contains: keywords,
+                            mode: 'insensitive'
                         }
                     },
                     {
                         recipe: {
-                            contains: keywords
+                            contains: keywords,
+                            mode: 'insensitive'
                         }
                     }
                 ],
