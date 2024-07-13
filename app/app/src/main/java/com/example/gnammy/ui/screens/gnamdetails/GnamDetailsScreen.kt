@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -271,7 +272,8 @@ fun gnamDetailsView(
                                 R.string.saved_add_to_saved
                             else
                                 R.string.saved_remove_from_saved
-                        )
+                        ),
+                        color = Color.White
                     )
                 }
             }
