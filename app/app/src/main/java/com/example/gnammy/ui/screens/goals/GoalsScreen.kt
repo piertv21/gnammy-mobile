@@ -15,10 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.gnammy.R
 import com.example.gnammy.ui.composables.GnamGoal
 import com.example.gnammy.ui.composables.UserGoal
 import com.example.gnammy.ui.viewmodels.GnamGoalsState
@@ -39,7 +41,7 @@ fun GoalsScreen(
     ) {
         item {
             Text(
-                text = "Utente",
+                text = stringResource(R.string.goals_users),
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -78,7 +80,7 @@ fun GoalsScreen(
 
         item {
             Text(
-                text = "Ricette",
+                text = stringResource(R.string.goals_gnam),
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
                 modifier = Modifier

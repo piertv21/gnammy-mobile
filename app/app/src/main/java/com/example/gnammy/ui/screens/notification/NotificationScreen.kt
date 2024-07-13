@@ -23,10 +23,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.ui.GnammyRoute
 import com.example.gnammy.ui.composables.NotificationPill
 import com.example.gnammy.ui.composables.PillState
@@ -62,8 +64,8 @@ fun NotificationScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Achievements",
-            style = MaterialTheme.typography.headlineLarge,
+            text = stringResource(R.string.notification_goals_title),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
@@ -111,8 +113,8 @@ fun NotificationScreen(
         }
 
         Text(
-            text = "Notifications",
-            style = MaterialTheme.typography.headlineLarge,
+            text = stringResource(R.string.notification_notification_subtitle),
+            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 

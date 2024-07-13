@@ -432,6 +432,7 @@ const toggleFollowUser = (req, res) => {
                         gnammyRepository.completeGoal(targetUserId, GoalType.userGoals.Follower10);
                         break;
                     case 100:
+                        console.log(`User with id ${targetUserId} has received 100 followers, i hope`);
                         gnammyRepository.completeGoal(targetUserId, GoalType.userGoals.Follower100);
                         break;
                     default:

@@ -97,10 +97,13 @@ fun GnamDetailsScreen(
             )
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
-                Text("Connettiti ad internet per visualizzare lo gnam.", modifier = Modifier.align(Alignment.Center))
+                Text(
+                    "Connettiti ad internet per visualizzare lo gnam.",
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         }
-    } else if(!offline.value) { // Online
+    } else if (!offline.value) { // Online
         gnamDetailsView(
             navController,
             fetchedGnam!!,
@@ -124,7 +127,7 @@ fun gnamDetailsView(
 ) {
     val scrollState = rememberScrollState()
     val isGnamSaved by gnamViewModel.isCurrentGnamSaved.collectAsState()
-    if(gnam.authorId != loggedUserId && online) { // If online and is not the author
+    if (gnam.authorId != loggedUserId && online) { // If online and is not the author
         gnamViewModel.isCurrentGnamSaved(gnam.id)
     }
 
@@ -134,7 +137,7 @@ fun gnamDetailsView(
             .padding(16.dp, 16.dp, 16.dp)
             .verticalScroll(scrollState)
     ) {
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = RoundedCornerShape(20.dp))
@@ -145,12 +148,12 @@ fun gnamDetailsView(
                 text = gnam.title,
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Start,
-                style =  MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier
                     .fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally)
@@ -226,7 +229,7 @@ fun gnamDetailsView(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Recipe:",
+            text = stringResource(R.string.gnam_details_recipe),
             style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier.align(Alignment.Start)
         )
@@ -247,11 +250,11 @@ fun gnamDetailsView(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            if(gnam.authorId != loggedUserId && online) { // If online and is not the author
+            if (gnam.authorId != loggedUserId && online) { // If online and is not the author
                 Button(
                     modifier = Modifier.padding(end = 8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if(!isGnamSaved) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error,
+                        containerColor = if (!isGnamSaved) MaterialTheme.colorScheme.tertiary else MaterialTheme.colorScheme.error,
                     ),
                     onClick = {
                         if (!isGnamSaved) {
@@ -264,7 +267,7 @@ fun gnamDetailsView(
                 ) {
                     Text(
                         stringResource(
-                            if(!isGnamSaved)
+                            if (!isGnamSaved)
                                 R.string.saved_add_to_saved
                             else
                                 R.string.saved_remove_from_saved
@@ -277,7 +280,10 @@ fun gnamDetailsView(
                     runBlocking { gnamViewModel.shareGnam(gnam) }
                     val intent = Intent().apply {
                         action = Intent.ACTION_SEND
-                        putExtra(Intent.EXTRA_TEXT, "Ehi! Prova questa ricetta che ho trovato su Gnammy:\n" + gnam.recipe)
+                        putExtra(
+                            Intent.EXTRA_TEXT,
+                            "Ehi! Prova questa ricetta che ho trovato su Gnammy:\n" + gnam.recipe
+                        )
                         type = "text/plain"
                     }
                     context.startActivity(Intent.createChooser(intent, "Save Recipe to Notes"))

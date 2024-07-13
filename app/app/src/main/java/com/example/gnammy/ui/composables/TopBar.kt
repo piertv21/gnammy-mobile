@@ -17,9 +17,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.ui.GnammyRoute
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
 
@@ -33,7 +35,17 @@ fun TopBar(
     CenterAlignedTopAppBar(
         title = {
             Text(
-                currentRoute.title,
+                when (currentRoute.route) {
+                    GnammyRoute.Home.route -> stringResource(R.string.route_home)
+                    GnammyRoute.Notification.route -> stringResource(R.string.route_notification)
+                    GnammyRoute.GnamDetails.route -> stringResource(R.string.route_gnam_details)
+                    GnammyRoute.Goals.route -> stringResource(R.string.route_goals)
+                    GnammyRoute.Profile.route -> stringResource(R.string.route_profile)
+                    GnammyRoute.Search.route -> stringResource(R.string.route_search)
+                    GnammyRoute.Post.route -> stringResource(R.string.route_post)
+                    GnammyRoute.Saved.route -> stringResource(R.string.route_saved)
+                    else -> stringResource(R.string.app_name)
+                },
                 fontWeight = FontWeight.Medium,
             )
         },

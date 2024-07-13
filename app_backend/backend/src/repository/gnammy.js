@@ -455,6 +455,9 @@ async function shortListGoals(userId, limit, callback) {
                 userId: userId,
                 goalType: {
                     isFor: 'user'
+                },
+                achievedOn: {
+                    not: null
                 }
             },
             take: limit,
@@ -490,7 +493,10 @@ async function listGoals(userId, callback) {
     try {
         const goals = await prisma.goal.findMany({
             where: {
-                userId: userId
+                userId: userId,
+                achievedOn: {
+                    not: null
+                }
             },
             orderBy: {
                 achievedOn: {

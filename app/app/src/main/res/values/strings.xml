@@ -39,4 +39,21 @@
     <string name="date_before">before</string>
     <string name="date_after">after</string>
     <string name="date_range">range</string>
+    <string name="route_home">Gnammy</string>
+    <string name="route_notification">Notifications</string>
+    <string name="route_gnam_details">Gnam details</string>
+    <string name="route_goals">Goals</string>
+    <string name="route_profile">Profile</string>
+    <string name="route_post">Post gnam</string>
+    <string name="route_search">Search</string>
+    <string name="route_saved">Saved gnams</string>
+    <string name="gnam_details_recipe">Recipe</string>
+    <string name="goals_users">User goals</string>
+    <string name="goals_gnam">Gnam goals</string>
+    <string name="notification_notification_subtitle">Notifications</string>
+    <string name="notification_goals_title">Goals</string>
+    <string name="connection_not_available">Unable to connect to the internet</string>
+    <string name="login">Login</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="register">Sign in</string>
 </resources>

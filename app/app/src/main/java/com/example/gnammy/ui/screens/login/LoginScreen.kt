@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.example.gnammy.R
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.Result
 import kotlinx.coroutines.launch
@@ -68,7 +70,9 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Accedi", fontWeight = FontWeight.Bold, fontSize = 30.sp)
+            Text(
+                stringResource(R.string.login), fontWeight = FontWeight.Bold, fontSize = 30.sp
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -118,7 +122,8 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
                 onClick = {
                     keyboardController?.hide()
                     if (username.isNotBlank() && password.isNotBlank()) {
-                        val state = runBlocking { userViewModel.login(username.trim(), password.trim()) }
+                        val state =
+                            runBlocking { userViewModel.login(username.trim(), password.trim()) }
                         when (state) {
                             is Result.Success -> {
                                 scope.launch {
@@ -128,12 +133,15 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
                                     popUpTo("Login") { inclusive = true }
                                 }
                             }
+
                             is Result.Error -> {
                                 scope.launch {
                                     snackbarHostState.showSnackbar(state.message)
                                 }
                             }
-                            null -> { /* No action */ }
+
+                            null -> { /* No action */
+                            }
                         }
                     } else {
                         scope.launch {
@@ -157,7 +165,7 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                "Non hai un account?",
+                stringResource(R.string.no_account),
                 color = Color.Gray
             )
 
@@ -167,7 +175,7 @@ fun LoginScreen(navHostController: NavHostController, userViewModel: UserViewMod
                     navHostController.navigate("Register")
                 }
             ) {
-                Text("Registrati")
+                Text(stringResource(R.string.register))
             }
         }
     }

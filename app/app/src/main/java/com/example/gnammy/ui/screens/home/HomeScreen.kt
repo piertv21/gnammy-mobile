@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -35,6 +36,7 @@ import com.alexstyl.swipeablecard.Direction
 import com.alexstyl.swipeablecard.ExperimentalSwipeableCardApi
 import com.alexstyl.swipeablecard.rememberSwipeableCardState
 import com.alexstyl.swipeablecard.swipableCard
+import com.example.gnammy.R
 import com.example.gnammy.ui.composables.RecipeCardBig
 import com.example.gnammy.ui.viewmodels.GnamViewModel
 import com.example.gnammy.ui.viewmodels.NotificationViewModel
@@ -75,7 +77,10 @@ fun HomeScreen(
 
     if (!isOnline(context)) {
         Box(modifier = Modifier.fillMaxSize()) {
-            Text("Nessuna connessione ad internet.", modifier = Modifier.align(Alignment.Center))
+            Text(
+                stringResource(R.string.connection_not_available),
+                modifier = Modifier.align(Alignment.Center)
+            )
         }
     } else {
         if (gnamsState.gnams.size < 5) {
@@ -128,7 +133,7 @@ fun HomeScreen(
                     }
                 }
 
-                if(userViewModel.homeBtnEnabled.value) {
+                if (userViewModel.homeBtnEnabled.value) {
                     Row(
                         modifier = Modifier
                             .weight(0.15f)
