@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.GnamGoal
 import com.example.gnammy.data.local.entities.UserGoal
@@ -44,12 +45,14 @@ fun UserGoal(goal: UserGoal, modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 10.dp, bottom = 10.dp, start = 0.dp, end = 5.dp)
+                .padding(top = 10.dp, bottom = 10.dp, start = 0.dp, end = 8.dp)
                 .weight(0.75f)
         ) {
             Text(
                 text = goal.content,
                 color = MaterialTheme.colorScheme.background,
+                fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                lineHeight = 20.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -103,6 +106,8 @@ fun GnamGoal(goal: GnamGoal) {
                 Text(
                     text = goal.content,
                     color = MaterialTheme.colorScheme.background,
+                    fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                    lineHeight = 20.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.Center)
                 )
