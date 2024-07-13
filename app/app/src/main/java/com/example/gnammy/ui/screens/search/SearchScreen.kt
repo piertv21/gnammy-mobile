@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Favorite
@@ -49,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -104,6 +107,27 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val loading = remember { mutableStateOf(false) }
 
+    fun search() {
+        keyboardController?.hide()
+        loading.value = true
+
+        val dateFromValue = if (dateFrom.value == 0L) "" else millisToDateString(
+            dateFrom.value,
+            DateFormats.DB_FORMAT
+        )
+        val dateToValue = if (dateTo.value == 0L) "" else millisToDateString(
+            dateTo.value,
+            DateFormats.DB_FORMAT
+        )
+        gnamViewModel.fetchSearchResults(
+            loggedUserId,
+            searchText,
+            dateToValue,
+            dateFromValue,
+            likesContent.value.toIntOrNull()
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,12 +137,19 @@ fun SearchScreen(
         OutlinedTextField(
             value = searchText,
             onValueChange = { searchText = it },
+            singleLine = true,
             label = { Text(stringResource(R.string.search_search) + "...") },
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 Icon(imageVector = Icons.Outlined.Search, contentDescription = null)
             },
-            shape = RoundedCornerShape(30.dp)
+            shape = RoundedCornerShape(30.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    search()
+                }
+            )
         )
 
         Row(
@@ -266,27 +297,11 @@ fun SearchScreen(
 
             ExpandedChip.NONE -> {}
         }
+
         if (expandedChip.value == ExpandedChip.NONE) {
             Button(
                 onClick = {
-                    keyboardController?.hide()
-                    loading.value = true
-
-                    val dateFromValue = if (dateFrom.value == 0L) "" else millisToDateString(
-                        dateFrom.value,
-                        DateFormats.DB_FORMAT
-                    )
-                    val dateToValue = if (dateTo.value == 0L) "" else millisToDateString(
-                        dateTo.value,
-                        DateFormats.DB_FORMAT
-                    )
-                    gnamViewModel.fetchSearchResults(
-                        loggedUserId,
-                        searchText,
-                        dateToValue,
-                        dateFromValue,
-                        likesContent.value.toIntOrNull()
-                    )
+                    search()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
