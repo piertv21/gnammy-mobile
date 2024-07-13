@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.ui.GnammyRoute
@@ -58,6 +59,8 @@ fun RecipeCardSmall(
                 color = MaterialTheme.colorScheme.background,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                lineHeight = 20.sp,
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentHeight(align = Alignment.CenterVertically)

@@ -56,4 +56,5 @@
     <string name="login">Login</string>
     <string name="no_account">Don\'t have an account?</string>
     <string name="register">Sign in</string>
+    <string name="notification_see_all_goals">See all</string>
 </resources>

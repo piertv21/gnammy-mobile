@@ -102,7 +102,7 @@ fun NotificationScreen(
                             modifier = Modifier.align(Alignment.Center)
                         ) {
                             Text(
-                                "See all",
+                                stringResource(id = R.string.notification_see_all_goals),
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.primary
                             )
