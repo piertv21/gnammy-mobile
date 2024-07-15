@@ -26,10 +26,10 @@ import org.koin.dsl.module
 
 val Context.dataStore by preferencesDataStore("settings")
 
-//val backendSocket = "http://172.23.176.1:3000"
+val backendSocket = "http://172.23.176.1:3000"
 //val backendSocket = "http://192.168.1.175:3000"
 //val backendSocket = "http://192.168.1.130:3000"
-val backendSocket = "http://192.168.36.70:3000"
+//val backendSocket = "http://192.168.36.70:3000"
 
 val appModule = module {
     single { get<Context>().dataStore }

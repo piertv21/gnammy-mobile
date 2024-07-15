@@ -7,8 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -82,6 +82,7 @@ import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.LocationService
 import com.example.gnammy.utils.isOnline
+import com.example.gnammy.utils.rememberCameraLauncher
 import kotlinx.coroutines.runBlocking
 import org.koin.compose.koinInject
 
@@ -496,10 +497,24 @@ fun SettingsModal(
 
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        profilePictureUri = uri
+    val cameraLauncher = rememberCameraLauncher { imageUri ->
+        profilePictureUri = imageUri
+    }
+
+    val cameraPermission = rememberPermission(Manifest.permission.CAMERA) { status ->
+        if (status.isGranted) {
+            cameraLauncher.captureImage()
+        } else {
+            Toast.makeText(ctx, "Permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun takePicture() {
+        if (cameraPermission.status.isGranted) {
+            cameraLauncher.captureImage()
+        } else {
+            cameraPermission.launchPermissionRequest()
+        }
     }
 
     Dialog(onDismissRequest = { onDismissRequest() }) {
@@ -597,16 +612,22 @@ fun SettingsModal(
                         modifier = Modifier.padding(bottom = 8.dp, start = 8.dp)
                     )
                     Button(
-                        onClick = { launcher.launch("image/*") },
+                        onClick = { takePicture() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp)
                     ) {
+                        Icon(
+                            Icons.Outlined.PhotoCamera,
+                            contentDescription = "Camera icon",
+                            modifier = Modifier.size(ButtonDefaults.IconSize)
+                        )
+                        Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                         Text(
                             text = if (profilePictureUri == null) {
-                                stringResource(R.string.profile_select_propic)
+                                stringResource(R.string.profile_update_propic)
                             } else {
-                                "Selected: " + profilePictureUri?.lastPathSegment
+                                "Selezionato: " + profilePictureUri?.lastPathSegment
                             }
                         )
                     }

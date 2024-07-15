@@ -127,9 +127,9 @@ fun RegisterScreen(navHostController: NavHostController, userViewModel: UserView
             ) {
                 Text(
                     text = if (profilePictureUri == null) {
-                        stringResource(R.string.profile_select_propic)
+                        stringResource(R.string.register_propic)
                     } else {
-                        "Selected: " + profilePictureUri?.lastPathSegment
+                        "Selezionato: " + profilePictureUri?.lastPathSegment
                     }
                 )
             }
