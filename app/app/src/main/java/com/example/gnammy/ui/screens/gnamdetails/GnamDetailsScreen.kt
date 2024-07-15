@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.provider.CalendarContract
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -292,6 +294,41 @@ fun gnamDetailsView(
                 }
             ) {
                 Text("Condividi")
+            }
+        }
+        if(isGnamSaved) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp)
+            ) {
+                Button(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_INSERT).apply {
+                            data = CalendarContract.Events.CONTENT_URI
+                            putExtra(CalendarContract.Events.TITLE, "Provare ${gnam.title} da Gnammy")
+                            putExtra(CalendarContract.Events.EVENT_LOCATION, "Casa")
+                            putExtra(CalendarContract.Events.DESCRIPTION, "Provare a preparare la ricetta \"${gnam.title}\" di ${gnam.authorName} trovata su Gnammy.")
+
+                            val currentTime = System.currentTimeMillis()
+                            val oneWeekInMillis = 7 * 24 * 60 * 60 * 1000L
+                            val startTime = currentTime + oneWeekInMillis
+                            val endTime = startTime + 60 * 60 * 1000L // 1 hour later
+
+                            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startTime)
+                            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endTime)
+                        }
+                        if (intent.resolveActivity(context.packageManager) != null) {
+                            context.startActivity(intent)
+                        } else {
+                            Toast.makeText(context, "Nessuna app calendario trovata", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                ) {
+                    Text("Ricordami di prepararlo fra 1 settimana")
+                }
             }
         }
     }
