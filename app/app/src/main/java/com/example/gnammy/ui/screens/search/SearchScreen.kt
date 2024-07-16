@@ -317,7 +317,7 @@ fun SearchScreen(
             LaunchedEffect(searchResult) {
                 loading.value = false
             }
-        } else if (searchResult.gnams.isEmpty()) {
+        } else if (searchResult.gnams.isEmpty() && searchText.isNotEmpty()) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text("Nessuno gnam trovato.", modifier = Modifier.align(Alignment.Center))
             }
