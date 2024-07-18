@@ -84,9 +84,6 @@ fun MainScreen(themeViewModel: ThemeViewModel) {
         } else {
             GnammyRoute.Home
         }
-        if (loggedUserId != "NOT SET") {
-            userViewModel.fetchUser(loggedUserId)
-        }
 
         val navController = rememberNavController()
         val backStackEntry by navController.currentBackStackEntryAsState()

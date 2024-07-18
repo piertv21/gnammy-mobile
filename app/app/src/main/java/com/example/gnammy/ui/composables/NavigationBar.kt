@@ -13,6 +13,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.wear.compose.material.ContentAlpha
 import com.example.gnammy.R
@@ -81,9 +82,35 @@ fun NavigationBar(
                     if (!selected) {
                         if (route == GnammyRoute.Profile) {
                             val loggedId = runBlocking { userViewModel.getLoggedUserId() }
-                            navController.navigate(GnammyRoute.Profile.buildRoute(loggedId))
+                            navController.navigate(GnammyRoute.Profile.buildRoute(loggedId)) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
+
                         } else {
-                            navController.navigate(route.route)
+                            navController.navigate(route.route) {
+                                // Pop up to the start destination of the graph to
+                                // avoid building up a large stack of destinations
+                                // on the back stack as users select items
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the same destination when
+                                // reselecting the same item
+                                launchSingleTop = true
+                                // Restore state when reselecting a previously selected item
+                                restoreState = true
+                            }
+
                         }
                     }
                 }

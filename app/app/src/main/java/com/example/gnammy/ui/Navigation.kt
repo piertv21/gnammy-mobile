@@ -2,6 +2,7 @@ package com.example.gnammy.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NamedNavArgument
@@ -86,15 +87,15 @@ fun GnammyNavGraph(
     goalsViewModel: GoalViewModel,
     modifier: Modifier = Modifier
 ) {
-    if (userViewModel.loggedUserId == "NOT SET") {
+    val loggedUserId = remember { userViewModel.loggedUserId }
+    if (loggedUserId == "NOT SET") {
         runBlocking { userViewModel.getLoggedUserId() }
     }
-    val loggedUserId = userViewModel.loggedUserId
 
     NavHost(
         navController = navController,
         startDestination = startDestination,
-        modifier = modifier
+        modifier = modifier,
     ) {
         with(GnammyRoute.Home) {
             composable(route) {
