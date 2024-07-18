@@ -35,6 +35,7 @@ import com.example.gnammy.utils.millisToDateString
 
 @Composable
 fun RecipeCardBig(
+    key: String,
     gnam: Gnam,
     modifier: Modifier,
     navController: NavHostController

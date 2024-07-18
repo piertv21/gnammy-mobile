@@ -893,8 +893,7 @@ async function getGnamTimeline(userId, offset, callback) {
                 }
             }
         });
-
-        const gnamsWithAuthorName = gnams.map(gnam => ({
+        let gnamsWithAuthorName = gnams.map(gnam => ({
             id: gnam.id,
             authorId: gnam.authorId,
             title: gnam.title,
@@ -905,6 +904,7 @@ async function getGnamTimeline(userId, offset, callback) {
             authorName: gnam.author.username,
             authorImageUri: gnam.author.imageUri
         }));
+
         console.log(gnamsWithAuthorName)
         callback(null, gnamsWithAuthorName);
     } catch (error) {

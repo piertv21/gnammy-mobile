@@ -1,6 +1,5 @@
 package com.example.gnammy.data.repository
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.util.Log
@@ -49,7 +48,7 @@ class GnamRepository(
         private val USER_ID_KEY = stringPreferencesKey("user_id_key")
     }
 
-    val timeline_offset = dataStore.data.map { it[TIMELINE_OFFSET_KEY] ?: 0 }
+    val timelineOffset = dataStore.data.map { it[TIMELINE_OFFSET_KEY] ?: 0 }
 
     suspend fun setTimelineOffsetKey(value: Int) =
         dataStore.edit { it[TIMELINE_OFFSET_KEY] = value }
@@ -125,30 +124,32 @@ class GnamRepository(
 
     suspend fun fetchGnamTimeline() {
         try {
-            val offset: Int = timeline_offset.first()
+            val offset: Int = timelineOffset.first()
             val currentUserId = getCurrentUserId()
             val gnamResponse = apiService.getGnamTimeline(currentUserId, offset)
-            setTimelineOffsetKey(offset + 10)
 
             if (gnamResponse.isSuccessful) {
                 val gnamRes = gnamResponse.body()
-                val listGnams: MutableList<Gnam> = timeline.value.toMutableList()
-                gnamRes?.gnams?.forEach() {
-                    listGnams.add(
-                        Gnam(
-                            id = it.id,
-                            authorId = it.authorId,
-                            title = it.title,
-                            description = it.description,
-                            recipe = it.recipe,
-                            date = dateStringToMillis(it.createdAt, DateFormats.DB_FORMAT),
-                            imageUri = "${backendSocket}/images/gnam/${it.id}.jpg",
-                            authorImageUri = "${backendSocket}/images/user/${it.authorImageUri}",
-                            authorName = it.authorName
-                        )
-                    )
+                if (gnamRes != null) {
+                    setTimelineOffsetKey(gnamRes.offset)
                 }
-                timeline.value = listGnams
+                val newGnams = gnamRes?.gnams?.map { gnam ->
+                    Gnam(
+                        id = gnam.id,
+                        authorId = gnam.authorId,
+                        title = gnam.title,
+                        description = gnam.description,
+                        recipe = gnam.recipe,
+                        date = dateStringToMillis(gnam.createdAt, DateFormats.DB_FORMAT),
+                        imageUri = "${backendSocket}/images/gnam/${gnam.id}.jpg",
+                        authorImageUri = "${backendSocket}/images/user/${gnam.authorImageUri}",
+                        authorName = gnam.authorName
+                    )
+                } ?: emptyList()
+
+                // Aggiungi i nuovi gnams alla lista esistente
+                val updatedTimeline = timeline.value.toMutableList().apply { addAll(newGnams) }
+                timeline.value = updatedTimeline
             } else {
                 Log.e("GnamRepository", "Error in getting gnam: ${gnamResponse.message()}")
             }

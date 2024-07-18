@@ -615,7 +615,11 @@ const getGnamTimeline = (req, res) => {
             return res.status(httpStatus.INTERNAL_SERVER_ERROR)
                 .json({ error: `Error during the gnam timeline retrieval: ${err}` });
         }
-        res.status(httpStatus.OK).json({ gnams });
+        let newOffset = offset + gnams.length
+        if(gnams.length == 0) {
+            newOffset = 0
+        }
+        res.status(httpStatus.OK).json({ gnams: gnams, offset:  newOffset });
     });
 }
 

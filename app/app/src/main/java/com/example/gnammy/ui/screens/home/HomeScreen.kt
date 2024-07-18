@@ -1,6 +1,5 @@
 package com.example.gnammy.ui.screens.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -75,22 +74,22 @@ fun HomeScreen(
         }
     }
 
-    if (!isOnline(context)) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Text(
-                stringResource(R.string.connection_not_available),
-                modifier = Modifier.align(Alignment.Center)
-            )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
-    } else {
-        if (gnamsState.gnams.size < 5) {
-            gnamViewModel.fetchGnamTimeline()
-            if (gnamsState.gnams.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator()
-                }
+
+        if (!isOnline(context)) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    stringResource(R.string.connection_not_available),
+                    modifier = Modifier.align(Alignment.Center)
+                )
             }
         } else {
+            if (gnamsState.gnams.size < 5) {
+                gnamViewModel.fetchGnamTimeline()
+            }
             val states = gnamsState.gnams.reversed()
                 .map { it to rememberSwipeableCardState() }
 
@@ -106,15 +105,18 @@ fun HomeScreen(
                     states.forEach { (gnam, state) ->
                         if (state.swipedDirection == null) {
                             RecipeCardBig(
+                                key = gnam.id,
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .swipableCard(
                                         state = state,
-                                        blockedDirections = listOf(Direction.Down, Direction.Up),
+                                        blockedDirections = listOf(
+                                            Direction.Down,
+                                            Direction.Up
+                                        ),
                                         onSwiped = {
                                         },
                                         onSwipeCancel = {
-                                            Log.d("Swipeable-Card", "Cancelled swipe")
                                         }
                                     ),
                                 gnam = gnam,
@@ -122,7 +124,6 @@ fun HomeScreen(
                             )
                         }
                         LaunchedEffect(state.swipedDirection) {
-                            Log.i("HomeScreen", "swipato ${state.swipedDirection}")
                             if (state.swipedDirection != null) {
                                 gnamViewModel.removeFromTimeline(
                                     gnam,
@@ -154,7 +155,10 @@ fun HomeScreen(
                             },
                             modifier = Modifier
                                 .size(80.dp)
-                                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                                .background(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    CircleShape
+                                )
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Close,
@@ -176,7 +180,10 @@ fun HomeScreen(
                             },
                             modifier = Modifier
                                 .size(80.dp)
-                                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+                                .background(
+                                    MaterialTheme.colorScheme.primaryContainer,
+                                    CircleShape
+                                )
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Favorite,
@@ -187,6 +194,7 @@ fun HomeScreen(
                         }
                     }
                 }
+
             }
         }
     }

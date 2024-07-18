@@ -1,6 +1,5 @@
 package com.example.gnammy.data.remote.apis
 
-import com.example.gnammy.utils.ImageResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -33,6 +32,11 @@ class GnamListWrapperResponse {
     var gnams: List<GnamResponse>? = null
 }
 
+class GnamTimelineResponse {
+    var gnams: List<GnamResponse>? = null
+    var offset: Int = 0
+}
+
 class LikeRequest(
     val gnamId: String,
     val userId: String
@@ -63,7 +67,7 @@ interface GnamApiService {
     suspend fun getGnamTimeline(
         @Path("userId") userId: String,
         @Path("offset") offset: Int
-    ): Response<GnamListWrapperResponse>
+    ): Response<GnamTimelineResponse>
 
     @GET("/gnam/{gnamId}")
     suspend fun getGnam(@Path("gnamId") gnamId: String): Response<GnamWrapperResponse>
