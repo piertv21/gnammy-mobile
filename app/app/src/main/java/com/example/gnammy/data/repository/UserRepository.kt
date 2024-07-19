@@ -124,7 +124,7 @@ class UserRepository(
                 Result.Error("Errore: credenziali errate")
             }
         } catch (e: IOException) {
-            Result.Error("Network error in login")
+            Result.Error("Errore: connessione di rete assente")
         } catch (e: HttpException) {
             Result.Error("HTTP error in login")
         }
@@ -169,7 +169,7 @@ class UserRepository(
                 Result.Error("Error in register: ${response.message()}")
             }
         } catch (e: IOException) {
-            Result.Error("Network error in register")
+            Result.Error("Errore: connessione di rete assente")
         } catch (e: HttpException) {
             Result.Error("HTTP error in register")
         }
