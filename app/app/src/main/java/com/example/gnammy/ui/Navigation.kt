@@ -87,7 +87,7 @@ fun GnammyNavGraph(
     goalsViewModel: GoalViewModel,
     modifier: Modifier = Modifier
 ) {
-    val loggedUserId = remember { userViewModel.loggedUserId }
+    val loggedUserId = runBlocking { userViewModel.getLoggedUserId() }
     if (loggedUserId == "NOT SET") {
         runBlocking { userViewModel.getLoggedUserId() }
     }
