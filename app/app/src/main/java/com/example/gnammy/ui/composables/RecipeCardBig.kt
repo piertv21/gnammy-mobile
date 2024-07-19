@@ -1,6 +1,9 @@
 package com.example.gnammy.ui.composables
 
 import android.net.Uri
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -30,10 +33,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,12 +63,30 @@ fun RecipeCardBig(
 ) {
     val transition =
         updateTransition(targetState = state.offset.value.x, label = "cardOffsetTransition")
+    val context = LocalContext.current
+    val vibrator = remember { context.getSystemService(Vibrator::class.java) }
+
+    var hasVibrated by remember { mutableStateOf(false) }
+
+    val screenWidth = with(LocalDensity.current) {
+        LocalConfiguration.current.screenWidthDp.dp.toPx()
+    }
+    val threshold = screenWidth / 4
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (kotlin.math.abs(state.offset.value.x) > threshold && !hasVibrated) {
+            vibrator.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_TICK))
+            hasVibrated = true
+        } else if (kotlin.math.abs(state.offset.value.x) <= threshold) {
+            hasVibrated = false
+        }
+    }
 
     val alpha by transition.animateFloat(
         transitionSpec = { tween(durationMillis = 500, easing = FastOutSlowInEasing) },
         label = "alphaAnimation"
     ) { offsetX ->
-        kotlin.math.min(0.65f, kotlin.math.abs(offsetX) / 400f)
+        kotlin.math.min(threshold / 400f, kotlin.math.abs(offsetX) / 400f)
     }
 
     val iconAlpha by transition.animateFloat(
@@ -67,7 +94,7 @@ fun RecipeCardBig(
         label = "iconAlphaAnimation"
     ) { offsetX ->
         if (kotlin.math.abs(offsetX) > 25f) {
-            kotlin.math.min(1f, kotlin.math.abs(offsetX - 25f) / 200f)
+            kotlin.math.min(threshold / 200f, kotlin.math.abs(offsetX) / 200f)
         } else {
             0f
         }
@@ -188,4 +215,3 @@ fun RecipeCardBig(
         }
     }
 }
-

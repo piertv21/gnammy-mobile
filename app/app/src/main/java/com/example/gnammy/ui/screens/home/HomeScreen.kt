@@ -1,5 +1,8 @@
 package com.example.gnammy.ui.screens.home
 
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +60,7 @@ fun HomeScreen(
     val gnamsState by gnamViewModel.timelineState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-
+    val vibrator = remember { context.getSystemService(Vibrator::class.java) }
     val coroutineScope = rememberCoroutineScope()
 
     DisposableEffect(Unit) {
@@ -146,6 +150,13 @@ fun HomeScreen(
                     ) {
                         IconButton(
                             onClick = {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    vibrator.vibrate(
+                                        VibrationEffect.createPredefined(
+                                            VibrationEffect.EFFECT_CLICK
+                                        )
+                                    )
+                                }
                                 scope.launch {
                                     val last = states.reversed()
                                         .firstOrNull {
@@ -170,6 +181,13 @@ fun HomeScreen(
                         }
                         IconButton(
                             onClick = {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    vibrator.vibrate(
+                                        VibrationEffect.createPredefined(
+                                            VibrationEffect.EFFECT_CLICK
+                                        )
+                                    )
+                                }
                                 scope.launch {
                                     val last = states.reversed()
                                         .firstOrNull {
