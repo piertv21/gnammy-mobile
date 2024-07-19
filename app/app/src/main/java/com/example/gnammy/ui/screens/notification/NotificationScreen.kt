@@ -49,11 +49,10 @@ fun NotificationScreen(
     val loadingGoals = remember { mutableStateOf(true) }
     val loadingNotifications = remember { mutableStateOf(true) }
 
-    if (goalsViewModel.goalsPreview.isNotEmpty()) {
+    LaunchedEffect(goalsViewModel.goalsPreview.isNotEmpty()) {
         loadingGoals.value = false
     }
-
-    if (notificationState.notifications.isNotEmpty()) {
+    LaunchedEffect(notificationState.notifications.isNotEmpty()) {
         loadingNotifications.value = false
     }
 
@@ -69,7 +68,7 @@ fun NotificationScreen(
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
-        if (goalsViewModel.goalsPreview.isEmpty()) {
+        if (loadingGoals.value) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -77,6 +76,15 @@ fun NotificationScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
+            }
+        } else if (goalsViewModel.goalsPreview.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.2f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Nessun obiettivo raggiunto.")
             }
         } else {
             LazyRow(
@@ -86,7 +94,6 @@ fun NotificationScreen(
                 contentPadding = PaddingValues(10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-
                 items(goalsViewModel.goalsPreview, key = { it.id }) { goal ->
                     UserGoal(
                         goal,
@@ -118,7 +125,7 @@ fun NotificationScreen(
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
-        if (notificationState.notifications.isEmpty()) {
+        if (loadingNotifications.value) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -126,6 +133,15 @@ fun NotificationScreen(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
+            }
+        } else if (notificationState.notifications.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.8f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Nessuna notifica disponibile.")
             }
         } else {
             LazyColumn(

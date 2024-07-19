@@ -464,14 +464,25 @@ fun profileView(
             }
         }
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(600.dp)
-        ) {
-            items(gnamsToShow) { gnam ->
-                RecipeCardSmall(gnam = gnam, navHostController, Modifier.padding(5.dp))
+        if(gnamsToShow.isNotEmpty()) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(600.dp)
+            ) {
+                items(gnamsToShow) { gnam ->
+                    RecipeCardSmall(gnam = gnam, navHostController, Modifier.padding(5.dp))
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(600.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Non hai ancora postato degli Gnam.")
             }
         }
     }
