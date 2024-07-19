@@ -120,7 +120,8 @@ fun HomeScreen(
                                         }
                                     ),
                                 gnam = gnam,
-                                navController = navController
+                                navController = navController,
+                                state = state
                             )
                         }
                         LaunchedEffect(state.swipedDirection) {

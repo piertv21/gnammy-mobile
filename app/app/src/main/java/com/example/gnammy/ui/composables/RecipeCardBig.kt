@@ -1,6 +1,10 @@
 package com.example.gnammy.ui.composables
 
 import android.net.Uri
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,17 +22,24 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.alexstyl.swipeablecard.SwipeableCardState
 import com.example.gnammy.data.local.entities.Gnam
 import com.example.gnammy.utils.DateFormats
 import com.example.gnammy.utils.millisToDateString
@@ -37,105 +48,144 @@ import com.example.gnammy.utils.millisToDateString
 fun RecipeCardBig(
     key: String,
     gnam: Gnam,
-    modifier: Modifier,
-    navController: NavHostController
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    state: SwipeableCardState
 ) {
-    Column(
+    val transition =
+        updateTransition(targetState = state.offset.value.x, label = "cardOffsetTransition")
+
+    val alpha by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 500, easing = FastOutSlowInEasing) },
+        label = "alphaAnimation"
+    ) { offsetX ->
+        kotlin.math.min(0.65f, kotlin.math.abs(offsetX) / 400f)
+    }
+
+    val iconAlpha by transition.animateFloat(
+        transitionSpec = { tween(durationMillis = 500, easing = FastOutSlowInEasing) },
+        label = "iconAlphaAnimation"
+    ) { offsetX ->
+        if (kotlin.math.abs(offsetX) > 25f) {
+            kotlin.math.min(1f, kotlin.math.abs(offsetX - 25f) / 200f)
+        } else {
+            0f
+        }
+    }
+
+    Box(
         modifier = modifier
-            .clip(RoundedCornerShape(20.dp))
-            .background(color = MaterialTheme.colorScheme.primaryContainer)
             .padding(10.dp)
             .fillMaxSize()
             .clip(RoundedCornerShape(20.dp))
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .clip(shape = RoundedCornerShape(20.dp))
-                .background(color = MaterialTheme.colorScheme.primary)
+                .clip(RoundedCornerShape(20.dp))
+                .background(color = MaterialTheme.colorScheme.primaryContainer)
                 .padding(10.dp)
+                .fillMaxSize()
         ) {
-            Text(
-                text = gnam.title,
-                color = MaterialTheme.colorScheme.background,
-                textAlign = TextAlign.Start,
-                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier
-                    .fillMaxWidth(),
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.CenterHorizontally)
-                    .clickable {
-                        navController.navigate("profile/${gnam.authorId}")
-                    }
-            ) {
-                ImageWithPlaceholder(
-                    uri = Uri.parse(gnam.authorImageUri),
-                    description = "propic",
-                    modifier = Modifier
-                        .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
-                        .size(30.dp)
-                        .clip(shape = CircleShape)
-                        .align(Alignment.CenterVertically)
-                        .background(color = MaterialTheme.colorScheme.primaryContainer)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = gnam.authorName,
-                    color = MaterialTheme.colorScheme.background,
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                )
-                Text(
-                    text = " - " + millisToDateString(gnam.date, DateFormats.SHOW_FORMAT),
-                    color = MaterialTheme.colorScheme.background,
-                    textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleMedium.copy(),
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .wrapContentHeight(align = Alignment.CenterVertically)
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box {
-            ImageWithPlaceholder(
-                uri = Uri.parse(gnam.imageUri),
-                description = "Recipe Image",
-                Modifier
-                    .background(color = MaterialTheme.colorScheme.primaryContainer)
-                    .clip(shape = RoundedCornerShape(20.dp))
-                    .fillMaxSize()
-                    .padding(0.dp, 0.dp, 0.dp, 100.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight(1f / 3f)
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .clip(shape = RoundedCornerShape(20.dp))
-                    .background(color = MaterialTheme.colorScheme.primary)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.primary)
                     .padding(10.dp)
             ) {
                 Text(
-                    text = gnam.description,
+                    text = gnam.title,
                     color = MaterialTheme.colorScheme.background,
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentHeight(align = Alignment.CenterVertically),
-                    overflow = TextOverflow.Ellipsis
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { navController.navigate("profile/${gnam.authorId}") }
+                ) {
+                    ImageWithPlaceholder(
+                        uri = Uri.parse(gnam.authorImageUri),
+                        description = "Author Image",
+                        modifier = Modifier
+                            .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = gnam.authorName,
+                        color = MaterialTheme.colorScheme.background,
+                        textAlign = TextAlign.Start,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    Text(
+                        text = " - " + millisToDateString(gnam.date, DateFormats.SHOW_FORMAT),
+                        color = MaterialTheme.colorScheme.background,
+                        textAlign = TextAlign.Start,
+                        style = MaterialTheme.typography.titleMedium.copy(),
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
             }
+            Spacer(modifier = Modifier.height(10.dp))
+            Box {
+                ImageWithPlaceholder(
+                    uri = Uri.parse(gnam.imageUri),
+                    description = "Recipe Image",
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.primaryContainer)
+                        .clip(RoundedCornerShape(20.dp))
+                        .fillMaxSize()
+                        .padding(bottom = 100.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight(1f / 3f)
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        text = gnam.description,
+                        color = MaterialTheme.colorScheme.background,
+                        textAlign = TextAlign.Start,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentHeight(Alignment.CenterVertically),
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = alpha))
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(80.dp)
+                .graphicsLayer(alpha = iconAlpha)
+                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
+        ) {
+            Icon(
+                imageVector = if (state.offset.value.x > 0) Icons.Default.Favorite else Icons.Rounded.Close,
+                contentDescription = if (state.offset.value.x > 0) "Like" else "Dislike",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(35.dp)
+            )
         }
     }
 }
+

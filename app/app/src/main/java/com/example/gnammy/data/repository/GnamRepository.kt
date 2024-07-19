@@ -23,6 +23,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -30,6 +32,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
+
 
 class GnamRepository(
     private val gnamDao: GnamDao,
@@ -42,6 +45,8 @@ class GnamRepository(
     val gnams: Flow<List<Gnam>> = gnamDao.getAllGnams()
     val timeline: MutableStateFlow<List<Gnam>> = MutableStateFlow(emptyList())
     val searchResults: MutableStateFlow<List<Gnam>> = MutableStateFlow(emptyList())
+
+    private val timelineMutex = Mutex()
 
     companion object {
         private val TIMELINE_OFFSET_KEY = intPreferencesKey("timeline_offset_key")
@@ -59,7 +64,7 @@ class GnamRepository(
     }
 
     suspend fun getGnamData(gnamId: String): Gnam? {
-        return try {
+        try {
             val gnamResponse = apiService.getGnam(gnamId)
             if (gnamResponse.isSuccessful) {
                 val gnamRes = gnamResponse.body()
@@ -147,9 +152,10 @@ class GnamRepository(
                     )
                 } ?: emptyList()
 
-                // Aggiungi i nuovi gnams alla lista esistente
-                val updatedTimeline = timeline.value.toMutableList().apply { addAll(newGnams) }
-                timeline.value = updatedTimeline
+                timelineMutex.withLock {
+                    val updatedTimeline = timeline.value.toMutableList().apply { addAll(newGnams) }
+                    timeline.value = updatedTimeline
+                }
             } else {
                 Log.e("GnamRepository", "Error in getting gnam: ${gnamResponse.message()}")
             }
@@ -235,10 +241,12 @@ class GnamRepository(
                 Log.e("GnamRepository", "HTTP error in removing like", e)
             }
         }
-        val currentTimeline = timeline.value.toMutableList()
-        currentTimeline.remove(gnam)
-        timeline.value = currentTimeline
-        Log.i("GnamRepository", "timeline has now ${timeline.value.size} elements")
+
+        timelineMutex.withLock {
+            val currentTimeline = timeline.value.toMutableList()
+            currentTimeline.remove(gnam)
+            timeline.value = currentTimeline
+        }
     }
 
     suspend fun addCurrentUserGnams(userId: String) {
