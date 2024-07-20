@@ -311,7 +311,7 @@ fun profileView(
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "Check out this profile on Gnam.my: ${user.username}")
+            putExtra(Intent.EXTRA_TEXT, "Dai un'occhiata a questo profilo su Gnam.my: ${user.username}")
         }
         val shareIntent = Intent.createChooser(sendIntent, "Share profile")
         if (shareIntent.resolveActivity(ctx.packageManager) != null) {
