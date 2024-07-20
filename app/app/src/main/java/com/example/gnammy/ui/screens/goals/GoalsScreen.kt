@@ -12,7 +12,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -32,8 +36,19 @@ import com.example.gnammy.ui.viewmodels.UserGoalsState
 fun GoalsScreen(
     goalsViewModel: GoalViewModel
 ) {
+    var isLoadingUserGoals by remember { mutableStateOf(true) }
+    var isLoadingGnamGoals by remember { mutableStateOf(true) }
+
     val userGoalsState: UserGoalsState by goalsViewModel.userGoalsState.collectAsStateWithLifecycle()
     val gnamGoalsState: GnamGoalsState by goalsViewModel.gnamGoalsState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(userGoalsState.goals.isNotEmpty()) {
+        isLoadingUserGoals = false
+    }
+
+    LaunchedEffect(gnamGoalsState.goals.isNotEmpty()) {
+        isLoadingGnamGoals = false
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -50,7 +65,7 @@ fun GoalsScreen(
             )
         }
         item {
-            if (userGoalsState.goals.isEmpty()) {
+            if (isLoadingUserGoals) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -60,19 +75,30 @@ fun GoalsScreen(
                     CircularProgressIndicator()
                 }
             } else {
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                ) {
-                    userGoalsState.goals.forEach { goal ->
-                        UserGoal(
-                            goal,
-                            Modifier
-                                .fillMaxWidth(1 / 2f)
-                                .aspectRatio(2f)
-                                .padding(4.dp)
-                        )
+                if (userGoalsState.goals.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Nessun obiettivo utente raggiunto.")
+                    }
+                } else {
+                    FlowRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        userGoalsState.goals.forEach { goal ->
+                            UserGoal(
+                                goal,
+                                Modifier
+                                    .fillMaxWidth(1 / 2f)
+                                    .aspectRatio(2f)
+                                    .padding(4.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -85,12 +111,11 @@ fun GoalsScreen(
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-
             )
         }
 
         item {
-            if (userGoalsState.goals.isEmpty()) {
+            if (isLoadingGnamGoals) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -100,13 +125,24 @@ fun GoalsScreen(
                     CircularProgressIndicator()
                 }
             } else {
-                FlowRow(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                ) {
-                    gnamGoalsState.goals.forEach { goal ->
-                        GnamGoal(goal)
+                if (gnamGoalsState.goals.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "Nessun obiettivo gnam raggiunto.")
+                    }
+                } else {
+                    FlowRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                    ) {
+                        gnamGoalsState.goals.forEach { goal ->
+                            GnamGoal(goal)
+                        }
                     }
                 }
             }
