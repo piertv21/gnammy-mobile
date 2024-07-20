@@ -416,6 +416,11 @@ fun profileView(
                     modifier = Modifier
                         .weight(0.4f)
                         .padding(end = 8.dp),
+                    colors = if (isUserFollowing.toString() == "true") {
+                        ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+                    } else {
+                        ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    },
                     onClick = {
                         runBlocking {
                             userViewModel.toggleFollowUser(user.id)
