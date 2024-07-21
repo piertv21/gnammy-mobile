@@ -106,6 +106,7 @@ fun SearchScreen(
     val chipsModifier = Modifier.defaultMinSize(minWidth = 120.dp)
     val keyboardController = LocalSoftwareKeyboardController.current
     val loading = remember { mutableStateOf(false) }
+    val hasSearched = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         gnamViewModel.resetSearchResults()
@@ -320,8 +321,9 @@ fun SearchScreen(
 
             LaunchedEffect(searchResult) {
                 loading.value = false
+                hasSearched.value = true
             }
-        } else if (searchResult.gnams.isEmpty() && searchText.isNotEmpty()) {
+        } else if (hasSearched.value) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Text("Nessuno gnam trovato.", modifier = Modifier.align(Alignment.Center))
             }
