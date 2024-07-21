@@ -64,9 +64,11 @@ private fun handleImageRotation(context: Context, imageUri: Uri) {
         ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270f)
         else -> bitmap
     }
+    val croppedBitmap = cropToSquare(rotatedBitmap)
+
     val outputStream = context.contentResolver.openOutputStream(imageUri)
     if (outputStream != null) {
-        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+        croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
     }
     outputStream?.close()
 }
@@ -75,4 +77,11 @@ private fun rotateImage(source: Bitmap, angle: Float): Bitmap {
     val matrix = Matrix()
     matrix.postRotate(angle)
     return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+}
+
+private fun cropToSquare(source: Bitmap): Bitmap {
+    val size = source.width.coerceAtMost(source.height)
+    val xOffset = (source.width - size) / 2
+    val yOffset = (source.height - size) / 2
+    return Bitmap.createBitmap(source, xOffset, yOffset, size, size)
 }
