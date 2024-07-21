@@ -135,4 +135,10 @@ class GnamViewModel(
     suspend fun shareGnam(gnam: Gnam) {
         repository.shareGnam(gnam)
     }
+
+    fun resetSearchResults() {
+        viewModelScope.launch {
+            repository.resetSearchResults()
+        }
+    }
 }

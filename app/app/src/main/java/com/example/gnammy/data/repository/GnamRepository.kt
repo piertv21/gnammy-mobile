@@ -332,4 +332,8 @@ class GnamRepository(
             Log.e("GnamRepository", "HTTP error in sharing gnam", e)
         }
     }
+
+    fun resetSearchResults() {
+        searchResults.value = emptyList()
+    }
 }

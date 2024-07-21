@@ -107,6 +107,10 @@ fun SearchScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val loading = remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        gnamViewModel.resetSearchResults()
+    }
+
     fun search() {
         keyboardController?.hide()
         loading.value = true
