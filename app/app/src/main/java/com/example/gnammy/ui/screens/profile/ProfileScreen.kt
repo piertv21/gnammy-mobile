@@ -161,19 +161,19 @@ fun ProfileScreen(
 
     if (state.showLocationDisabledAlert) {
         AlertDialog(
-            title = { Text("Location disabled") },
-            text = { Text("Location must be enabled to get your current location in the app.") },
+            title = { Text("Posizione disabilitata") },
+            text = { Text("La posizione deve essere abilitata per ottenere il luogo corrente nell'app.") },
             confirmButton = {
                 TextButton(onClick = {
                     locationService.openLocationSettings()
                     actions.setShowLocationDisabledAlert(false)
                 }) {
-                    Text("Enable")
+                    Text("Attiva")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { actions.setShowLocationDisabledAlert(false) }) {
-                    Text("Dismiss")
+                    Text("Chiudi")
                 }
             },
             onDismissRequest = { actions.setShowLocationDisabledAlert(false) }
@@ -182,19 +182,19 @@ fun ProfileScreen(
 
     if (state.showLocationPermissionDeniedAlert) {
         AlertDialog(
-            title = { Text("Location permission denied") },
-            text = { Text("Location permission is required to get your current location in the app.") },
+            title = { Text("Autorizzazione alla Posizione negata") },
+            text = { Text("L'autorizzazione alla posizione è necessaria per ottenere il luogo corrente nell'app.") },
             confirmButton = {
                 TextButton(onClick = {
                     locationPermission.launchPermissionRequest()
                     actions.setShowLocationPermissionDeniedAlert(false)
                 }) {
-                    Text("Grant")
+                    Text("Attiva")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { actions.setShowLocationPermissionDeniedAlert(false) }) {
-                    Text("Dismiss")
+                    Text("Chiudi")
                 }
             },
             onDismissRequest = { actions.setShowLocationPermissionDeniedAlert(false) }
@@ -204,8 +204,8 @@ fun ProfileScreen(
     if (state.showLocationPermissionPermanentlyDeniedSnackbar) {
         LaunchedEffect(snackbarHostState) {
             val res = snackbarHostState.showSnackbar(
-                "Location permission is required.",
-                "Go to Settings",
+                "È necessaria l'autorizzazione alla Posizione.",
+                "Vai alle Impostazioni",
                 duration = SnackbarDuration.Long
             )
             if (res == SnackbarResult.ActionPerformed) {
@@ -223,8 +223,8 @@ fun ProfileScreen(
     if (state.showNoInternetConnectivitySnackbar) {
         LaunchedEffect(snackbarHostState) {
             val res = snackbarHostState.showSnackbar(
-                message = "No Internet connectivity",
-                actionLabel = "Go to Settings",
+                message = "Nessuna connessione Internet",
+                actionLabel = "Vai alle Impostazioni",
                 duration = SnackbarDuration.Long
             )
             if (res == SnackbarResult.ActionPerformed) {
