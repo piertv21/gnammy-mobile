@@ -64,12 +64,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.gnammy.utils.PermissionStatus
-import com.example.gnammy.utils.rememberPermission
 import com.example.gnammy.R
 import com.example.gnammy.data.local.entities.User
 import com.example.gnammy.ui.composables.ImageWithPlaceholder
@@ -81,8 +80,10 @@ import com.example.gnammy.ui.viewmodels.SettingsState
 import com.example.gnammy.ui.viewmodels.ThemeViewModel
 import com.example.gnammy.ui.viewmodels.UserViewModel
 import com.example.gnammy.utils.LocationService
+import com.example.gnammy.utils.PermissionStatus
 import com.example.gnammy.utils.isOnline
 import com.example.gnammy.utils.rememberCameraLauncher
+import com.example.gnammy.utils.rememberPermission
 import kotlinx.coroutines.runBlocking
 import org.koin.compose.koinInject
 
@@ -311,7 +312,10 @@ fun profileView(
         val sendIntent = Intent().apply {
             action = Intent.ACTION_SEND
             type = "text/plain"
-            putExtra(Intent.EXTRA_TEXT, "Dai un'occhiata a questo profilo su Gnam.my: ${user.username}")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Dai un'occhiata a questo profilo su Gnam.my: ${user.username}"
+            )
         }
         val shareIntent = Intent.createChooser(sendIntent, "Share profile")
         if (shareIntent.resolveActivity(ctx.packageManager) != null) {
@@ -469,7 +473,7 @@ fun profileView(
             }
         }
 
-        if(gnamsToShow.isNotEmpty()) {
+        if (gnamsToShow.isNotEmpty()) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier
@@ -549,11 +553,28 @@ fun SettingsModal(
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    Text(
-                        text = "Impostazioni",
-                        style = MaterialTheme.typography.headlineSmall.copy(),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Impostazioni",
+                            style = MaterialTheme.typography.headlineSmall.copy(),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.weight(0.9f)
+                        )
+
+                        IconButton(
+                            onClick = { onDismissRequest() },
+                            modifier = Modifier.weight(0.1f)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Close"
+                            )
+                        }
+                    }
 
                     RadioButtonGroup(
                         selectedOption = themeViewModel.theme.value,
@@ -684,18 +705,6 @@ fun SettingsModal(
                         Text(text = stringResource(R.string.profile_logout), color = Color.White)
                     }
                 }
-            }
-
-            IconButton(
-                onClick = { onDismissRequest() },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 8.dp, end = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Close,
-                    contentDescription = "Close"
-                )
             }
 
             // Snackbar host
